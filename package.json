@@ -1,0 +1,18 @@
+{
+  "name": "saber-firework",
+  "version": "0.1.0",
+  "description": "适用于移动端的MVP框架",
+  "maintainers": [
+    {
+      "name": "treelite",
+      "email": "c.xinle@gmail.com"
+    }
+  ],
+  "dependencies": [
+      "saber-string": "~0.2.0",
+      "saber-ajax": "~0.1.0",
+      "saber-emitter": "~0.3.0"
+  ],
+  "repository": "git://github.com/ecomfe/saber-firework.git",
+  "license": "BSD"
+}
