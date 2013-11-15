@@ -5,7 +5,8 @@
 
 define(function (require) {
 
-    var format = require('saber-string/format');
+    var dom = require('saber-dom');
+    var inherits = require('saber-lang/inherits');
     var Emitter = require('saber-emitter');
 
     function toClassName(str) {
@@ -37,20 +38,31 @@ define(function (require) {
     }
 
     /**
+     * 继承
+     *
+     * @public
+     * @param {function} subclass
+     * @return {function}
+     */
+    View.subClass = function (subClass) {
+        return inherits(subClass, this);
+    };
+
+    /**
      * 渲染视图
      *
      * @public
-     * @param {HTMLElement} main 视图容器元素
+     * @param {HTMLElement|string} main 视图容器元素
      * @param {Object} template 模版
      * @param {Object} data 数据
      */
     View.prototype.render = function (main, template, data) {
+        if (typeof main == 'string' || main instanceof String) {
+            main = dom.query(main);
+        }
+
         this.main = main;
         this.template = template;
-
-        if (template && template.main) {
-            main.innerHTML = format(template.main, data);
-        }
 
         addClass(main, toClassName(this.name));
     };

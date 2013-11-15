@@ -1,6 +1,8 @@
 /**
  * @file 列表数据实体 数据交互遵循e-json规范
  * @author treelite(c.xinle@gmail.com)
+ *
+ * TODO 增加排序支持
  */
 
 define(function () {
@@ -9,6 +11,7 @@ define(function () {
     function DataList(url, queryInfo) {
         this.url = url;
         this.query = queryInfo;
+        this.data = [];
     }
 
     /**
@@ -18,6 +21,7 @@ define(function () {
      * @return {Array.<Object>}
      */
     DataList.prototype.getData = function () {
+        return this.data;
     };
 
     /**
@@ -66,7 +70,15 @@ define(function () {
             queryStr.push(key + '=' + encodeURIComponent(query[key]));
         });
 
-        return ajax.get(this.url + '?' + queryStr.join('&')).then(function (res) {return JSON.parse(res)});
+        var me = this;
+        return ajax.get(
+                    this.url + '?' + queryStr.join('&')
+                ).then(
+                    function (res) {
+                        res = JSON.parse(res);
+                        me.data = res.data;
+                        return me;
+                });
     };
 
     return DataList;

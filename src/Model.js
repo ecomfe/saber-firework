@@ -3,12 +3,25 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-define(function () {
+define(function (require) {
+
+    var inherits = require('saber-lang/inherits');
 
     function Model(name) {
         this.data = {};
         this.name = name;
     }
+
+    /**
+     * 继承
+     *
+     * @public
+     * @param {function} subclass
+     * @return {function}
+     */
+    Model.subClass = function (subClass) {
+        return inherits(subClass, this);
+    };
 
     /**
      * 暂存数据
@@ -31,7 +44,9 @@ define(function () {
      * @param {*} value
      */
     Model.prototype.storage = function (key, value) {
-        localStorage.setItem(this.name + '-' + key, JSON.stringify(value));
+        if (value !== undefined) {
+            localStorage.setItem(this.name + '-' + key, JSON.stringify(value));
+        }
     };
 
     /**
@@ -50,7 +65,7 @@ define(function () {
         }
         else {
             var value = localStorage.getItem(this.name + '-' + key);
-            if (value) {
+            if (value != 'undefined' && value !== null) {
                 res = JSON.parse(value);
             }
         }
