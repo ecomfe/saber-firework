@@ -8,13 +8,13 @@
       "email": "c.xinle@gmail.com"
     }
   ],
-  "dependencies": [
+  "dependencies": {
       "saber-string": "~0.2.0",
       "saber-ajax": "~0.1.0",
       "saber-emitter": "~0.3.0",
       "saber-dom": "~0.3.0",
       "saber-lang": "~0.2.0"
-  ],
+  },
   "license": "BSD",
   "repository": "git://github.com/ecomfe/saber-firework.git",
   "bugs": "https://github.com/ecomfe/saber-firework/issues"
