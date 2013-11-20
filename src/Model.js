@@ -12,6 +12,20 @@ define(function (require) {
         this.name = name;
     }
 
+    function getStorage(level) {
+        var res;
+
+        switch (level) {
+            case 'session':
+                res = sessionStorage;
+                break;
+            case 'local':
+                res = localStorage;
+                break;
+        }
+        return res;
+    }
+
     /**
      * 继承
      *
@@ -24,39 +38,64 @@ define(function (require) {
     };
 
     /**
-     * 暂存数据
-     * 内存级别
+     * 存储数据
      *
      * @public
      * @param {string} key
      * @param {*} value
+     * @param {string} level 存储级别 默认为内存级别，还可选`session`, `local`
      */
-    Model.prototype.set = function (key, value) {
-        this.data[key] = value;
+    Model.prototype.set = function (key, value, level) {
+        if (value === undefined) {
+            return;
+        }
+
+        var storage = getStorage(level);
+        if (storage) {
+            storage.setItem(this.name + '-' + key, JSON.stringify(value));
+        }
+        else {
+            this.data[key] = value;
+        }
+
+        return value;
     };
 
     /**
-     * 存储数据
-     * 使用localStorage
+     * 删除数据
      *
      * @public
      * @param {string} key
-     * @param {*} value
+     * @param {string} level 存储级别 默认为内存级别，还可选`session`, `local`
      */
-    Model.prototype.storage = function (key, value) {
-        if (value !== undefined) {
-            localStorage.setItem(this.name + '-' + key, JSON.stringify(value));
+    Model.prototype.remove = function (key, level) {
+        if (!key) {
+            return;
+        }
+
+        var storage = getStorage(level);
+
+        if (storage) {
+            storage.removeItem(this.name + '-' + key);
+        }
+        else if (key in this.data) {
+            delete this.data[key];
         }
     };
 
     /**
-     * 存储数据
-     * 使用sessionStroage
+     * 清除数据
      *
+     * @public
+     * @param {string} level 存储级别 默认为内存级别，还可选`session`, `local`
      */
-    Model.prototype.session = function (key, value) {
-        if (value !== undefined) {
-            sessionStorage.setItem(this.name + '-' + key, JSON.stringify(value));
+    Model.prototype.clear = function (level) {
+        var storage = getStorage(level);
+        if (storage) {
+            storage.clear();
+        }
+        else {
+            this.data = {};
         }
     };
 
@@ -69,16 +108,21 @@ define(function (require) {
      * @return {*}
      */
     Model.prototype.get = function (key) {
+        if (!key) {
+            return;
+        }
+
         var res;
 
         if (key in this.data) {
             res = this.data[key];
         }
         else {
-            var skey = this.name + '-' + key;
-            var value = sessionStorage.getItem(skey);
+            key = this.name + '-' + key;
+            var value = sessionStorage.getItem(key);
+
             if (value === null) {
-                value = localStorage.getItem(skey);
+                value = localStorage.getItem(key);
             }
             if (value != 'undefined') {
                 res = JSON.parse(value);
