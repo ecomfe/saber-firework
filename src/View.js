@@ -9,16 +9,31 @@ define(function (require) {
     var inherits = require('saber-lang/inherits');
     var Emitter = require('saber-emitter');
 
+    /**
+     * 驼峰转化为class样式
+     *
+     * @inner
+     */
     function toClassName(str) {
         return str.replace(/[A-Z]/g, function ($1) {
             return '-' + $1.toLowerCase();
         });
     }
 
+    /**
+     * 添加className
+     *
+     * @inner
+     */
     function addClass(ele, className) {
         ele.className += ' ' + className;
     }
 
+    /**
+     * 删除class
+     *
+     * @inner
+     */
     function removeClassName(ele, className) {
         var cls = ele.className.split(/\s+/);
 
@@ -32,6 +47,11 @@ define(function (require) {
         ele.className = cls.join(' ');
     }
 
+    /**
+     * View
+     *
+     * @Constructor
+     */
     function View(name) {
         this.name = name;
         Emitter.mixin(this);
@@ -64,7 +84,7 @@ define(function (require) {
         this.main = main;
         this.template = template;
 
-        addClass(main, toClassName(this.name));
+        addClass(main, toClassName(this.className || this.name));
     };
 
     /**
