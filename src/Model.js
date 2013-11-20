@@ -50,6 +50,17 @@ define(function (require) {
     };
 
     /**
+     * 存储数据
+     * 使用sessionStroage
+     *
+     */
+    Model.prototype.session = function (key, value) {
+        if (value !== undefined) {
+            sessionStorage.setItem(this.name + '-' + key, JSON.stringify(value));
+        }
+    };
+
+    /**
      * 获取数据
      * 先从内存中获取 再从localStorage中获取
      *
@@ -64,8 +75,12 @@ define(function (require) {
             res = this.data[key];
         }
         else {
-            var value = localStorage.getItem(this.name + '-' + key);
-            if (value != 'undefined' && value !== null) {
+            var skey = this.name + '-' + key;
+            var value = sessionStorage.getItem(skey);
+            if (value === null) {
+                value = localStorage.getItem(skey);
+            }
+            if (value != 'undefined') {
                 res = JSON.parse(value);
             }
         }
