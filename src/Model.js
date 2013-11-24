@@ -6,10 +6,12 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
+    var Emitter = require('saber-emitter');
 
     function Model(name) {
         this.data = {};
         this.name = name;
+        Emitter.mixin(this);
     }
 
     function getStorage(level) {
