@@ -1,17 +1,19 @@
 /**
  * @file 列表数据实体 数据交互遵循e-json规范
  * @author treelite(c.xinle@gmail.com)
- *
- * TODO 增加排序支持
  */
 
-define(function () {
-    var ajax = require('saber-ajax');
+define(function (require) {
+    var extend = require('saber-lang/extend');
+    var ajax = require('saber-ajax/ejson');
 
     function DataList(url, queryInfo) {
         this.url = url;
-        this.query = queryInfo;
+        this.query = queryInfo || {};
         this.data = [];
+        this.page = 0;
+        this.pageSize = 10;
+        this.total = 0;
     }
 
     /**
@@ -31,6 +33,7 @@ define(function () {
      * @return {number} 获取当前数
      */
     DataList.prototype.getPage = function () {
+        return this.page;
     };
 
     /**
@@ -39,8 +42,8 @@ define(function () {
      * @public
      * @return {number}
      */
-
     DataList.prototype.getMaxPage = function () {
+        return Math.ceil(this.total / this.pageSize);
     };
 
     /**
@@ -49,7 +52,18 @@ define(function () {
      * @public
      * @return {number}
      */
-    DataList.prototype.getSize = function () {
+    DataList.prototype.getPageSize = function () {
+        return this.pageSize;
+    };
+
+    /**
+     * 获取总记录数
+     * 
+     * @public
+     * @return {number}
+     */
+    DataList.prototype.getTotal = function () {
+        return this.total;
     };
 
     /**
@@ -57,13 +71,13 @@ define(function () {
      *
      * @public
      * @param {number} page 页数
-     * @param {number} size 每页数量
+     * @param {number} pageSize 每页数量
      * @return {Promise}
      */
-    DataList.prototype.fetch = function (page, size) {
-        var query = this.query;
-        query.page = page || 0;
-        query.size = size || 10;
+    DataList.prototype.fetch = function (page, pageSize) {
+        var query = extend({}, this.query);
+        query.page = page || this.page;
+        query.pageSize = pageSize || this.pageSize;
 
         var queryStr = [];
         Object.keys(query).forEach(function (key) {
@@ -71,14 +85,16 @@ define(function () {
         });
 
         var me = this;
-        return ajax.get(
-                    this.url + '?' + queryStr.join('&')
-                ).then(
-                    function (res) {
-                        res = JSON.parse(res);
-                        me.data = res.data;
-                        return me;
-                });
+
+        return ajax.get(this.url + '?' + queryStr.join('&')).then(
+            function (res) {
+                me.data = res.data;
+                me.page = res.page;
+                me.pageSize = res.pageSize;
+                me.total = res.total;
+                return res.data;
+            }
+        );
     };
 
     return DataList;
