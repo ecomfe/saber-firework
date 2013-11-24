@@ -5,7 +5,6 @@
 
 define(function (require) {
 
-    var dom = require('saber-dom');
     var inherits = require('saber-lang/inherits');
     var Emitter = require('saber-emitter');
 
@@ -72,18 +71,10 @@ define(function (require) {
      * 渲染视图
      *
      * @public
-     * @param {HTMLElement|string} main 视图容器元素
-     * @param {Object} template 模版
-     * @param {Object} data 数据
+     * @param {HTMLElement} main 视图容器元素
      */
-    View.prototype.render = function (main, template, data) {
-        if (typeof main == 'string' || main instanceof String) {
-            main = dom.query(main);
-        }
-
+    View.prototype.render = function (main) {
         this.main = main;
-        this.template = template;
-
         addClass(main, toClassName(this.className || this.name));
     };
 
