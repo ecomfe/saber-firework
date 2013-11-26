@@ -7,12 +7,23 @@ define(function (require) {
     var extend = require('saber-lang/extend');
     var ajax = require('saber-ajax/ejson');
 
-    function DataList(url, queryInfo) {
+    /**
+     * @constructor
+     * @param {string} url
+     * @param {Object} queryInfo 查询条件
+     * @param {Object} options 配置参数
+     * @param {number} options.pageSize 默认每页记录数 默认10
+     * @param {number} options.method 请求方法 默认`GET`
+     *
+     */
+    function DataList(url, queryInfo, options) {
+        options = options || {};
         this.url = url;
         this.query = queryInfo || {};
         this.data = [];
         this.page = 0;
-        this.pageSize = 10;
+        this.pageSize = options.pageSize || 10;
+        this.method = options.method || 'GET';
         this.total = 0;
     }
 
@@ -83,10 +94,19 @@ define(function (require) {
         Object.keys(query).forEach(function (key) {
             queryStr.push(key + '=' + encodeURIComponent(query[key]));
         });
+        queryStr = queryStr.join('&');
 
         var me = this;
+        var url = this.url;
+        var options = { method: this.method.toUpperCase() };
+        if (options.method == 'POST') {
+            options.data = queryStr;
+        }
+        else {
+            url += (url.indexOf('?') >= 0 ? '&' : '?') + queryStr;
+        }
 
-        return ajax.get(this.url + '?' + queryStr.join('&')).then(
+        return ajax.request(url, options).then(
             function (res) {
                 me.data = res.data;
                 me.page = res.page;
