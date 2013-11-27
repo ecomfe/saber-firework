@@ -123,10 +123,11 @@ define(function (require) {
             key = this.name + '-' + key;
             var value = sessionStorage.getItem(key);
 
-            if (value === null) {
+            if (!value) {
                 value = localStorage.getItem(key);
             }
-            if (value != 'undefined') {
+
+            if (value && value != 'undefined') {
                 res = JSON.parse(value);
             }
         }
