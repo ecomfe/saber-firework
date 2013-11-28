@@ -29,24 +29,6 @@ define(function (require) {
     }
 
     /**
-     * 删除class
-     *
-     * @inner
-     */
-    function removeClassName(ele, className) {
-        var cls = ele.className.split(/\s+/);
-
-        for (var i = 0, item; item = cls[i]; i++) {
-            if (item == className) {
-                cls.splice(i, 1);
-                i--;
-            }
-        }
-
-        ele.className = cls.join(' ');
-    }
-
-    /**
      * View
      *
      * @Constructor
@@ -84,9 +66,6 @@ define(function (require) {
      * @public
      */
     View.prototype.dispose = function () {
-        var className = toClassName(this.name);
-
-        removeClassName(this.main, className);
         this.main = null;
     };
 
