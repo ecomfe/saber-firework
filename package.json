@@ -9,8 +9,14 @@
     }
   ],
   "dependencies": {
-      "saber-emitter": "~0.3.1",
-      "saber-lang": "~0.3.0"
+    "saber-emitter": "~0.3.1",
+    "saber-lang": "~0.3.0"
+  },
+  "scripts": {
+    "test": "phantomjs test/run-jasmine.js test/runner.html"
+  },
+  "devDependencies": {
+    "phantomjs": "~1.9"
   },
   "license": "BSD",
   "repository": "git://github.com/ecomfe/saber-firework.git",
