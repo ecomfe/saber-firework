@@ -1,7 +1,7 @@
 {
   "name": "saber-firework",
-  "version": "0.1.0-beta.4",
-  "description": "适用于移动端的简单`MVP`模式实现",
+  "version": "0.2.0",
+  "description": "适用于移动端的简单`MVVM`模式实现",
   "maintainers": [
     {
       "name": "treelite",
@@ -9,9 +9,8 @@
     }
   ],
   "dependencies": {
-      "saber-ajax": "~0.1.0",
-      "saber-emitter": "~0.3.0",
-      "saber-lang": "~0.2.0"
+      "saber-emitter": "~0.3.1",
+      "saber-lang": "~0.3.0"
   },
   "license": "BSD",
   "repository": "git://github.com/ecomfe/saber-firework.git",
