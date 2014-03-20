@@ -8,6 +8,12 @@ define(function (require) {
     var util = require('./util');
     var Emitter = require('saber-emitter');
 
+    /**
+     * 元数据key
+     *
+     * @const
+     * @type {string}
+     */
     var META_KEY = '__meta__';
 
     /**
@@ -50,6 +56,7 @@ define(function (require) {
         do {
             args[1] = key;
             meta.emit.apply(meta, args);
+            // 组合父节点的key
             if (meta.key) {
                 key = meta.key + '.' + key;
             }
@@ -66,8 +73,24 @@ define(function (require) {
      * @param {*} oldValue 旧值
      */
     function defaultSetterHandler(key, value, oldValue) {
+        // 如果值不相同则触发change事件
         if (value !== oldValue) {
             bubble(this, ['change', key, value, oldValue]);
+        }
+    }
+
+    /**
+     * 监控子对象
+     *
+     * @inner
+     * @param {Object} child 子对象
+     * @param {Object} parentMeta 父对象的元数据
+     * @param {string} key 子对象key
+     */
+    function watchChild(child, parentMeta, key) {
+        if (enableWatch(child)) {
+            child[META_KEY].parent = parentMeta;
+            child[META_KEY].key = key;
         }
     }
 
@@ -90,11 +113,8 @@ define(function (require) {
                     var oldValue = values[key];
                     meta.emit('set', key, value, oldValue);
                     values[key] = value;
-
-                    if (enableWatch(value)) {
-                        value[META_KEY].parent = meta;
-                        value[META_KEY].key = key;
-                    }
+                    // 监控新的子对象
+                    watchChild(value, meta, key);
                 },
                 get: function () {
                     meta.emit('get', key, values[key]);
@@ -102,12 +122,7 @@ define(function (require) {
                 }
             });
 
-            var value = values[key];
-            if (enableWatch(value)) {
-                value[META_KEY].parent = meta;
-                value[META_KEY].key = key;
-            }
-
+            watchChild(values[key], meta, key);
         });
     }
 
