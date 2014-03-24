@@ -11,9 +11,9 @@ define(function (require) {
 
         describe('.enable', function () {
 
-            it('should return true when argument is Object or Array', function () {
-                expect(observer.enable({})).toBeTruthy();
-                expect(observer.enable([])).toBeTruthy();
+            it('should not return false when argument is Object or Array', function () {
+                expect(observer.enable({})).not.toBeFalsy();
+                expect(observer.enable([])).not.toBeFalsy();
             });
 
             it('should return false when argument is not Object and Array', function () {
@@ -28,21 +28,47 @@ define(function (require) {
                 expect(observer.enable(new Boolean(true))).toBeFalsy();
             });
 
-            it('should add meta data', function () {
+            it('should return proxy object', function () {
                 var a = {};
-                var b = {};
-                observer.enable(a);
-                expect(b.__meta__).toBeUndefined();
-                expect(a.__meta__).not.toBeUndefined();
+                var res = observer.enable(a);
+                expect(a.__meta__).toBeUndefined();
+                expect(res.__meta__).not.toBeUndefined();
             });
 
             it('should set meta data is not enumerable', function () {
                 var a = {name: 'treelite'};
-                observer.enable(a);
+                a = observer.enable(a);
                 expect(Object.keys(a).length).toBe(1);
+                expect(Object.keys(a)[0]).toEqual('name');
             });
 
         });
+
+        /*
+        describe('.disable', function () {
+           
+            it('should remove meta data', function () {
+                var a = {name: 'treelite'};
+                observer.enable(a);
+                observer.disable(a);
+
+                expect(a.__meta__).toBeUndefined();
+                expect(a.name).toEqual('treelite');
+                a.name = 'cxl';
+                expect(a.name).toEqual('cxl');
+            });
+
+            it('should remove nested meta data', function () {
+                var a = {custom: {name: 'treelite'}};
+                observer.enable(a);
+                observer.disable(a);
+
+                expect(a.__meta__).toBeUndefined();
+                expect(a.custom.__meta__).toBeUndefined();
+            });
+
+        });
+        */
 
         describe('.watch', function () {
 
@@ -54,7 +80,7 @@ define(function (require) {
                 var obj = {name: 'treelite'};
                 var newName = 'cxl';
 
-                observer.watch(obj, function (key, value) {
+                obj = observer.watch(obj, function (key, value) {
                     expect(key).toEqual('name');
                     expect(value).toEqual(newName);
                     done();
@@ -67,7 +93,7 @@ define(function (require) {
                 var obj = {sub: {name: 'treelite'}};
                 var newName = 'cxl';
 
-                observer.watch(obj, function (key, value) {
+                obj = observer.watch(obj, function (key, value) {
                     expect(key).toEqual('sub.name');
                     expect(value).toEqual(newName);
                     done();
@@ -81,7 +107,7 @@ define(function (require) {
                 var newName = 'cxl';
                 var i = 0;
 
-                observer.watch(obj, function (key, value) {
+                obj = observer.watch(obj, function (key, value) {
                     i++;
                     if (i == 2) {
                         expect(key).toEqual('sub.name');
@@ -92,6 +118,17 @@ define(function (require) {
 
                 obj.sub = {name: 'treelite'};
                 obj.sub.name = newName;
+            });
+
+            it('should watch array', function (done) {
+                var arr = [1, 2, 3];
+
+                arr = observer.watch(arr, function () {
+                    expect(arr[0]).toBe(0);
+                    done();
+                });
+
+                arr[0] = 0;
             });
 
         });
