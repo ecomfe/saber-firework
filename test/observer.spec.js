@@ -11,9 +11,9 @@ define(function (require) {
 
         describe('.enable', function () {
 
-            it('should not return false when argument is Object or Array', function () {
-                expect(observer.enable({})).not.toBeFalsy();
-                expect(observer.enable([])).not.toBeFalsy();
+            it('should return true when argument is Object or Array', function () {
+                expect(observer.enable({})).toBeTruthy();
+                expect(observer.enable([])).toBeTruthy();
             });
 
             it('should return false when argument is not Object and Array', function () {
@@ -28,23 +28,34 @@ define(function (require) {
                 expect(observer.enable(new Boolean(true))).toBeFalsy();
             });
 
-            it('should return proxy object', function () {
+            it('should add meta data', function () {
                 var a = {};
-                var res = observer.enable(a);
-                expect(a.__meta__).toBeUndefined();
-                expect(res.__meta__).not.toBeUndefined();
+                var b = {};
+                observer.enable(a);
+                expect(a.__meta__).not.toBeUndefined();
+                expect(b.__meta__).toBeUndefined();
+            });
+
+            it('should not change prototype', function () {
+                var a = {};
+                var b = [];
+
+                observer.enable(a);
+                expect(a instanceof Object).toBeTruthy();
+
+                observer.enable(b);
+                expect(b instanceof Array).toBeTruthy();
             });
 
             it('should set meta data is not enumerable', function () {
                 var a = {name: 'treelite'};
-                a = observer.enable(a);
+                observer.enable(a);
                 expect(Object.keys(a).length).toBe(1);
                 expect(Object.keys(a)[0]).toEqual('name');
             });
 
         });
 
-        /*
         describe('.disable', function () {
            
             it('should remove meta data', function () {
@@ -68,7 +79,6 @@ define(function (require) {
             });
 
         });
-        */
 
         describe('.watch', function () {
 
@@ -76,59 +86,250 @@ define(function (require) {
                 expect(Object.prototype.toString.call(observer.watch)).toEqual('[object Function]');
             });
 
-            it('should watch object', function (done) {
-                var obj = {name: 'treelite'};
-                var newName = 'cxl';
+            describe('object', function () {
 
-                obj = observer.watch(obj, function (key, value) {
-                    expect(key).toEqual('name');
-                    expect(value).toEqual(newName);
-                    done();
+                it('should pass', function (done) {
+                    var obj = {name: 'treelite'};
+                    var newName = 'cxl';
+
+                    observer.watch(obj, function (key, value) {
+                        expect(key).toEqual('name');
+                        expect(value).toEqual(newName);
+                        done();
+                    });
+
+                    obj.name = newName;
                 });
 
-                obj.name = newName;
-            });
+                it('should pass when object is nested', function (done) {
+                    var obj = {sub: {name: 'treelite'}};
+                    var newName = 'cxl';
 
-            it('should watch nested object', function (done) {
-                var obj = {sub: {name: 'treelite'}};
-                var newName = 'cxl';
-
-                obj = observer.watch(obj, function (key, value) {
-                    expect(key).toEqual('sub.name');
-                    expect(value).toEqual(newName);
-                    done();
-                });
-
-                obj.sub.name = newName;
-            });
-
-            it('should watch new object property', function (done) {
-                var obj = {sub: ''};
-                var newName = 'cxl';
-                var i = 0;
-
-                obj = observer.watch(obj, function (key, value) {
-                    i++;
-                    if (i == 2) {
+                    observer.watch(obj, function (key, value) {
                         expect(key).toEqual('sub.name');
                         expect(value).toEqual(newName);
                         done();
-                    }
+                    });
+
+                    obj.sub.name = newName;
                 });
 
-                obj.sub = {name: 'treelite'};
-                obj.sub.name = newName;
+                it('should watch new object property', function (done) {
+                    var obj = {sub: ''};
+                    var newName = 'cxl';
+                    var i = 0;
+
+                    observer.watch(obj, function (key, value) {
+                        i++;
+                        if (i == 2) {
+                            expect(key).toEqual('sub.name');
+                            expect(value).toEqual(newName);
+                            done();
+                        }
+                    });
+
+                    obj.sub = {name: 'treelite'};
+                    obj.sub.name = newName;
+                });
+
             });
 
-            it('should watch array', function (done) {
-                var arr = [1, 2, 3];
+            describe('array', function ()  {
 
-                arr = observer.watch(arr, function () {
-                    expect(arr[0]).toBe(0);
-                    done();
+                it('should watch nested array', function (done) {
+                    var arr = [123, [{name: 'treelite'}]];
+                    var newName = 'cxl';
+
+                    observer.watch(arr, function (key) {
+                        expect(key).toEqual('1.0.name');
+                        expect(arr[1][0].name).toEqual(newName);
+                        done();
+                    });
+
+                    arr[1][0].name = newName;
                 });
 
-                arr[0] = 0;
+                it('should watched after call `push`', function (done) {
+                    var arr = [1, 2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(4);
+                        expect(arr[3]).toBe(4);
+                        done();
+                    });
+
+                    arr.push(4);
+                });
+
+                it('should watch new data after call `push`', function (done) {
+                    var arr = [1, 2];
+                    var obj = {name: 'treelite'};
+                    var newName = 'cxl';
+                    var i = 0;
+
+                    observer.watch(arr, function (key) {
+                        i++;
+                        expect(arr.length).toBe(3);
+                        if (i == 2) {
+                            expect(key).toEqual('2.name');
+                            expect(arr[2].name).toEqual(newName);
+                            done();
+                        }
+                    });
+
+                    arr.push(obj);
+
+                    arr[2].name = newName;
+                });
+
+                it('should watched after call `pop`', function (done) {
+                    var arr = [1, 2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(2);
+                        done();
+                    });
+
+                    arr.pop();
+                });
+
+                it('should unwatch return data after call `pop`', function () {
+                    var arr = [1, 2, {name: 'treelite'}];
+                    var res;
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(2);
+                    });
+
+                    res = arr.pop();
+
+                    expect(res.name).toEqual('treelite');
+                    expect(res.__meta__).toBeUndefined();
+                });
+
+                it('should watched after call `shift`', function (done) {
+                    var arr = [1, 2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(2);
+                        done();
+                    });
+
+                    arr.shift();
+                });
+
+                it('should unwatch return data after call `shift`', function () {
+                    var arr = [{name: 'treelite'}, 2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(2);
+                    });
+
+                    var res = arr.shift();
+                    expect(res.name).toEqual('treelite');
+                    expect(res.__meta__).toBeUndefined();
+                });
+
+                it('should watched after call `splice`', function (done) {
+                    var arr = [1, 2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(4);
+                        done();
+                    });
+
+                    arr.splice(1, 1, 2, 3);
+                });
+
+                it('should watch returnd data after call `splice`', function () {
+                    var arr = [1, 2, {name: 'treelite'}];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(2);
+                    });
+
+                    var res = arr.splice(2, 1);
+
+                    expect(res[0].name).toEqual('treelite');
+                    expect(res.__meta__).toBeUndefined();
+                    expect(res[0].__meta__).toBeUndefined();
+                });
+
+                it('should watch new data after call `splice`', function (done) {
+                    var arr = [1, 2, 3];
+                    var newName = 'cxl';
+                    var i = 0;
+
+                    observer.watch(arr, function (key) {
+                        i++;
+                        expect(arr.length).toBe(4);
+                        if (i == 2) {
+                            expect(key).toEqual('1.name');
+                            expect(arr[1].name).toEqual(newName);
+                            done();
+                        }
+                    });
+
+                    arr.splice(1, 0, {name: 'treelite'});
+
+                    arr[1].name = newName;
+                });
+
+                it('should watched after call `unshift`', function (done) {
+                    var arr = [2, 3];
+
+                    observer.watch(arr, function () {
+                        expect(arr.length).toBe(3);
+                        done();
+                    });
+
+                    arr.unshift(1);
+                });
+
+                it('should watch new data after call `unshift`', function (done) {
+                    var arr = [2, 3];
+                    var obj = {name: 'treelite'};
+                    var newName = 'cxl';
+                    var i = 0;
+
+                    observer.watch(arr, function (key) {
+                        i++;
+                        expect(arr.length).toBe(3);
+                        if (i == 2) {
+                            expect(key).toEqual('0.name');
+                            expect(arr[0].name).toEqual(newName);
+                            done();
+                        }
+                    });
+
+                    arr.unshift(obj);
+                    arr[0].name = newName;
+                });
+
+                it('should watched after call `sort`', function (done) {
+                    var arr = [3, 1, 2];
+
+                    observer.watch(arr, function (key) {
+                        expect(arr[0]).toBe(1);
+                        expect(arr.length).toBe(3);
+                        done();
+                    });
+
+                    arr.sort();
+                });
+
+                it('should watched after call `reverse`', function (done) {
+                    var arr = [3, 1, 2];
+
+                    observer.watch(arr, function (key) {
+                        expect(arr[0]).toBe(2);
+                        expect(arr.length).toBe(3);
+                        done();
+                    });
+
+                    arr.reverse();
+                });
+
             });
 
         });
