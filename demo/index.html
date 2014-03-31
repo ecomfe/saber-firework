@@ -26,12 +26,12 @@
                     </li>
                     <!-- /for -->
                 </ul>
-                <input type="checkbox" id="toggle-all">
+                <input type="checkbox" id="toggle-all" c-model="allChecked">
             </section>
 
             <footer id="footer">
                 <span id="todo-count">
-                    <strong>2</strong> todos left
+                    <strong>${remainingCount}</strong> ${unit} left
                 </span>
 
                 <ul id="filters">
@@ -46,9 +46,11 @@
                     </li>
                 </ul>
 
-                <button id="clear-completed">
-                    Clear completed (1)
+                <!-- if: ${completedCount} > 0 -->
+                <button id="clear-completed" c-event="click:clear">
+                    Clear completed (${completedCount})
                 </button>
+                <!-- /if -->
             </footer>
         </section>
 

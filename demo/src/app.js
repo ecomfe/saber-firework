@@ -8,6 +8,7 @@ define(function (require) {
 
     new VM({
         ele: '#todoapp',
+
         data: {
             eIndex: null,
             current: '',
@@ -17,6 +18,43 @@ define(function (require) {
                 {title: 'Hello World', completed: false}
             ]
         },
+
+        computed: {
+            remainingCount: {
+                get: function () {
+                    return this.todos.filter(
+                                function (item) {
+                                    return !item.completed
+                                }
+                            ).length;
+                }
+            },
+
+            completedCount: {
+                get: function () {
+                    return this.todos.length - this.remainingCount;
+                }
+            },
+
+            unit: {
+                get: function () {
+                    return this.remainingCount > 1 ? 'items' : 'item';
+                }
+            },
+
+            allChecked: {
+                get: function () {
+                    return this.remainingCount == 0;
+                },
+                set: function (value) {
+                    this.todos.map(function (item) {
+                        item.completed = value;
+                    });
+                }
+            }
+
+        },
+
         methods: {
             remove: function (index) {
                 this.todos.splice(index, 1);
@@ -38,6 +76,12 @@ define(function (require) {
 
             edit: function (index) {
                 this.eIndex = index; 
+            },
+
+            clear: function () {
+                this.todos = this.todos.filter(function (item) {
+                    return !item.completed;
+                });
             }
         }
     });
