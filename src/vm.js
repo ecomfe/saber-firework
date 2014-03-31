@@ -12,6 +12,7 @@ define(function (require) {
 
     var directive = require('./directive');
     var observer = require('./observer');
+    var util = require('./util');
 
     /**
      * 默认根节点
@@ -45,7 +46,8 @@ define(function (require) {
         this.methods = extend({}, options.methods || {});
         this.render = etpl.compile(getTemplate(this.main));
 
-        observer.watch(this.data, curry(render, this));
+        var repaint = curry(render, this);
+        observer.watch(this.data, curry(util.setTimeout, repaint));
 
         render(this);
     }
