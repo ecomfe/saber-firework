@@ -9,15 +9,27 @@ define(function (require) {
     new VM({
         ele: '#todoapp',
         data: {
+            current: '',
             todos: [
-                {id: 1001, title: 'Hello World', completed: true},
-                {id: 1002, title: 'Hello World', completed: false},
-                {id: 1003, title: 'Hello World', completed: false}
+                {title: 'Hello World', completed: true},
+                {title: 'Hello World', completed: false},
+                {title: 'Hello World', completed: false}
             ]
         },
         methods: {
             remove: function (index) {
                 this.todos.splice(index, 1);
+            },
+
+            add: function () {
+                console.log('add');
+                if (this.current) {
+                    this.todos.push({
+                        title: this.current,
+                        completed: false
+                    });
+                    this.current = '';
+                }
             }
         }
     });
