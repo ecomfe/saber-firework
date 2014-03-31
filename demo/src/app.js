@@ -9,6 +9,7 @@ define(function (require) {
     new VM({
         ele: '#todoapp',
         data: {
+            eIndex: null,
             current: '',
             todos: [
                 {title: 'Hello World', completed: true},
@@ -22,7 +23,6 @@ define(function (require) {
             },
 
             add: function () {
-                console.log('add');
                 if (this.current) {
                     this.todos.push({
                         title: this.current,
@@ -30,6 +30,14 @@ define(function (require) {
                     });
                     this.current = '';
                 }
+            },
+
+            accept: function () {
+                this.eIndex = null;
+            },
+
+            edit: function (index) {
+                this.eIndex = index; 
             }
         }
     });

@@ -17,9 +17,12 @@
             <section id="main">
                 <ul id="todo-list">
                     <!-- for:${todos} as ${todo},${index} -->
-                    <li c-class="completed:${todo.completed}">
-                        <input type="checkbox" class="toggle" c-model="todos[${index}].completed">
-                        <label>${todo.title}</label><button class="destroy" c-event="click:remove(${index})"></button>
+                    <li c-class="completed:${todo.completed}, editing:eIndex == ${index}">
+                        <div class="view" c-event="dblclick:edit(${index})">
+                            <input type="checkbox" class="toggle" c-model="todos[${index}].completed">
+                            <label>${todo.title}</label><button class="destroy" c-event="click:remove(${index})"></button>
+                        </div>
+                        <input type="text" class="edit" c-model="todos[${index}].title" c-event="keypress:accept|13" />
                     </li>
                     <!-- /for -->
                 </ul>
