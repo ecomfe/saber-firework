@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+        <title>TodoApp</title>
+        <link rel="stylesheet" href="src/style.css">
+        <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
+    </head>
+    <body>
+        <section id="todoapp">
+            <header id="header">
+                <h1>todos</h1>
+                <input type="text" id="new-todo" placeholder="What needs to be done?" />
+            </header>
+
+            <section id="main">
+                <ul id="todo-list">
+                    <!-- for:${todos} as ${todo},${index} -->
+                    <li c-class="completed:${todo.completed}">
+                        <input type="checkbox" class="toggle" c-model="todos[${index}].completed">
+                        <label>${todo.title}</label><button class="destroy" c-event="click:remove(${index})"></button>
+                    </li>
+                    <!-- /for -->
+                </ul>
+                <input type="checkbox" id="toggle-all">
+            </section>
+
+            <footer id="footer">
+                <span id="todo-count">
+                    <strong>2</strong> todos left
+                </span>
+
+                <ul id="filters">
+                    <li>
+                        <a href="all" class="selected">All</a>
+                    </li>
+                    <li>
+                        <a href="active">Active</a>
+                    </li>
+                    <li>
+                        <a href="completed">Completed</a>
+                    </li>
+                </ul>
+
+                <button id="clear-completed">
+                    Clear completed (1)
+                </button>
+            </footer>
+        </section>
+
+        <footer id="info">
+            <p>Double-click to edit a todo</p>
+        </footer>
+
+        <script>
+            require.config({
+                baseUrl: 'src',
+                packages: [
+                    {
+                        name: 'saber-firework',
+                        location: '../../src'
+                    },
+                    {
+                        name: 'etpl',
+                        location: '../dep/etpl/2.0.10/src'
+                    },
+                    {
+                        name: 'saber-dom',
+                        location: '../dep/saber-dom/0.3.1/src'
+                    },
+                    {
+                        name: 'saber-string',
+                        location: '../dep/saber-string/0.3.0/src'
+                    },
+                    {
+                        name: 'saber-emitter',
+                        location: '../dep/saber-emitter/0.3.1/src',
+                        main: 'emitter'
+                    },
+                    {
+                        name: 'saber-lang',
+                        location: '../dep/saber-lang/0.3.0/src'
+                    }
+                ]
+            });
+
+            require(['app']);
+        </script>
+    </body>
+</html>
