@@ -92,6 +92,39 @@ define(function () {
 
     })();
 
+    /**
+     * 定义对象属性
+     * 不会覆盖已有的同名属性
+     * 属性默认可删除，可枚举
+     *
+     * @public
+     * @param {Object} obj
+     * @param {Object} properties
+     */
+    exports.defineProperties = function (obj, properties) {
+        var item;
+        var defaultOption = {
+                configurable: true, 
+                enumerable: true
+            };
+
+        Object.keys(properties).forEach(function (key) {
+            if (obj.hasOwnProperty(key)) {
+                delete properties[key];
+                return;
+            }
+
+            item = properties[key];
+            Object.keys(defaultOption).forEach(function (k) {
+                if (!item.hasOwnProperty(k)) {
+                    item[k] = defaultOption[k];
+                }
+            });
+        });
+
+        Object.defineProperties(obj, properties);
+    };
+
 
     return exports;
 });

@@ -7,6 +7,7 @@ define(function (require) {
 
     var extend = require('saber-lang/extend');
     var curry = require('saber-lang/curry');
+    var bind = require('saber-lang/bind');
     var dom = require('saber-dom');
     var etpl = require('etpl');
 
@@ -49,6 +50,11 @@ define(function (require) {
         var repaint = curry(render, this);
         observer.watch(this.data, curry(util.setTimeout, repaint));
 
+        util.defineProperties(
+            this.data,
+            extend({}, options.computed || {})
+        );
+
         render(this);
     }
 
@@ -57,7 +63,6 @@ define(function (require) {
             return this.data[key];
         }
         else {
-            console.log(key);
             var fn = new Function('with(this) {return ' + key + '}');
             return fn.call(this.data);
         }
@@ -68,7 +73,10 @@ define(function (require) {
             this.data[key] = value;
         }
         else {
-            var fn = new Function('this.' + key + '= "' + value + '"');
+            if (util.typeof(value) == 'String') {
+                value = '"' + value + '"';
+            }
+            var fn = new Function('this.' + key + '=' + value );
             fn.call(this.data);
         }
     };

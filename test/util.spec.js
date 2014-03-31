@@ -68,6 +68,69 @@ define(function (require) {
 
         });
 
+        describe('.defineProperties()', function () {
+
+            it('should define properties', function () {
+                var obj = {};
+
+                util.defineProperties(obj, {
+                    name: {
+                        value: 'treelite'
+                    },
+                    age: {
+                        value: 10
+                    }
+                });
+
+                expect(obj.hasOwnProperty('name')).toBeTruthy();
+                expect(obj.name).toEqual('treelite');
+                expect(obj.hasOwnProperty('age')).toBeTruthy();
+                expect(obj.age).toBe(10);
+            });
+
+            it('should ignore the same properity', function () {
+                var obj = {name: 'cxl'};
+
+                util.defineProperties(obj, {
+                    name: {
+                        value: 'treelite'
+                    },
+                    age: {
+                        value: 10
+                    }
+                });
+
+                expect(obj.hasOwnProperty('name')).toBeTruthy();
+                expect(obj.name).toEqual('cxl');
+                expect(obj.hasOwnProperty('age')).toBeTruthy();
+                expect(obj.age).toBe(10);
+            });
+
+            it('should define properity enumerable and configurable', function () {
+                var obj = {};
+                
+                util.defineProperties(obj, {
+                    name: {
+                        value: 'treelite'
+                    }
+                });
+
+                expect(Object.keys(obj).length).toBe(1);
+
+                var configurable = true;
+                try {
+                    delete obj.name;
+                }
+                catch (e) {
+                    configurable = false;
+                }
+                finally {
+                    expect(configurable).toBeTruthy();
+                }
+            });
+
+        });
+
     });
 
 });
