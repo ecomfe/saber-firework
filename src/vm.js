@@ -57,7 +57,8 @@ define(function (require) {
             return this.data[key];
         }
         else {
-            var fn = new Function('return this.' + key);
+            console.log(key);
+            var fn = new Function('with(this) {return ' + key + '}');
             return fn.call(this.data);
         }
     };
@@ -67,7 +68,7 @@ define(function (require) {
             this.data[key] = value;
         }
         else {
-            var fn = new Function('this.' + key + '=' + value);
+            var fn = new Function('this.' + key + '= "' + value + '"');
             fn.call(this.data);
         }
     };
