@@ -14,17 +14,24 @@ define(function (require) {
     var ATTR_PREFIX = 'c';
 
     /**
-     * 指令集合
+     * 已注册的指令集合
      *
      * @type {Object}
      */
-    var directives = {};
+    var directiveMap = {};
+
+    /**
+     * 已注册的指令
+     *
+     * @type {Array}
+     */
+    var directives = [];
 
     var exports = {};
 
     function eachDirective(callback) {
-        Object.keys(directives).forEach(function (name) {
-            callback(name, directives[name]);
+        directives.forEach(function (item) {
+            callback(item.name, item);
         });
     }
 
@@ -100,11 +107,13 @@ define(function (require) {
      * @param {object} handler 指令处理器
      */
     exports.register = function (name, handler) {
-        if (directives[name]) {
+        if (directiveMap[name]) {
             throw new Error('directive ' + name + ' duplicated');
         }
         else {
-            directives[name] = handler;
+            handler.name = name;
+            directives.push(handler);
+            directiveMap[name] = directives.length;
         }
     };
     
@@ -121,9 +130,12 @@ define(function (require) {
     };
 
     // 载入默认指令
+    // 顺序有考虑
+    // model必须在event之前
+    // 否则可能触发事件时model绑定的数据还没有修改
     exports.register('model', require('./directives/model'));
-    exports.register('event', require('./directives/event'));
     exports.register('class', require('./directives/class'));
+    exports.register('event', require('./directives/event'));
 
     return exports;
 });

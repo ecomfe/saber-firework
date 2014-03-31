@@ -3,34 +3,32 @@
  * @author treelite(c.xinle@gmail.com)
  */
 
-define(function () {
+define(function (require) {
 
-    function parseAttribute(str) {
-        var res = {};
-        var str = str.split(',');
-        str.forEach(function (item) {
-            if (!item) {
-                return;
-            }
-
-            item = item.trim();
-            item = item.split(':');
-            res[item[0].trim()] = item[1].trim();
-        });
-
-        return res;
-    }
+    var util = require('../util');
 
     var exports = {};
 
+    /**
+     * 指令处理
+     *
+     * @public
+     * @param {HTMLElement} ele DOM接点
+     * @param {string} value 指令属性值
+     * @param {VM} vm ViewModel
+     */
     exports.handle = function (ele, value, vm) {
-        var items = parseAttribute(value);
+        var cmds = util.parseCmd(value);
 
         var name;
+        var clsName;
         var clsNames = [];
-        Object.keys(items).forEach(function (clsName) {
-            name = items[clsName];
+        cmds.forEach(function (cmd) {
+            name = cmd.action;
+            clsName = cmd.name;
 
+            // 如果是`true`或者`false`
+            // 不再从vm中获取数据判断
             if (name == 'true' || name == 'false') {
                 name == 'true' && clsNames.push(clsName);
             }
