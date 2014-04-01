@@ -68,6 +68,57 @@ define(function (require) {
 
         });
 
+        describe('.parseCmd()', function (){
+
+            it('should return cmd\'s name, action and filter', function () {
+                var str = 'keypress : hello() | 13';
+
+                var cmds = util.parseCmd(str);
+
+                expect(cmds.length).toBe(1);
+                expect(cmds[0].name).toEqual('keypress');
+                expect(cmds[0].action).toEqual('hello()');
+                expect(cmds[0].filter).toEqual('13');
+            });
+
+            it('should return multi cmds', function () {
+                var str = 'keypress: hello() | 13, click: add | true';
+
+                var cmds = util.parseCmd(str);
+
+                expect(cmds.length).toBe(2);
+                expect(cmds[0].name).toEqual('keypress');
+                expect(cmds[0].action).toEqual('hello()');
+                expect(cmds[0].filter).toEqual('13');
+                expect(cmds[1].name).toEqual('click');
+                expect(cmds[1].action).toEqual('add');
+                expect(cmds[1].filter).toEqual('true');
+            });
+
+            it('should only return name when action and filter were empty', function () {
+                var str = 'keypress: | ';
+                
+                var cmds = util.parseCmd(str);
+
+                expect(cmds.length).toBe(1);
+                expect(cmds[0].name).toEqual('keypress');
+                expect(cmds[0].action).toBeUndefined();
+                expect(cmds[0].filter).toBeUndefined();
+            });
+
+            it('should return name and action when filter was empty', function () {
+                var str = 'keypress: hello | ';
+                
+                var cmds = util.parseCmd(str);
+
+                expect(cmds.length).toBe(1);
+                expect(cmds[0].name).toEqual('keypress');
+                expect(cmds[0].action).toEqual('hello');
+                expect(cmds[0].filter).toBeUndefined();
+            });
+
+        });
+
         describe('.defineProperties()', function () {
 
             it('should define properties', function () {

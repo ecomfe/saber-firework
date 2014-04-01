@@ -19,7 +19,7 @@ define(function () {
 
     /**
      * 解析命令字符串
-     * cmd: action | filter, ...
+     * name: action | filter, ...
      *
      * @public
      * @param {string} str
@@ -42,7 +42,9 @@ define(function () {
             if (item[1]) {
                 item = item[1].trim();
                 item = item.split('|');
-                cmd.action = item[0].trim();
+                if (item[0]) {
+                    cmd.action = item[0].trim();
+                }
                 if (item[1]) {
                     cmd.filter = item[1].trim();
                 }
