@@ -4,9 +4,9 @@
  */
 
 define(function (require) {
-    var VM = require('saber-firework/vm');
+    var ViewModel = require('saber-firework/ViewModel');
 
-    new VM({
+    new ViewModel({
         ele: '#todoapp',
 
         data: {

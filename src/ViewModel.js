@@ -1,5 +1,5 @@
 /**
- * @file main
+ * @file ViewModel
  * @author treelite(c.xinle@gmail.com)
  */
 
@@ -41,7 +41,7 @@ define(function (require) {
         vm.main = root;
     }
 
-    function VM(options) {
+    function ViewModel(options) {
         this.main = dom.query(options.ele || DEFAULT_ROOT);
         this.data = extend({}, options.data || {});
         this.methods = extend({}, options.methods || {});
@@ -58,7 +58,7 @@ define(function (require) {
         render(this);
     }
 
-    VM.prototype.getValue = function (key) {
+    ViewModel.prototype.getValue = function (key) {
         if (this.data.hasOwnProperty(key)) {
             return this.data[key];
         }
@@ -68,7 +68,7 @@ define(function (require) {
         }
     };
 
-    VM.prototype.setValue = function (key, value) {
+    ViewModel.prototype.setValue = function (key, value) {
         if (this.data.hasOwnProperty(key)) {
             this.data[key] = value;
         }
@@ -81,6 +81,6 @@ define(function (require) {
         }
     };
 
-    return VM;
+    return ViewModel;
 
 });
