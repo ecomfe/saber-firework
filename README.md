@@ -1,6 +1,6 @@
 # saber-firework [![Build Status](https://travis-ci.org/ecomfe/saber-firework.png?branch=develop)](https://travis-ci.org/ecomfe/saber-firework)
 
-适用于移动端的简单`MVVM`模式实现
+适用于移动端的简单`MVP`模式实现
 
 ===
 
