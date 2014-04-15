@@ -96,7 +96,9 @@ define(function (require) {
         var handlers = eventHost.handlers[type] || [];
 
         while (handlers.delegateCount && target && target != eventHost.ele) {
-            for (var i = 0, handler, max = handlers.delegateCount; i < max && (handler = handlers[i]); i++) {
+            var handler;
+            var max = handlers.delegateCount;
+            for (var i = 0; i < max && (handler = handlers[i]); i++) {
                 if (matchElement(target, handler.selector, eventHost.ele)) {
                     var item = extend({}, handler);
                     item.thisArg = target;

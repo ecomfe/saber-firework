@@ -13,6 +13,8 @@ define({
 
     /**
      * 视图配置
+     * 参见`saber-viewport`的全局配置参数
+     * https://github.com/ecomfe/saber-viewport
      *
      * @type {Object}
      */
@@ -22,6 +24,23 @@ define({
          * 默认关闭转场效果
          *
          * @type {boolean}
+         */
+        transition: false,
+
+    },
+
+    /**
+     * 附加处理器
+     * 默认都是禁用处理器
+     *
+     * @type {Object}
+     */
+    processer: {
+
+        /**
+         * 转场参数处理
+         *
+         * @type {function|boolean}
          */
         transition: false
     }

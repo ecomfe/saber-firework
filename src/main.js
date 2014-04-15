@@ -24,6 +24,18 @@ define(function (require) {
     cur.state = STATE_IDLE;
 
     /**
+     * 获取全配配置的附加处理器
+     *
+     * @inner
+     * @param {string} name
+     * @param {function|undefined}
+     */
+    function getProcessor(name) {
+        var processor = globalConfig.processor || {};
+        return processor[name];
+    }
+
+    /**
      * Action加载完成处理
      *
      * @inner
@@ -71,8 +83,8 @@ define(function (require) {
         // 获取页面转场配置参数
         var transition = config.transition || {};
         // 调用全局配置中的处理函数进行转场参数处理
-        var processor = globalConfig.viewport.processor; 
-        if (processor && typeof processor == 'function') {
+        var processor = getProcessor('transition'); 
+        if (processor) {
             extend(transition, processor(config, cur.route) || {});
         }
 
@@ -178,7 +190,7 @@ define(function (require) {
      *
      * @public
      * @param {HTMLElement} main
-     * @param {Object} options 全局配置信息
+     * @param {Object} options 全局配置信息 完整配置参考`./config.js`
      */
     exports.start = function (main, options) {
         // 扩展全局配置信息
