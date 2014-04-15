@@ -13,10 +13,16 @@ define(function (require) {
 
     var Abstract = require('./Abstract');
 
+    function delegateDomEvent(view, fn) {
+        return function (e) {
+            return fn.call(view, this, e);
+        }
+    }
+
     function bindEvents(view) {
         // 绑定View事件
-        var events = this.events || [];
-        events.forEach(function (name) {
+        var events = view.events || {};
+        Object.keys(events).forEach(function (name) {
             view.on(name, events[name]);
         });
 
@@ -24,9 +30,9 @@ define(function (require) {
         var type;
         var selector;
         var fn;
-        events = this.domEvents || {};
+        events = view.domEvents || {};
         Object.keys(events).forEach(function (name) {
-            fn = events[name];
+            fn = delegateDomEvent(view, events[name]);
             name = name.split(':');
             type = name[0].trim();
             selector = name[1] ? name[1].trim() : undefined;
@@ -48,10 +54,12 @@ define(function (require) {
     function View(options) {
         Abstract.call(this);
 
-        this.template = etpl.compile(getTemplate(options));
+        if (options.template) {
+            etpl.compile(getTemplate(options));
+        }
 
         extend(this, options);
-
+        this.template = etpl;
         this.bindElements = [];
     }
 
@@ -59,11 +67,13 @@ define(function (require) {
 
     View.prototype.beforeRender = function (ele) {
         this.main = ele;
-        ele.className += ' ' + this.className;
+        if (this.className) {
+            ele.className += ' ' + this.className;
+        }
     };
 
     View.prototype.render = function (data) {
-        this.main.innerHTML = this.template.render(data);
+        this.main.innerHTML = this.template.render(this.templateMainTarget, data);
     };
 
     View.prototype.ready = function () {

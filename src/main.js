@@ -21,6 +21,8 @@ define(function (require) {
     var waitingRoute;
     var cur = {};
 
+    cur.state = STATE_IDLE;
+
     /**
      * Action加载完成处理
      *
@@ -97,7 +99,7 @@ define(function (require) {
                         .then(function () {
                             return page.enter(transition.type, transition);
                         }).then(function () {
-                            page.ready();
+                            action.ready();
                         });
         }
         else {
@@ -163,6 +165,9 @@ define(function (require) {
      * @param {Object} paths
      */
     exports.load = function (paths) {
+        if (!Array.isArray(paths)) {
+            paths = [paths];
+        }
         paths.forEach(function (item) {
             router.add(item.path, curry(routeTo, item));
         });

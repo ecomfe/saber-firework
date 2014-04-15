@@ -323,10 +323,9 @@ define(function (require) {
      */
     EventHost.prototype.dispose = function () {
         var me = this;
-        var ele = me.ele;
-        removeUID(ele);
+        removeUID(me.ele);
         Object.keys(me.handlers).forEach(function (type) {
-            removeEvent(ele, type, me.commonEventHandler);
+            removeEvent(me, type);
         });
         this.ele = null;
     };

@@ -21,7 +21,7 @@ define(function (require) {
      * @inner
      */
     function bindEvents(action) {
-        var events = action.events;
+        var events = action.events || {};
 
         var fn;
         Object.keys(events).forEach(function (name) {
@@ -67,11 +67,10 @@ define(function (require) {
         this.url = url;
         this.query = extend({}, query);
 
-        this.view.main = main;
-
+        this.view.beforeRender(main);
         this.emit('enter');
 
-        return this.model.fetch(this.query).then(this.view.render);
+        return this.model.fetch(this.query).then(bind(this.view.render, this.view));
     };
 
     Action.prototype.wakeup = function (url, query) {
@@ -89,6 +88,7 @@ define(function (require) {
 
     Action.prototype.ready = function () {
         bindEvents(this);
+        this.view.ready();
         this.emit('ready');
     };
 
@@ -111,9 +111,9 @@ define(function (require) {
      *
      * @public
      */
-    Action.prototype.dipose = function () {
-        this.view.dipose();
-        this.model.dipose();
+    Action.prototype.dispose = function () {
+        this.view.dispose();
+        this.model.dispose();
     };
 
     return Action;

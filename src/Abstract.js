@@ -11,6 +11,8 @@ define(function (require) {
         Emitter.mixin(this);
     }
 
+    Abstract.prototype.dispose = function () {};
+
     return Abstract;
 
 });
