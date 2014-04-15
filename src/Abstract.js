@@ -1,5 +1,5 @@
 /**
- * @file 虚基类
+ * @file Abstract
  * @author treelite(c.xinle@gmail.com)
  */
 
