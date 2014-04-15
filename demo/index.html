@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>TodoApp - saber</title>
+    <link rel="stylesheet" href="src/style.css">
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-10/esl.js"></script>
+  </head>
+  <body>
+    <section id="todoapp"></section>
+
+    <footer id="info">
+      <p>Double-click to edit a todo</p>
+    </footer>
+    <script type="text/template" id="template">
+        <!-- target: main -->
+        <header id="header">
+            <h1>todos</h1>
+            <input type="text" id="new-todo" placeholder="What needs to be done?" />
+        </header>
+
+        <section id="main">
+        <!-- import: todolist -->
+        </section>
+
+        <footer id="footer">
+          <span id="todo-count">
+              <!-- if: ${remainingCount} > 0 -->
+                <strong>${remainingCount}</strong> 
+                <!-- if: ${remainingCount} > 1 -->
+                items
+                <!-- else -->
+                item
+                <!-- /if -->
+                left
+              <!-- /if -->
+          </span>
+          <ul id="filters">
+            <li>
+              <!-- if: !${filter} -->
+              <a class="selected">All</a>
+              <!-- else -->
+              <a href="#/">All</a>
+              <!-- /if -->
+            </li>
+            <li>
+              <!-- if: ${filter} == 'active' -->
+              <a class="selected">Active</a>
+              <!-- else -->
+              <a href="#/~filter=active">Active</a>
+              <!-- /if -->
+            </li>
+            <li>
+              <!-- if: ${filter} == 'complete' -->
+              <a class="selected">Completed</a>
+              <!-- else -->
+              <a href="#/~filter=complete">Completed</a>
+              <!-- /if -->
+            </li>
+          </ul>
+
+          <!-- if: ${completedCount} > 0 -->
+          <button id="clear-completed">
+            Clear completed (${completedCount})
+          </button>
+          <!-- /if -->
+        </footer>
+
+        <!-- target: todolist -->
+        <ul id="todo-list">
+            <!-- for: ${todos} as ${todo} -->
+            <!-- if: ${todo.completed} -->
+            <li class="completed">
+            <!-- else -->
+            <li>
+            <!-- /if -->
+              <div class="view">
+                  <!-- if: ${todo.completed} -->
+                  <input data-id="${todo.id}" type="checkbox" class="toggle" checked>
+                  <!-- else -->
+                  <input data-id="${todo.id}" type="checkbox" class="toggle">
+                  <!-- /if -->
+                  <label>${todo.title|html}</label><button data-id="${todo.id}" class="destroy"></button>
+              </div>
+              <input type="text" class="edit" />
+            </li>
+            <!-- /for -->
+          </ul>
+          <!-- if: ${complatedAll} -->
+          <input type="checkbox" id="toggle-all" checked>
+          <!-- else -->
+          <input type="checkbox" id="toggle-all">
+          <!-- /if -->
+    </script>
+
+    <script>
+        require.config({
+            baseUrl: 'src',
+            packages: [
+                {
+                    name: 'saber-firework',
+                    location: '../../src'
+                },
+                {
+                    name: 'saber-router',
+                    location: '../dep/saber-router/0.2.0/src'
+                },
+                {
+                    name: 'saber-viewport',
+                    location: '../dep/saber-viewport/0.2.5/src'
+                },
+                {
+                    name: 'saber-run',
+                    location: '../dep/saber-run/0.2.0/src'
+                },
+                {
+                    name: 'saber-uri',
+                    location: '../dep/saber-uri/0.1.0/src'
+                },
+                {
+                    name: 'saber-dom',
+                    location: '../dep/saber-dom/0.4.0/src'
+                },
+                {
+                    name: 'saber-emitter',
+                    location: '../dep/saber-emitter/0.3.1/src',
+                    main: 'emitter'
+                },
+                {
+                    name: 'saber-lang',
+                    location: '../dep/saber-lang/0.3.0/src'
+                },
+                {
+                    name: 'saber-promise',
+                    location: '../dep/saber-promise/0.1.2/src',
+                    main: 'promise'
+                },
+                {
+                    name: 'hammer',
+                    location: '../dep/hammer/1.0.10/src',
+                    main: 'hammer'
+                },
+                {
+                    name: 'etpl',
+                    location: '../dep/etpl/2.0.10/src'
+                }
+
+            ]
+        });
+
+        require(['app']);
+    </script>
+  </body>
+</html>
