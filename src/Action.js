@@ -15,32 +15,6 @@ define(function (require) {
     var View = require('./View');
     var Model = require('./Model');
 
-    /**
-     * 绑定事件
-     *
-     * @inner
-     */
-    function bindEvents(action) {
-        var events = action.events || {};
-
-        var fn;
-        Object.keys(events).forEach(function (name) {
-            fn = events[name];
-            // 没有':'表示action事件
-            if (name.indexOf(':') < 0) {
-                action.on(name, fn);
-            }
-            // 有':'表示绑定组件事件(view或者model的事件)
-            // e.g: view:add
-            else {
-                var items = name.split(':');
-                var item = items[0].trim();
-                if (item && items[1]) {
-                    action[item].on(items[1].trim(), bind(fn, action));
-                }
-            }
-        });
-    }
 
     /**
      * Action
@@ -49,17 +23,23 @@ define(function (require) {
      * @param {Object} options 配置参数
      * @param {Object} options.view view配置项
      * @param {Object} options.model model配置项
-     * @param {Object=} options.events 事件（包括action事件与组件事件）
+     * @param {Object=} options.events 事件
      */
     function Action(options) {
-        Abstract.call(this);
 
-        extend(this, options);
+        options = options || {};
 
         // 创建model
-        this.model = new Model(this.model || {});
+        options.model = options.model || {};
+        this.model = new Model(options.model);
+        delete options.model;
+
         // 创建view
-        this.view = new View(this.view || {});
+        options.view = options.view || {};
+        this.view = new View(options.view);
+        delete options.view;
+
+        Abstract.call(this, options);
 
         this.emit('init');
     }
@@ -124,7 +104,6 @@ define(function (require) {
      * @public
      */
     Action.prototype.ready = function () {
-        bindEvents(this);
         this.view.ready();
         this.emit('ready');
     };
