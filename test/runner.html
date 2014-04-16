@@ -29,11 +29,20 @@
                 {
                     name: 'saber-lang',
                     location: 'dep/saber-lang/0.3.0/src'
+                },
+                {
+                    name: 'saber-dom',
+                    location: 'dep/saber-dom/0.4.0/src'
+                },
+                {
+                    name: 'hammer',
+                    location: 'dep/hammer/1.0.10/src',
+                    main: 'hammer'
                 }
             ]
         });
         
-        require(['abstract.spec']);
+        require(['abstract.spec', 'event.spec']);
 
         </script>
     </body>
