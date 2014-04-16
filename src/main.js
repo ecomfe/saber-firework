@@ -6,6 +6,7 @@
 define(function (require) {
 
     var Emitter = require('saber-emitter');
+    var Tap = require('saber-tap');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var curry = require('saber-lang/curry');
@@ -198,6 +199,9 @@ define(function (require) {
 
         // 初始化viewport
         viewport.init(main, globalConfig.viewport);
+
+        // 启用无延迟点击
+        Tap.mixin(document.body);
 
         // 初始化router
         router.index = globalConfig.index;
