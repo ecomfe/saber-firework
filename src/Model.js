@@ -6,7 +6,6 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
-    var extend = require('saber-lang/extend');
     var Resolver = require('saber-promise');
     var Abstract = require('./Abstract');
 
@@ -16,9 +15,7 @@ define(function (require) {
      * @constructor
      */
     function Model(options) {
-        Abstract.call(this);
-
-        extend(this, options);
+        Abstract.call(this, options);
     }
 
     /**
