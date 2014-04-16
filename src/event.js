@@ -389,7 +389,7 @@ define(function (require) {
      * @param {string} selector 子元素选择器
      * @param {Function} fn 事件处理函数
      */
-    exports.once = function (ele, type, selector, fn) {
+    exports.one = function (ele, type, selector, fn) {
         if (isFunction(selector)) {
             fn = selector;
             selector = undefined;
