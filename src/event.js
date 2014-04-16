@@ -5,13 +5,20 @@
 
 define(function (require) {
 
-    var Hammer = require('hammer');
     var dom = require('saber-dom');
     var extend = require('saber-lang/extend');
 
     var KEY_UID = '_event_uid';
     var KEY_STOP = '_stopped';
     var UID = 0;
+
+    /**
+     * 插件
+     *
+     * @inner
+     * @type {Array}
+     */
+    var plugins = [];
 
     /**
      * EventHost对象集合
@@ -22,37 +29,6 @@ define(function (require) {
     var eventHosts = {};
 
     /**
-     * 手势名称
-     *
-     * @inner
-     * @type {Array.<string>}
-     */
-    var GESTURES = (function () {
-            var res = [];
-            Object.keys(Hammer.gestures).forEach(function (key) {
-                res.push(Hammer.gestures[key].name);
-            });
-            return res;
-        })();
-
-    /**
-     * 判断事件是否是手势
-     *
-     * @inner
-     * @param {string} name
-     * @return {boolean}
-     */
-    function isGestures(name) {
-        var res = false;
-        
-        GESTURES.some(function (gesture) {
-            return res = gesture.indexOf(name) === 0;
-        });
-
-        return res;
-    }
-
-    /**
      * 判断是否是函数
      *
      * @inner
@@ -61,6 +37,26 @@ define(function (require) {
      */
     function isFunction(fn) {
         return typeof fn == 'function';
+    }
+
+    /**
+     * 获取事件对应的插件
+     *
+     * @inner
+     * @param {string} type 事件类型
+     * @return {Object}
+     */
+    function getPlugin(type) {
+        var res;
+
+        plugins.some(function (plugin) {
+            if (plugin.detect(type)) {
+                res = plugin;
+            }
+            return !!res;
+        });
+
+        return res;
     }
 
     /**
@@ -154,9 +150,10 @@ define(function (require) {
      */
     function addEvent(eventHost, type) {
         var fn = eventHost.commonEventHandler;
+        var plugin = getPlugin(type);
 
-        if (isGestures(type)) {
-            eventHost.hammer.on(type, fn);
+        if (plugin) {
+            plugin.on(eventHost.ele, type, fn);
         }
         else {
             eventHost.ele.addEventListener(type, fn, false);
@@ -172,8 +169,10 @@ define(function (require) {
      */
     function removeEvent(eventHost, type) {
         var fn = eventHost.commonEventHandler;
-        if (isGestures(type)) {
-            eventHost.hammer.on(type, fn);
+        var plugin = getPlugin(type);
+
+        if (plugin) {
+            plugin.off(eventHost.ele, type, fn);
         }
         else {
             eventHost.ele.removeEventListener(type, fn, false);
@@ -247,7 +246,6 @@ define(function (require) {
     function EventHost(ele) {
         this.uid = createUID(ele);
         this.ele = ele;
-        this.hammer = Hammer(this.ele);
         this.handlers = {};
         this.commonEventHandler = createCommonEventHandler(this);
         eventHosts[this.uid] = this;
@@ -289,7 +287,7 @@ define(function (require) {
     };
 
     /**
-     * 移除事件绑定
+     * 事件卸载
      *
      * @public
      * @param {string} type 事件类型
@@ -367,7 +365,7 @@ define(function (require) {
     };
 
     /**
-     * 移除事件绑定
+     * 事件卸载
      *
      * @public
      * @param {HTMLElement} ele DOM元素
@@ -405,7 +403,7 @@ define(function (require) {
     };
 
     /**
-     * 结束所有的事件绑定
+     * 卸载所有事件绑定
      *
      * @public
      * @param {HTMLElement} ele DOM元素
@@ -413,6 +411,19 @@ define(function (require) {
     exports.clear = function (ele) {
         var host = generateEventHost(ele);
         host.dispose();
+    };
+
+    /**
+     * 注册插件
+     *
+     * @public
+     * @param {}
+     */
+    exports.register = function (plugin) {
+        if (plugin.init) {
+            plugin.init();
+        }
+        plugins.push(plugin);
     };
 
     return exports;
