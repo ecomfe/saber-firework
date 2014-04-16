@@ -35,6 +35,23 @@
                     location: 'dep/saber-dom/0.4.0/src'
                 },
                 {
+                    name: 'saber-promise',
+                    location: 'dep/saber-promise/0.1.2/src',
+                    main: 'promise'
+                },
+                {
+                    name: 'saber-router',
+                    location: 'dep/saber-router/0.2.0/src'
+                },
+                {
+                    name: 'saber-uri',
+                    location: 'dep/saber-uri/0.1.0/src'
+                },
+                {
+                    name: 'etpl',
+                    location: 'dep/etpl/2.0.10/src'
+                },
+                {
                     name: 'hammer',
                     location: 'dep/hammer/1.0.10/src',
                     main: 'hammer'
@@ -42,7 +59,7 @@
             ]
         });
         
-        require(['abstract.spec', 'event.spec']);
+        require(['event.spec', 'abstract.spec', 'action.spec', 'view.spec']);
 
         </script>
     </body>

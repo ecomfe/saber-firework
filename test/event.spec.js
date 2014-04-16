@@ -185,6 +185,23 @@ define(function (require) {
 
         });
 
+        it('.clear(ele) should clear binded events', function (done) {
+            var fn = jasmine.createSpy('fn');
+            var inner = dom.query('.inner', ele);
+
+            eventHelper.on(ele, 'click', fn);
+            eventHelper.on(ele, 'click', '.containerl', fn);
+            
+            eventHelper.clear(ele);
+
+            fireEvent(inner, 'click');
+
+            setTimeout(function () {
+                expect(fn.calls.count()).toBe(0);
+                done();
+            }, WAIT);
+        });
+
     });
 
 });
