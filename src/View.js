@@ -6,7 +6,6 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
-    var extend = require('saber-lang/extend');
     var dom = require('saber-dom');
     var etpl = require('etpl');
     var eventHelper = require('./event');
@@ -29,23 +28,16 @@ define(function (require) {
     }
 
     /**
-     * 事件绑定
+     * 绑定DOM事件
      *
      * @inner
      * @param {View} view
      */
-    function bindEvents(view) {
-        // 绑定View事件
-        var events = view.events || {};
-        Object.keys(events).forEach(function (name) {
-            view.on(name, events[name]);
-        });
-
-        // 绑定DOM事件
+    function bindDomEvents(view) {
         var type;
         var selector;
         var fn;
-        events = view.domEvents || {};
+        var events = view.domEvents || {};
         Object.keys(events).forEach(function (name) {
             fn = delegateDomEvent(view, events[name]);
             name = name.split(':');
@@ -53,23 +45,6 @@ define(function (require) {
             selector = name[1] ? name[1].trim() : undefined;
             view.attachEvent(view.main, type, selector, fn);
         });
-    }
-
-    /**
-     * 获取模版字符串
-     *
-     * @inner
-     * @param {Object} options view配置参数
-     * @return {string}
-     */
-    function getTemplate(options) {
-        var tpl = options.template;
-
-        if (Array.isArray(tpl)) {
-            tpl = tpl.join('\n\n');
-        }
-
-        return tpl;
     }
 
     /**
@@ -84,19 +59,19 @@ define(function (require) {
      * @param {Object=} domEvents DOM事件
      */
     function View(options) {
-        Abstract.call(this);
+
+        Abstract.call(this, options);
 
         // 获取模版字符串进行编译
-        if (options.template) {
+        if (this.template && !etpl.getRenderer(this.templateMainTarget)) {
+            var tpl = this.template;
+            if (Array.isArray(tpl)) {
+                tpl = tpl.join('\n\n');
+            }
             // 使用全局引擎编译
-            // 以支持不同View之间的模版
-            etpl.compile(getTemplate(options));
-            // 直接修改原始配置
-            // 不再编译已处理过的模版
-            delete options.template;
+            // 以支持不同View之间的模版共享
+            etpl.compile(tpl);
         }
-
-        extend(this, options);
 
         this.template = etpl;
 
@@ -140,7 +115,7 @@ define(function (require) {
      * @public
      */
     View.prototype.ready = function () {
-        bindEvents(this);
+        bindDomEvents(this);
         this.emit('ready');
     };
 
@@ -195,6 +170,7 @@ define(function (require) {
         this.bindElements.forEach(function (ele) {
             eventHelper.clear(ele);
         });
+        this.bindElements = [];
         this.main = null;
     };
 
