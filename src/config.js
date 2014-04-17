@@ -12,6 +12,13 @@ define({
     index: '/',
 
     /**
+     * 预加载的模版
+     *
+     * @type {Array.<string>}
+     */
+    template: [],
+
+    /**
      * 视图配置
      * 参见`saber-viewport`的全局配置参数
      * https://github.com/ecomfe/saber-viewport

@@ -7,6 +7,7 @@ define(function (require) {
 
     var Emitter = require('saber-emitter');
     var Tap = require('saber-tap');
+    var etpl = require('etpl');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var curry = require('saber-lang/curry');
@@ -129,6 +130,7 @@ define(function (require) {
         cur.route = config;
         cur.page = page;
         cur.action = action;
+        cur.path = config.path
     }
 
     /**
@@ -167,6 +169,24 @@ define(function (require) {
         tryLoadAction();
     }
 
+    /**
+     * 初始化模版引擎
+     *
+     * @inner
+     * @param {string} 模版
+     */
+    function initTemplate(template) {
+        if (!template || template.length <= 0) {
+            return;
+        }
+
+        if (Array.isArray(template)) {
+            template = template.join('\n\n');
+        }
+
+        etpl.compile(template);
+    }
+
     var exports = {};
 
     Emitter.mixin(exports);
@@ -202,6 +222,9 @@ define(function (require) {
 
         // 启用无延迟点击
         Tap.mixin(document.body);
+
+        // 初始化模版引擎
+        initTemplate(globalConfig.template);
 
         // 初始化router
         router.index = globalConfig.index;
