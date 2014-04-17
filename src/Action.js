@@ -61,7 +61,7 @@ define(function (require) {
         this.url = url;
         this.query = extend({}, query);
 
-        this.view.beforeRender(main);
+        this.view.setMain(main);
         this.emit('enter');
 
         return this.model.fetch(this.query)

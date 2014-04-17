@@ -83,18 +83,13 @@ define(function (require) {
     inherits(View, Abstract);
 
     /**
-     * 渲染视图前处理
-     * 主要用于设置视图容器元素
-     * 附加视图容器元素的className
+     * 设置容器元素
      *
      * @public
      * @param {HTMLElement} 视图容器元素
      */
-    View.prototype.beforeRender = function (ele) {
+    View.prototype.setMain = function (ele) {
         this.main = ele;
-        if (this.className) {
-            ele.className += ' ' + this.className;
-        }
     };
 
     /**
@@ -104,6 +99,10 @@ define(function (require) {
      * @param {Object} data
      */
     View.prototype.render = function (data) {
+        if (this.className) {
+            ele.className += ' ' + this.className;
+        }
+        this.emit('beforerender', data);
         this.main.innerHTML = 
             this.template.render(this.templateMainTarget, data);
     };
