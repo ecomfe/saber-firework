@@ -130,6 +130,17 @@ define(function (require) {
     };
 
     /**
+     * 选取视图中的DOM元素
+     *
+     * @public
+     * @param {string} selector 选择器
+     * @return {HTMLElement|Array.<HTMLElement>}
+     */
+    View.prototype.queryAll = function (selector) {
+        return dom.queryAll(selector, this.main || document.body);
+    };
+
+    /**
      * 绑定DOM事件
      * 会对进行绑定的DOM元素进行管理，方便自动卸载
      *
