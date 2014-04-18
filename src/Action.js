@@ -104,8 +104,8 @@ define(function (require) {
      * @public
      */
     Action.prototype.ready = function () {
-        this.view.ready();
         this.emit('ready');
+        this.view.ready();
     };
 
     /**
@@ -125,6 +125,7 @@ define(function (require) {
      */
     Action.prototype.leave = function () {
         this.emit('leave');
+        this.view.leave();
         this.dispose();
     };
 

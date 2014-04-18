@@ -185,6 +185,15 @@ define(function (require) {
     };
 
     /**
+     * 视图离开
+     *
+     * @public
+     */
+    View.prototype.leave = function () {
+        this.emit('leave');
+    };
+
+    /**
      * 视图休眠
      *
      * @public
