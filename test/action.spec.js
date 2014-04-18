@@ -54,7 +54,7 @@ define(function (require) {
                 });
 
             spyOn(action.model, 'fetch').and.callThrough();
-            spyOn(action.view, 'beforeRender').and.callThrough();
+            spyOn(action.view, 'setMain').and.callThrough();
             spyOn(action.view, 'render').and.callThrough();
 
             action.enter(url, query, ele).then(function () {
@@ -62,7 +62,7 @@ define(function (require) {
                 expect(action.query).toEqual(query);
                 expect(action.query).not.toBe(query);
                 expect(fn.calls.count()).toBe(1);
-                expect(action.view.beforeRender).toHaveBeenCalledWith(ele);
+                expect(action.view.setMain).toHaveBeenCalledWith(ele);
                 expect(action.model.fetch).toHaveBeenCalledWith(query);
                 expect(action.view.render).toHaveBeenCalled();
                 done();

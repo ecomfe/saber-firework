@@ -55,12 +55,11 @@ define(function (require) {
             expect(pass).toBeTruthy();
         });
 
-        it('.beforeRender(ele) should set main element and className', function () {
-            var view = new View({className: 'page'});
+        it('.setMain(ele) should set main element', function () {
+            var view = new View();
 
-            view.beforeRender(main);
+            view.setMain(main);
 
-            expect(main.className.indexOf('page') >= 0).toBeTruthy();
             expect(view.main).toBe(main);
         });
 
