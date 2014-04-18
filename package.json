@@ -1,6 +1,6 @@
 {
   "name": "saber-firework",
-  "version": "0.1.0-beta.4",
+  "version": "0.2.0",
   "description": "适用于移动端的简单`MVP`模式实现",
   "maintainers": [
     {
@@ -11,7 +11,7 @@
   "dependencies": {
     "etpl": "~2.1.0",
     "hammer": "~1.0.10",
-    "saber-viewport": "~0.2.5",
+    "saber-viewport": "~0.2.6",
     "saber-router": "~0.2.0",
     "saber-dom": "~0.4.0",
     "saber-emitter": "~0.3.1",
