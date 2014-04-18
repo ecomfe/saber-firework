@@ -42,7 +42,7 @@ define({
      *
      * @type {Object}
      */
-    processer: {
+    processor: {
 
         /**
          * 转场参数处理
