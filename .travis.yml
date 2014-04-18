@@ -5,4 +5,10 @@ before_install:
   - npm install phantomjs --save-dev
   - git clone https://github.com/ecomfe/saber-emitter.git test/dep/saber-emitter/0.3.1
   - git clone https://github.com/ecomfe/saber-lang.git test/dep/saber-lang/0.3.0
+  - git clone https://github.com/ecomfe/saber-tap.git test/dep/saber-tap/0.1.1
+  - git clone https://github.com/ecomfe/saber-dom.git test/dep/saber-dom/0.4.0
+  - git clone https://github.com/ecomfe/saber-promise.git test/dep/saber-promise/0.1.2
+  - git clone https://github.com/ecomfe/saber-router.git test/dep/saber-router/0.2.0
+  - git clone https://github.com/ecomfe/saber-uri.git test/dep/saber-uri/0.1.0
+  - git clone https://github.com/ecomfe/etpl.git test/dep/etpl/2.1.0
 install: true
