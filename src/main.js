@@ -17,13 +17,14 @@ define(function (require) {
 
     var globalConfig = require('./config');
 
-    var STATE_IDLE = 0;
-    var STATE_LOAD = 1;
+    var STATUS_TIMER = 300;
+    var STATUS_IDLE = 0;
+    var STATUS_LOAD = 1;
     var cachedAction = {};
     var waitingRoute;
     var cur = {};
 
-    cur.state = STATE_IDLE;
+    cur.status = STATUS_IDLE;
 
     /**
      * 获取全配配置的附加处理器
@@ -38,13 +39,37 @@ define(function (require) {
     }
 
     /**
+     * 当前状态设置
+     *
+     * @inner
+     * @param {number}
+     */
+    function setStatus(status) {
+        if (status == STATUS_LOAD) {
+            // 设置状态回复计时器
+            // 在Action加载过久时支持用户切换页面
+            cur.statusTimer = setTimeout(
+                function () {
+                    cur.status = STATUS_IDLE;
+                },
+                STATUS_TIMER
+            );
+        }
+        else if (status == STATUS_IDLE) {
+            clearTimeout(cur.statusTimer);
+        }
+
+        cur.status = status
+    }
+
+    /**
      * Action加载完成处理
      *
      * @inner
      */
     function loadedAction() {
         cur.action.complete();
-        cur.state = STATE_IDLE;
+        setStatus(STATUS_IDLE);
         tryLoadAction();
     }
 
@@ -97,13 +122,13 @@ define(function (require) {
         }
 
         var page = viewport.load(config.path, { cached: config.cached });
-        // 在转场结束时触发aftertransition事件
+        // 在转场结束时触发afterlaod事件
         page.on(
             'afterenter', 
-            bind(exports.emit, exports, 'aftertransition', page, cur.page)
+            bind(exports.emit, exports, 'afterload', page, cur.page)
         );
-        // 触发beforetransition事件
-        exports.emit('beforetransition', page, cur.page);
+        // 触发beforeload事件
+        exports.emit('beforeload', page, cur.page);
 
         var finished;
         // 如果action未缓存
@@ -142,11 +167,11 @@ define(function (require) {
         // 如果没有待加载的路由信息
         // 或者当前不是空闲状态
         // 都不再继续加载Action
-        if (!waitingRoute || cur.state != STATE_IDLE) {
+        if (!waitingRoute || cur.status != STATUS_IDLE) {
             return;
         }
 
-        cur.state = STATE_LOAD;
+        setStatus(STATUS_LOAD);
         loadAction(waitingRoute);
         waitingRoute = null;
     }
