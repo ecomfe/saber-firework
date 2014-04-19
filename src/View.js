@@ -99,10 +99,16 @@ define(function (require) {
      * @param {Object} data
      */
     View.prototype.render = function (data) {
-        if (this.className) {
-            ele.className += ' ' + this.className;
+        if (!this.main) {
+            return;
         }
+
+        if (this.className) {
+            this.main.className += ' ' + this.className;
+        }
+
         this.emit('beforerender', data);
+
         this.main.innerHTML = 
             this.template.render(this.templateMainTarget, data);
     };
