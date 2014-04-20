@@ -50,5 +50,13 @@ define({
          * @type {function|boolean}
          */
         transition: false
-    }
+    },
+
+    /**
+     * 加载Action超时时间（毫秒）
+     * 超过此时间可以切换Action
+     *
+     * @type {number}
+     */
+    timeout: 300
 });

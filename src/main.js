@@ -17,7 +17,6 @@ define(function (require) {
 
     var globalConfig = require('./config');
 
-    var STATUS_TIMER = 300;
     var STATUS_IDLE = 0;
     var STATUS_LOAD = 1;
     var cachedAction = {};
@@ -52,14 +51,14 @@ define(function (require) {
                 function () {
                     cur.status = STATUS_IDLE;
                 },
-                STATUS_TIMER
+                globalConfig.timeout
             );
         }
         else if (status == STATUS_IDLE) {
             clearTimeout(cur.statusTimer);
         }
 
-        cur.status = status
+        cur.status = status;
     }
 
     /**
@@ -155,7 +154,7 @@ define(function (require) {
         cur.route = config;
         cur.page = page;
         cur.action = action;
-        cur.path = config.path
+        cur.path = config.path;
     }
 
     /**
