@@ -5,7 +5,7 @@
 `Object`类型，包含以下字段：
 
 * `template` `{string|Array.<string>}` 模版字符串
-* `templateMainTarget` `{string}` 模版主target名称 用于初始化视图
+* `templateMainTarget` `{string}` 模版主target名称 用于初始化视图，注意模版引擎是全局单例的，所以target也是全局唯一的，target重复会导致模版编译错误
 * `className` `{string=}` 容器元素附加的className
 * `events` `{Object=}` 事件配置，`key`为事件名称，`value`为事件回调函数，`this`指针指向View实例
 * `domEvents` `{Object=}` dom事件配置，`key`为事件名称＋元素选择器(以':'分割)，`value`为事件回调函数，比如`{ 'click: .add-btn' : function (el, e) {...} }`。回调函数的第一个参数为事件绑定的Dom元素，第二个参数为事件参数(`event`)，`this`指针指向View实例

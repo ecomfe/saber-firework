@@ -43,7 +43,7 @@ action配置参数较多,同时为了便于复用，一般都作为一个模块�
  * @file index
  */
 
- define(function () {
+ define(function (require) {
 
     var config = {};
 
@@ -106,13 +106,13 @@ define(function () {
 
     config.template = '<!-- target:main -->hello ${name}';
 
-    config.templateTargetMain = 'main';
+    config.templateMainTarget = 'main';
 
     return config;
 });
 ```
 
-关键配置是`template`模版字符串与`templateTargetMain`视图的主模版名称
+关键配置是`template`模版字符串与`templateMainTarget`视图的主模版名称
 
 在页面加载时框架会用`model.fetch()`获取的数据来渲染`templateMainTarget`指定的模版完成页面的渲染
 
