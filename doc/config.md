@@ -6,7 +6,7 @@
 * `template` `{string|Array.<string>}` 模版字符串，预编译的template，主要用于在启动App时提前编译全局公用的template，比如母版等。默认为空
 * `timeout` `{number}` action加载超时时间，单位ms，超时后框架可以响应其它Action的切换请求，默认为`300`
 * `processor` `{Object}` 附加处理器，作用于特定时刻调整框架行为，具体参考之后的'附加处理器'说明
-* `viewport` `{Object}` 转场相关配置，具体参考`saber-viewport`的[全局配置信息](https://github.com/ecomfe/saber-viewport#initele-options)，默认为`{ transition: false }` 关闭转场效果
+* `viewport` `{Object}` 转场相关配置，具体请参考[saber-viewprot](https://github.com/ecomfe/saber-viewport)的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)，默认为`{ transition: false }` 关闭转场效果
 
 ## 附加处理器
 
@@ -14,7 +14,7 @@
 
 ### transition
 
-转场参数处理器，用于在转场操作前处理转场效果参数（参数具体字段请参考[saber-viewport](https://github.com/ecomfe/saber-viewport#pageentertype-options)的`.enter()`方法参数说明）
+转场参数处理器，用于在转场操作前处理转场效果参数（参数具体字段请参考[saber-viewprot](https://github.com/ecomfe/saber-viewport)的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)）
 
 `function (route, oldRoute):Object`
 
