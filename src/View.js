@@ -114,8 +114,11 @@ define(function (require) {
      */
     function View(options) {
 
+        options = options || {};
+
         Abstract.call(this, options);
 
+        this.template = this.template || '';
         // 如果是字符串或者数组
         // 则表示模版还未编译
         if (Array.isArray(this.template)
