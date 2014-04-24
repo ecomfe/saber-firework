@@ -103,7 +103,7 @@ define(function (require) {
             action = cachedAction[config.path];
         }
         if (!action) {
-            action = new Action(extend({}, config.action || {}));
+            action = new Action(config.action);
         }
 
         // 获取页面转场配置参数
@@ -248,7 +248,10 @@ define(function (require) {
         Tap.mixin(document.body);
 
         // 初始化router
-        router.index = config.index;
+        router.config({
+            index: config.index,
+            path: config.path
+        });
         router.start();
     };
 
