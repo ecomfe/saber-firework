@@ -18,9 +18,6 @@ define(function (require) {
         var events = abs.events || {};
 
         var fn;
-        var items;
-        var item;
-        var name;
         Object.keys(events).forEach(function (name) {
             fn = events[name];
             // 没有':'表示abs事件
@@ -32,7 +29,8 @@ define(function (require) {
             else {
                 var items = name.split(':');
                 var item = items[0].trim();
-                var name = items[1] && items[1].trim();
+
+                name = items[1] && items[1].trim();
                 if (item && abs[item] && name) {
                     abs[item].on(name, bind(fn, abs));
                 }

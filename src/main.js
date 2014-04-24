@@ -7,7 +7,6 @@ define(function (require) {
 
     var Emitter = require('saber-emitter');
     var Tap = require('saber-tap');
-    var etpl = require('etpl');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var curry = require('saber-lang/curry');
@@ -25,8 +24,9 @@ define(function (require) {
 
     cur.status = STATUS_IDLE;
 
+
     /**
-     * 获取全配配置的附加处理器
+     * 获取全局配置的附加处理器
      *
      * @inner
      * @param {string} name
@@ -193,22 +193,22 @@ define(function (require) {
         tryLoadAction();
     }
 
+
     /**
-     * 初始化模版引擎
+     * 扩展全局配置项
      *
      * @inner
-     * @param {string} 模版
+     * @param {Object} 配置项
+     * @return {Object}
      */
-    function initTemplate(template) {
-        if (!template || template.length <= 0) {
-            return;
+    function extendGlobalConfig(options) {
+        var config = extend(globalConfig, options);
+
+        if (!Array.isArray(config.template)) {
+            config.template = [config.template];
         }
 
-        if (Array.isArray(template)) {
-            template = template.join('\n\n');
-        }
-
-        etpl.compile(template);
+        return config;
     }
 
     var exports = {};
@@ -239,19 +239,16 @@ define(function (require) {
      */
     exports.start = function (main, options) {
         // 扩展全局配置信息
-        globalConfig = extend(globalConfig, options);
+        var config = extendGlobalConfig(options);
 
         // 初始化viewport
-        viewport.init(main, globalConfig.viewport);
+        viewport.init(main, config.viewport);
 
         // 启用无延迟点击
         Tap.mixin(document.body);
 
-        // 初始化模版引擎
-        initTemplate(globalConfig.template);
-
         // 初始化router
-        router.index = globalConfig.index;
+        router.index = config.index;
         router.start();
     };
 
