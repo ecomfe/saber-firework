@@ -5,11 +5,18 @@
 
 define({
     /**
-     * index路径
+     * index文件名
      *
      * @type {string}
      */
-    index: '/',
+    index: 'index',
+
+    /**
+     * 默认路径
+     *
+     * @type {string}
+     */
+    path: '/',
 
     /**
      * 预加载的模版
