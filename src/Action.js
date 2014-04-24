@@ -15,7 +15,6 @@ define(function (require) {
     var View = require('./View');
     var Model = require('./Model');
 
-
     /**
      * Action
      *
@@ -26,25 +25,23 @@ define(function (require) {
      * @param {Object=} options.events 事件
      */
     function Action(options) {
-
-        options = options || {};
-
-        // 创建model
-        options.model = options.model || {};
-        this.model = new Model(options.model);
-        delete options.model;
-
-        // 创建view
-        options.view = options.view || {};
-        this.view = new View(options.view);
-        delete options.view;
-
         Abstract.call(this, options);
-
+        this.init();
         this.emit('init');
     }
 
     inherits(Action, Abstract);
+
+    /**
+     * 初始化
+     *
+     * @public
+     */
+    Action.prototype.init = function () {
+        this.view = new View(this.view);
+        this.model = new Model(this.model);
+        Abstract.prototype.init.call(this);
+    };
 
     /**
      * 加载页面

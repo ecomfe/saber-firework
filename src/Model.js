@@ -16,7 +16,10 @@ define(function (require) {
      */
     function Model(options) {
         Abstract.call(this, options);
+        this.init();
     }
+
+    inherits(Model, Abstract);
 
     /**
      * 获取数据
@@ -26,8 +29,6 @@ define(function (require) {
     Model.prototype.fetch = function () {
         return Resolver.resolved({});
     };
-
-    inherits(Model, Abstract);
 
     return Model;
 });

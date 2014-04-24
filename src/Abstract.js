@@ -49,10 +49,22 @@ define(function (require) {
         options = options || {};
         extend(this, options);
         Emitter.mixin(this);
-
-        bindEvents(this);
     }
 
+    /**
+     * 初始化
+     *
+     * @public
+     */
+    Abstract.prototype.init = function () {
+        bindEvents(this);
+    };
+
+    /**
+     * 销毁
+     *
+     * @public
+     */
     Abstract.prototype.dispose = function () {};
 
     return Abstract;

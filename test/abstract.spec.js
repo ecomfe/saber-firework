@@ -37,6 +37,7 @@ define(function (require) {
                     },
                     fo: fo
                 });
+            abs.init();
 
             abs.emit('init');
             abs.fo.emit('init');

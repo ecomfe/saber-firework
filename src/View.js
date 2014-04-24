@@ -118,6 +118,21 @@ define(function (require) {
 
         Abstract.call(this, options);
 
+        this.init();
+
+        // 修改原始配置项
+        // 只在第一次加载view的时候才编译模版
+        options.template = this.template;
+    }
+
+    inherits(View, Abstract);
+
+    /**
+     * 初始化
+     *
+     * @public
+     */
+    View.prototype.init = function () {
         this.template = this.template || '';
         // 如果是字符串或者数组
         // 则表示模版还未编译
@@ -127,16 +142,12 @@ define(function (require) {
             compileTemplate(this, this.template);
         }
 
-        // 修改原始配置项
-        // 只在第一次加载view的时候才编译模版
-        options.template = this.template;
-
         // 绑定了事件的DOM元素集合
         // 用于View销毁时卸载事件绑定
         this.bindElements = [];
-    }
 
-    inherits(View, Abstract);
+        Abstract.prototype.init.call(this);
+    };
 
     /**
      * 设置容器元素
