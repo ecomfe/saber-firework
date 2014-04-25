@@ -38,8 +38,16 @@ define(function (require) {
      * @public
      */
     Action.prototype.init = function () {
-        this.view = new View(this.view);
-        this.model = new Model(this.model);
+        var Constructor = this.view.constructor == Object
+                            ? View
+                            : this.view.constructor;
+        this.view = new Constructor(this.view);
+
+        Constructor = this.model.constructor == Object
+                            ? Model
+                            : this.model.constructor;
+        this.model = new Constructor(this.model);
+
         Abstract.prototype.init.call(this);
     };
 

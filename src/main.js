@@ -103,7 +103,10 @@ define(function (require) {
             action = cachedAction[config.path];
         }
         if (!action) {
-            action = new Action(config.action);
+            var Constructor = config.action.constructor == Object
+                                ? Action
+                                : config.action.constructor;
+            action = new Constructor(config.action);
         }
 
         // 获取页面转场配置参数
