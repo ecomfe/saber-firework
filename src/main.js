@@ -103,9 +103,15 @@ define(function (require) {
             action = cachedAction[config.path];
         }
         if (!action) {
-            var Constructor = config.action.constructor == Object
-                                ? Action
-                                : config.action.constructor;
+            var Constructor;
+            if (config.action
+                && config.action.constructor !== Object
+            ) {
+                Constructor = config.action.constructor;
+            }
+            else {
+                Constructor = Action;
+            }
             action = new Constructor(config.action);
         }
 
