@@ -9,6 +9,7 @@ define(function (require) {
     var dom = require('saber-dom');
     var etpl = require('etpl');
     var eventHelper = require('./event');
+    var globalConfig = require('./config');
 
     var Abstract = require('./Abstract');
 
@@ -48,39 +49,105 @@ define(function (require) {
     }
 
     /**
+     * 字符串判断
+     *
+     * @public
+     * @param {*}
+     * @return {boolean}
+     */
+    function isString(str) {
+        return Object.prototype.toString.call(str)
+                    == '[object String]';
+    }
+
+    /**
+     * 编译模版
+     *
+     * @public
+     * @param {View} view
+     * @param {string|Array.<string>} str 模版
+     */
+    function compileTemplate(view, str) {
+        if (!Array.isArray(str)) {
+            str = [str];
+        }
+
+        // 添加全局的模版
+        str = str.concat(globalConfig.template || []);
+
+        str = str.join('');
+
+        // 新建模版引擎
+        var tplEngine = new etpl.Engine();
+        // 保存默认render
+        var defaultRender = tplEngine.compile(str);
+        // 保存原始的render
+        var orgRender = tplEngine.render;
+
+        view.template = tplEngine;
+        // 重载render以支持无target的情况
+        view.template.render = function (name, data) {
+            var res = '';
+            // 如果只有一个参数 或者target为null
+            // 则使用默认render
+            if (arguments.length < 2 || !name) {
+                res = defaultRender(name || data);
+            }
+            else {
+                res = orgRender.call(this, name, data);
+            }
+
+            return res;
+        };
+    }
+
+    /**
      * View
      * 
      * @constructor
      * @param {Object} options 配置信息
      * @param {string|Array.<string>} options.template 模版字符串
-     * @param {string} options.templateMainTarget 模版主target 用于初始化视图
+     * @param {string=} options.templateMainTarget 模版主target 用于初始化视图
      * @param {string=} options.className 容器元素附加className
      * @param {Object=} events view事件
      * @param {Object=} domEvents DOM事件
      */
     function View(options) {
 
+        options = options || {};
+
         Abstract.call(this, options);
 
-        // 获取模版字符串进行编译
-        if (this.template && !etpl.getRenderer(this.templateMainTarget)) {
-            var tpl = this.template;
-            if (Array.isArray(tpl)) {
-                tpl = tpl.join('\n\n');
-            }
-            // 使用全局引擎编译
-            // 以支持不同View之间的模版共享
-            etpl.compile(tpl);
-        }
+        this.init();
 
-        this.template = etpl;
+        // 修改原始配置项
+        // 只在第一次加载view的时候才编译模版
+        options.template = this.template;
+    }
+
+    inherits(View, Abstract);
+
+    /**
+     * 初始化
+     *
+     * @public
+     */
+    View.prototype.init = function () {
+        this.template = this.template || '';
+        // 如果是字符串或者数组
+        // 则表示模版还未编译
+        if (Array.isArray(this.template)
+            || isString(this.template)
+        ) {
+            compileTemplate(this, this.template);
+        }
 
         // 绑定了事件的DOM元素集合
         // 用于View销毁时卸载事件绑定
         this.bindElements = [];
-    }
 
-    inherits(View, Abstract);
+        Abstract.prototype.init.call(this);
+    };
 
     /**
      * 设置容器元素
