@@ -3,6 +3,7 @@
 ## Model 配置信息
 
 * `fetch` `{Function(Object):Promise}` 默认数据请求方法，参数为查询条件，返回`Promise`对象，action加载时会调用此方法进行数据初始化，并将请求的结果作为视图渲染数据
+* `constructor` `{Object=}` 构造函数，默认为`saber-firework/Model`
 * `events` `{Object=}` 事件配置，`key`为事件名称，`value`为事件回调函数，`this`指针指向Model实例
 
 ## Model 实例
