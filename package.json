@@ -1,6 +1,6 @@
 {
   "name": "saber-firework",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "移动端`MVP`开发框架",
   "main": "main",
   "maintainers": [
@@ -17,7 +17,7 @@
     "saber-dom": "~0.4.0",
     "saber-emitter": "~0.5.0",
     "saber-lang": "~0.3.1",
-    "saber-tap": "~0.1.1",
+    "saber-tap": "~0.1.2",
     "saber-promise": "~0.1.2"
   },
   "scripts": {
