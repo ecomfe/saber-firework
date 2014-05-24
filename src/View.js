@@ -196,10 +196,12 @@ define(function (require) {
      *
      * @public
      * @param {string} selector 选择器
+     * @param {HTMLElement=} context 上下文
      * @return {HTMLElement|Array.<HTMLElement>}
      */
-    View.prototype.query = function (selector) {
-        return dom.query(selector, this.main || document.body);
+    View.prototype.query = function (selector, context) {
+        context = context || this.main || document.body;
+        return dom.query(selector, context);
     };
 
     /**
@@ -207,10 +209,12 @@ define(function (require) {
      *
      * @public
      * @param {string} selector 选择器
+     * @param {HTMLElement=} context 上下文
      * @return {HTMLElement|Array.<HTMLElement>}
      */
-    View.prototype.queryAll = function (selector) {
-        return dom.queryAll(selector, this.main || document.body);
+    View.prototype.queryAll = function (selector, context) {
+        context = context || this.main || document.body;
+        return dom.queryAll(selector, context);
     };
 
     /**
