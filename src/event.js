@@ -347,6 +347,22 @@ define(function (require) {
         }
     }
 
+    /**
+     * 获取元素对应的EventHost对象
+     *
+     * @inner
+     * @param {HTMLElement} ele
+     * @return {?EventHost}
+     */
+    function getEventHost(ele) {
+        var host;
+        var uid = getUID(ele);
+        if (uid) {
+            host = eventHosts[uid];
+        }
+        return host;
+    }
+
     var exports = {};
 
 
@@ -374,8 +390,10 @@ define(function (require) {
      * @param {Function} fn 事件处理函数
      */
     exports.off = function (ele, type, selector, fn) {
-        var host = generateEventHost(ele);
-        host.off(type, selector, fn);
+        var host = getEventHost(ele);
+        if (host) {
+            host.off(type, selector, fn);
+        }
     };
 
     /**
@@ -409,8 +427,10 @@ define(function (require) {
      * @param {HTMLElement} ele DOM元素
      */
     exports.clear = function (ele) {
-        var host = generateEventHost(ele);
-        host.dispose();
+        var host = getEventHost(ele);
+        if (host) {
+            host.dispose();
+        }
     };
 
     /**
