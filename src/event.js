@@ -29,17 +29,6 @@ define(function (require) {
     var eventHosts = {};
 
     /**
-     * 判断是否是函数
-     *
-     * @inner
-     * @param {*} fn
-     * @return {boolean}
-     */
-    function isFunction(fn) {
-        return typeof fn == 'function';
-    }
-
-    /**
      * 获取事件对应的插件
      *
      * @inner
@@ -260,7 +249,7 @@ define(function (require) {
      * @param {Function} fn 事件处理函数
      */
     EventHost.prototype.on = function (type, selector, fn) {
-        if (isFunction(selector)) {
+        if (!fn) {
             fn = selector;
             selector = undefined;
         }
@@ -291,11 +280,11 @@ define(function (require) {
      *
      * @public
      * @param {string} type 事件类型
-     * @param {string} selector 子元素选择器
+     * @param {string=} selector 子元素选择器
      * @param {Function} fn 事件处理函数
      */
     EventHost.prototype.off = function (type, selector, fn) {
-        if (isFunction(selector)) {
+        if (!fn) {
             fn = selector;
             selector = undefined;
         }
@@ -402,11 +391,11 @@ define(function (require) {
      * @public
      * @param {HTMLElement} ele DOM元素
      * @param {string} type 事件类型
-     * @param {string} selector 子元素选择器
+     * @param {string=} selector 子元素选择器
      * @param {Function} fn 事件处理函数
      */
     exports.one = function (ele, type, selector, fn) {
-        if (isFunction(selector)) {
+        if (!fn) {
             fn = selector;
             selector = undefined;
         }

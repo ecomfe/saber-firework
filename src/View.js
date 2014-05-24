@@ -13,6 +13,14 @@ define(function (require) {
 
     var Abstract = require('./Abstract');
 
+    /**
+     * 代理DOM事件KEY
+     *
+     * @const
+     * @type{string}
+     */
+    var KEY_DELEGATE = '__delegate__';
+
     /*
      * 代理DOM事件
      * 调整this指针
@@ -23,7 +31,7 @@ define(function (require) {
      * @return {function}
      */
     function delegateDomEvent(view, fn) {
-        return function (e) {
+        return fn[KEY_DELEGATE] = function (e) {
             return fn.call(view, this, e);
         };
     }
@@ -40,11 +48,11 @@ define(function (require) {
         var fn;
         var events = view.domEvents || {};
         Object.keys(events).forEach(function (name) {
-            fn = delegateDomEvent(view, events[name]);
+            fn = events[name];
             name = name.split(':');
             type = name[0].trim();
             selector = name[1] ? name[1].trim() : undefined;
-            view.attachEvent(view.main, type, selector, fn);
+            view.addDomEvent(view.main, type, selector, fn);
         });
     }
 
@@ -218,6 +226,8 @@ define(function (require) {
     };
 
     /**
+     * Superseded by `addDomEvent`
+     *
      * 绑定DOM事件
      * 会对进行绑定的DOM元素进行管理，方便自动卸载
      *
@@ -235,6 +245,8 @@ define(function (require) {
     };
 
     /**
+     * Superseded by `removeDomEvent`
+     *
      * 卸载DOM事件
      *
      * @public
@@ -245,6 +257,46 @@ define(function (require) {
      */
     View.prototype.detachEvent = function (ele, type, selector, fn) {
         eventHelper.off(ele, type, selector, fn);
+    };
+
+    /*
+     * 绑定DOM事件
+     * 会对进行绑定的DOM元素进行管理，方便自动卸载
+     *
+     * @public
+     * @param {HTMLElement} ele
+     * @param {string} type 事件类型
+     * @param {string=} selector 子元素选择器
+     * @param {function(element,event)} fn 事件处理函数，this指针为View对象
+     */
+    View.prototype.addDomEvent = function (ele, type, selector, fn) {
+        if (this.bindElements.indexOf(ele) < 0) {
+            this.bindElements.push(ele);
+        }
+        if (!fn) {
+            fn = selector;
+            selector = undefined;
+        }
+        eventHelper.on(ele, type, selector, delegateDomEvent(this, fn));
+    };
+
+    /*
+     * 卸载DOM事件
+     *
+     * @public
+     * @param {HTMLElement} ele
+     * @param {string} type 事件类型
+     * @param {string=} selector 子元素选择器
+     * @param {function} fn 事件处理函数
+     */
+    View.prototype.removeDomEvent = function (ele, type, selector, fn) {
+        if (!fn) {
+            fn = selector;
+            selector = undefined;
+        }
+        if (fn[KEY_DELEGATE]) {
+            eventHelper.off(ele, type, selector, fn[KEY_DELEGATE]);
+        }
     };
 
     /**

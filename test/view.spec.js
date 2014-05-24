@@ -92,10 +92,57 @@ define(function (require) {
             view.render();
             view.ready();
 
+            var ele = dom.query('.box', main);
             fireEvent(dom.query('.inner', main), 'click');
 
             setTimeout(function () {
-                expect(fn.calls.count()).toBe(1);
+                expect(fn.calls.any()).toBeTruthy();
+                expect(fn.calls.argsFor(0)[0]).toBe(ele);
+                done();
+            }, 0);
+        });
+
+        it('.addDomEvent() should bind dom events', function (done) {
+            var view = new View({
+                    main: main,
+                    template: '<div class="box"><div class="inner"></div></div>'
+                });
+
+            view.render();
+
+            var thisObj;
+            var element = dom.query('.box', main);
+            view.addDomEvent(element, 'click', function (ele) {
+                expect(ele).toBe(element);
+                thisObj = this;
+            });
+
+            fireEvent(dom.query('.inner', main), 'click');
+
+            setTimeout(function () {
+                expect(thisObj).toBe(view);
+                done();
+            }, 0);
+        });
+
+        it('.removeDomEvent() should unbind dom events', function (done) {
+            var fn = jasmine.createSpy('fn');
+            var view = new View({
+                    main: main,
+                    template: '<div class="box"><div class="inner"></div></div>'
+                });
+
+            view.render();
+
+            var element = dom.query('.box', main);
+            view.addDomEvent(element, 'click', fn);
+
+            view.removeDomEvent(element, 'click', fn);
+
+            fireEvent(dom.query('.inner', main), 'click');
+
+            setTimeout(function () {
+                expect(fn.calls.any()).toBeFalsy();
                 done();
             }, 0);
         });
