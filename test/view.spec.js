@@ -147,30 +147,56 @@ define(function (require) {
             }, 0);
         });
 
-        it('.dispose() should detach all dom events', function (done) {
-            var tpl = '<!-- target:disposeMain --><div class="box"><div class="inner"></div></div>';
-            var fn = jasmine.createSpy('fn');
-            var view = new View({
-                    main: main,
-                    template: tpl,
-                    templateMainTarget: 'disposeMain',
-                    domEvents: {
-                        'click:.box': fn,
-                        'click': fn
-                    }
-                });
+        describe('.dipose()', function () {
 
-            view.render();
-            view.ready();
-            view.dispose();
+            it('should detach all dom events', function (done) {
+                var tpl = '<!-- target:disposeMain --><div class="box"><div class="inner"></div></div>';
+                var fn = jasmine.createSpy('fn');
+                var view = new View({
+                        main: main,
+                        template: tpl,
+                        templateMainTarget: 'disposeMain',
+                        domEvents: {
+                            'click:.box': fn,
+                            'click': fn
+                        }
+                    });
 
-            fireEvent(dom.query('.inner', main), 'click');
+                view.render();
+                view.ready();
+                view.dispose();
 
-            setTimeout(function () {
-                expect(fn.calls.count()).toBe(0);
-                done();
-            }, 0);
+                fireEvent(dom.query('.inner', main), 'click');
+
+                setTimeout(function () {
+                    expect(fn.calls.count()).toBe(0);
+                    done();
+                }, 0);
+            });
+
+            it('should dipose all widget', function () {
+                var tpl = '<div class="slider"><div></div></div>';
+                var view = new View({
+                        main: main,
+                        template: tpl
+                    });
+
+                view.render();
+                var ele = view.query('.slider');
+                var widget = require('saber-widget');
+                var Slider = require('saber-widget/Slider');
+                var slider = new Slider({main: ele, id: 'slider'}).render();
+                
+                expect(widget.get('slider')).toBe(slider);
+
+                view.dispose();
+
+                expect(widget.get('slider')).toBeUndefined();
+                expect(slider.main).toBeNull();
+            });
+
         });
+
     });
 
 });

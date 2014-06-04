@@ -8,6 +8,7 @@ define(function (require) {
     var inherits = require('saber-lang/inherits');
     var dom = require('saber-dom');
     var etpl = require('etpl');
+    var widget = require('saber-widget');
     var eventHelper = require('./event');
     var globalConfig = require('./config');
 
@@ -306,10 +307,17 @@ define(function (require) {
      */
     View.prototype.dispose = function () {
         this.emit('dispose');
+
+        // 解除事件绑定
         this.bindElements.forEach(function (ele) {
             eventHelper.clear(ele);
         });
         this.bindElements = [];
+
+        // 销毁页面的widget
+        widget.dispose(this.main);
+
+        // 解除元素引用
         this.main = null;
     };
 
