@@ -19,7 +19,7 @@
     "saber-lang": "~0.3.1",
     "saber-tap": "~0.1.2",
     "saber-promise": "~0.1.2",
-    "saber-widget": "~0.1.0"
+    "saber-widget": "~0.1.1"
   },
   "scripts": {
     "test": "phantomjs test/run-jasmine.js test/runner.html"

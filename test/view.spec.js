@@ -184,8 +184,9 @@ define(function (require) {
                 view.render();
                 var ele = view.query('.slider');
                 var widget = require('saber-widget');
-                var Slider = require('saber-widget/Slider');
-                var slider = new Slider({main: ele, id: 'slider'}).render();
+                require('saber-widget/Slider');
+
+                var slider = widget.slider(ele, {id: 'slider'});
                 
                 expect(widget.get('slider')).toBe(slider);
 
