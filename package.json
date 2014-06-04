@@ -13,13 +13,13 @@
     "etpl": "~2.1.0",
     "hammer": "~1.0.10",
     "saber-viewport": "~0.2.9",
-    "saber-router": "~0.2.1",
-    "saber-dom": "~0.4.0",
+    "saber-router": "~0.2.2",
+    "saber-dom": "~0.4.1",
     "saber-emitter": "~0.5.0",
     "saber-lang": "~0.3.1",
     "saber-tap": "~0.1.2",
     "saber-promise": "~0.1.2",
-    "saber-widget": "~0.1.1"
+    "saber-widget": "~0.2.0"
   },
   "scripts": {
     "test": "phantomjs test/run-jasmine.js test/runner.html"
