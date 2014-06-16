@@ -34,6 +34,30 @@ firework.start();
 * `ele ` `{HTMLElement}` 容器元素
 * `options` `{Object}` 全局配置信息，具体参考[doc/config](doc/config.md)
 
+## Events
+
+### beforeload
+
+加载页面前事件，有两个参数，`after`待转加载页面信息 与 `before`当前页面信息
+
+* `{Object}` after 待转加载页面信息
+* `{Action}` after.action 待转加载的[action对象](doc/action.md)
+* `{Page}` after.page 待转加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
+* `{Object}` before 当前页面信息
+* `{Action}` before.action 当前的[action对象](doc/action.md)
+* `{Page}` before.page 当前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+
+### afterload
+
+页面加载完成事件，有两个参数，`after`当前已加载的页面信息 与 `before`之前的页面信息
+
+* `{Object}` after 当前已加载的页面信息
+* `{Action}` after.action 当前已加载的[action对象](doc/action.md)
+* `{Page}` after.page 当前已加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
+* `{Object}` before 之前的页面信息
+* `{Action}` before.action 之前的[action对象](doc/action.md)
+* `{Page}` before.page 之前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+
 ===
 
 [![Saber](https://f.cloud.github.com/assets/157338/1485433/aeb5c72a-4714-11e3-87ae-7ef8ae66e605.png)](http://ecomfe.github.io/saber/)
