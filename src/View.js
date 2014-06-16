@@ -8,10 +8,19 @@ define(function (require) {
     var inherits = require('saber-lang/inherits');
     var dom = require('saber-dom');
     var etpl = require('etpl');
+    var widget = require('saber-widget');
     var eventHelper = require('./event');
     var globalConfig = require('./config');
 
     var Abstract = require('./Abstract');
+
+    /**
+     * 代理DOM事件KEY
+     *
+     * @const
+     * @type{string}
+     */
+    var KEY_DELEGATE = '__delegate__';
 
     /*
      * 代理DOM事件
@@ -23,7 +32,7 @@ define(function (require) {
      * @return {function}
      */
     function delegateDomEvent(view, fn) {
-        return function (e) {
+        return fn[KEY_DELEGATE] = function (e) {
             return fn.call(view, this, e);
         };
     }
@@ -40,11 +49,11 @@ define(function (require) {
         var fn;
         var events = view.domEvents || {};
         Object.keys(events).forEach(function (name) {
-            fn = delegateDomEvent(view, events[name]);
+            fn = events[name];
             name = name.split(':');
             type = name[0].trim();
             selector = name[1] ? name[1].trim() : undefined;
-            view.attachEvent(view.main, type, selector, fn);
+            view.addDomEvent(view.main, type, selector, fn);
         });
     }
 
@@ -196,10 +205,12 @@ define(function (require) {
      *
      * @public
      * @param {string} selector 选择器
+     * @param {HTMLElement=} context 上下文
      * @return {HTMLElement|Array.<HTMLElement>}
      */
-    View.prototype.query = function (selector) {
-        return dom.query(selector, this.main || document.body);
+    View.prototype.query = function (selector, context) {
+        context = context || this.main || document.body;
+        return dom.query(selector, context);
     };
 
     /**
@@ -207,13 +218,17 @@ define(function (require) {
      *
      * @public
      * @param {string} selector 选择器
+     * @param {HTMLElement=} context 上下文
      * @return {HTMLElement|Array.<HTMLElement>}
      */
-    View.prototype.queryAll = function (selector) {
-        return dom.queryAll(selector, this.main || document.body);
+    View.prototype.queryAll = function (selector, context) {
+        context = context || this.main || document.body;
+        return dom.queryAll(selector, context);
     };
 
     /**
+     * Superseded by `addDomEvent`
+     *
      * 绑定DOM事件
      * 会对进行绑定的DOM元素进行管理，方便自动卸载
      *
@@ -231,6 +246,8 @@ define(function (require) {
     };
 
     /**
+     * Superseded by `removeDomEvent`
+     *
      * 卸载DOM事件
      *
      * @public
@@ -243,6 +260,46 @@ define(function (require) {
         eventHelper.off(ele, type, selector, fn);
     };
 
+    /*
+     * 绑定DOM事件
+     * 会对进行绑定的DOM元素进行管理，方便自动卸载
+     *
+     * @public
+     * @param {HTMLElement} ele
+     * @param {string} type 事件类型
+     * @param {string=} selector 子元素选择器
+     * @param {function(element,event)} fn 事件处理函数，this指针为View对象
+     */
+    View.prototype.addDomEvent = function (ele, type, selector, fn) {
+        if (this.bindElements.indexOf(ele) < 0) {
+            this.bindElements.push(ele);
+        }
+        if (!fn) {
+            fn = selector;
+            selector = undefined;
+        }
+        eventHelper.on(ele, type, selector, delegateDomEvent(this, fn));
+    };
+
+    /*
+     * 卸载DOM事件
+     *
+     * @public
+     * @param {HTMLElement} ele
+     * @param {string} type 事件类型
+     * @param {string=} selector 子元素选择器
+     * @param {function} fn 事件处理函数
+     */
+    View.prototype.removeDomEvent = function (ele, type, selector, fn) {
+        if (!fn) {
+            fn = selector;
+            selector = undefined;
+        }
+        if (fn[KEY_DELEGATE]) {
+            eventHelper.off(ele, type, selector, fn[KEY_DELEGATE]);
+        }
+    };
+
     /**
      * 视图销毁
      *
@@ -250,10 +307,17 @@ define(function (require) {
      */
     View.prototype.dispose = function () {
         this.emit('dispose');
+
+        // 解除事件绑定
         this.bindElements.forEach(function (ele) {
             eventHelper.clear(ele);
         });
         this.bindElements = [];
+
+        // 销毁页面的widget
+        widget.dispose(this.main);
+
+        // 解除元素引用
         this.main = null;
     };
 

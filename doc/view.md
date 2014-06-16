@@ -42,36 +42,60 @@
 
 ### 方法
 
-#### .query(selector)
+#### .query(selector, context)
 
 查找视图中的DOM元素
 
 * `selector` `{string}` 元素选择器
+* `context` `{string=}` 上下文，可选，默认为View的主元素
 * `{HTMLElement}` 返回DOM元素
 
-#### .queryAll(selector)
+#### .queryAll(selector, context)
 
 查找视图中所有符合的DOM元素
 
 * `selector` `{string}` 元素选择器
+* `context` `{string=}` 上下文，可选，默认为View的主元素
 * `{Array.<HTMLElement>}` 返回DOM元素数组
 
-#### .attachEvent(ele, type, selector, fn)
+#### .addDomEvent(ele, type, selector, fn)
 
 注册DOM事件
 
 * `ele` `{HTMLElement}` DOM元素
 * `type` `{string}` 事件名称
-* `selector` `{string}` 元素选择器
-* `fn` `{Function(Object)}` 回调函数
+* `selector` `{string=}` 元素选择器，可选
+* `fn` `{Function(ele, e)}` 事件处理函数，`this`指向View实例
 
-#### .detachEvent(ele, type, selector, fn)
+#### .removeDomEvent(ele, type, selector, fn)
 
 卸载DOM事件
 
 * `ele` `{HTMLElement}` DOM元素
 * `type` `{string}` 事件名称
-* `selector` `{string}` 元素选择器
+* `selector` `{string=}` 元素选择器，可选
+* `fn` `{Function(ele, e)}` 事件处理函数
+
+#### .attachEvent(ele, type, selector, fn)
+
+__已废弃 可能在以后版本中删除__ 请使用[addDomEvent](#adddomeventele-type-selector-fn)
+
+注册DOM事件
+
+* `ele` `{HTMLElement}` DOM元素
+* `type` `{string}` 事件名称
+* `selector` `{string=}` 元素选择器，可选
+* `fn` `{Function(e)}` 事件处理函数 `this`指向事件绑定元素
+
+#### .detachEvent(ele, type, selector, fn)
+
+__已废弃 可能在以后版本中删除__ 请使用[removeDomEvent](#removedomeventele-type-selector-fn)
+
+卸载DOM事件
+
+* `ele` `{HTMLElement}` DOM元素
+* `type` `{string}` 事件名称
+* `selector` `{string=}` 元素选择器，可选
 * `fn` `{Function(e)}` 回调函数
 
 ### 重载实例方法

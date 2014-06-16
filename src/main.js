@@ -133,10 +133,32 @@ define(function (require) {
         // 在转场结束时触发afterlaod事件
         page.on(
             'afterenter', 
-            bind(exports.emit, exports, 'afterload', page, cur.page)
+            bind(
+                exports.emit,
+                exports,
+                'afterload',
+                {
+                    action: action,
+                    page: page
+                },
+                {
+                    action: cur.action,
+                    page: cur.page
+                }
+            )
         );
         // 触发beforeload事件
-        exports.emit('beforeload', page, cur.page);
+        exports.emit(
+            'beforeload',
+            {
+                action: action,
+                page: page
+            },
+            {
+                action: cur.action,
+                page: cur.page
+            }
+        );
 
         var finished;
         // 如果action未缓存

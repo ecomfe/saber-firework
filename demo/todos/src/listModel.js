@@ -8,10 +8,12 @@ define(function (require) {
     var Resolver = require('saber-promise');
 
     var todos = [
-        {id: 1001, title: 'hello', completed: false},
-        {id: 1002, title: 'world', completed: false},
-        {id: 1003, title: 'something', completed: true}
+        {id: 1, title: 'hello', completed: false},
+        {id: 2, title: 'world', completed: false},
+        {id: 3, title: 'something', completed: true}
     ];
+
+    var UID = 3;
     
     var config = {};
 
@@ -45,7 +47,7 @@ define(function (require) {
     config.add = function (title) {
         var item = {};   
         item.title = title;
-        item.id = todos[todos.length - 1].id + 1;
+        item.id = ++UID;
         item.completed = false;
         todos.push(item);
 
