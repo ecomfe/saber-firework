@@ -1,3 +1,9 @@
+# 0.3.0 / 2014-06-16
+
+* 添加`saber-widget`支持，各种`widget`放心用，清理工作框架会搞定
+* 添加`addDomEvent`与`removeDomEvent`方法，替换原有的`attachEvent`与`detachEvent`，优化了事件处理函数的参数与`this`指针，具体请参考[文档](doc/view.md)
+* 全局的`beforeload`与`afterload`事件调整事件参数，能获取到`action`对象，具体请参考[文档](README.md)
+
 # 0.2.6 / 2014-04-30
 
 * 更新依赖
