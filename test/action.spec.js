@@ -45,6 +45,7 @@ define(function (require) {
         it('.enter() should set url, query and finish render', function (done) {
             var url = '/index';
             var query = {filter: 'www'};
+            var options = {noCache: true};
             var ele = document.createElement('div');
             var fn = jasmine.createSpy('fn');
             var action = new Action({
@@ -57,10 +58,12 @@ define(function (require) {
             spyOn(action.view, 'setMain').and.callThrough();
             spyOn(action.view, 'render').and.callThrough();
 
-            action.enter(url, query, ele).then(function () {
+            action.enter(url, query, ele, options).then(function () {
                 expect(action.url).toEqual(url);
                 expect(action.query).toEqual(query);
                 expect(action.query).not.toBe(query);
+                expect(action.options).toEqual(options);
+                expect(action.options).not.toBe(options);
                 expect(fn.calls.count()).toBe(1);
                 expect(action.view.setMain).toHaveBeenCalledWith(ele);
                 expect(action.model.fetch).toHaveBeenCalledWith(query);

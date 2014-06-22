@@ -64,6 +64,20 @@ define(function (require) {
     };
 
     /**
+     * 页面跳转
+     *
+     * @public
+     * @param {string} url 跳转地址
+     * @param {Object=} query 查询条件
+     * @param {Object=} options 跳转参数
+     * @param {boolean} options.force 强制跳转（url相同时）
+     * @param {boolean} options.noCache 不使用缓存的action
+     */
+    Action.prototype.redirect = function (url, query, options) {
+        router.redirect(url, query, options);
+    };
+
+    /**
      * 加载页面
      *
      * 页面入口
@@ -74,9 +88,10 @@ define(function (require) {
      * @param {Object} query 查询条件
      * @param {HTMLElement} main 视图容器
      */
-    Action.prototype.enter = function (url, query, main) {
+    Action.prototype.enter = function (url, query, main, options) {
         this.url = url;
         this.query = extend({}, query);
+        this.options = extend({}, options);
 
         this.view.setMain(main);
         this.emit('enter');
@@ -86,27 +101,18 @@ define(function (require) {
     };
 
     /**
-     * 页面跳转
-     *
-     * @public
-     * @param {string} url 跳转地址
-     * @param {Object} query 查询条件
-     * @param {boolean=} force 强制跳转`
-     */
-    Action.prototype.redirect = function (url, query, force) {
-        router.redirect(url, query, force);
-    };
-
-    /**
      * 唤醒页面
      *
      * @public
      * @param {string} url 当前的访问地址
      * @param {Object} query 查询条件
+     * @param {Object} options 跳转参数
+     * @return {Promise}
      */
-    Action.prototype.wakeup = function (url, query) {
+    Action.prototype.wakeup = function (url, query, options) {
         this.url = url;
         this.query = extend({}, query);
+        this.options = extend({}, options);
 
         this.emit('wakeup');
         this.view.wakeup();
