@@ -8,38 +8,14 @@ define(function (require) {
     var Hammer = require('hammer');
     var eventHelper = require('../event');
 
-    /**
-     * 手势名称
-     *
-     * @inner
-     * @type {Array.<string>}
-     */
-    var GESTURES = (function () {
-            var res = [];
-            Object.keys(Hammer.gestures).forEach(function (key) {
-                res.push(Hammer.gestures[key].name);
-            });
-            return res;
-        })();
+    var plugin = {};
 
     /**
-     * 判断事件是否是手势
+     * 空函数
      *
      * @inner
-     * @param {string} name
-     * @return {boolean}
      */
-    function isGestures(name) {
-        var res = false;
-        
-        GESTURES.some(function (gesture) {
-            return res = gesture.indexOf(name) === 0;
-        });
-
-        return res;
-    }
-
-    var plugin = {};  
+    function blank () {}
 
     /**
      * 插件初始化
@@ -60,8 +36,9 @@ define(function (require) {
      * @param {string} type 事件类型
      * @return {boolean}
      */
-    plugin.detect = function (type) {
-        // 不单独绑定事件
+    plugin.detect = function () {
+        // 已经使用全局代理
+        // 不再需要使用由插件来完成事件绑定
         return false;
     };
 
@@ -73,7 +50,7 @@ define(function (require) {
      * @param {string} type 事件类型
      * @param {Function} fn 事件处理函
      */
-    plugin.on = function (ele, type, fn) {};
+    plugin.on = blank;
 
     /**
      * 事件卸载
@@ -83,7 +60,7 @@ define(function (require) {
      * @param {string} type 事件类型
      * @param {Function} fn 事件处理函
      */
-    plugin.off = function (ele, type, fn) {};
+    plugin.off = blank;
 
     // 注册插件
     eventHelper.register(plugin);
