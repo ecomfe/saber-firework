@@ -45,13 +45,15 @@
 
 ### 方法
 
-#### .redirect(url, query, force)
+#### .redirect(url, query, options)
 
 页面跳转
 
 * `url` `{string}` url
-* `query` `{Object=}` 查询条件
-* `force` `{boolean=}` 强制跳转
+* `query` `{?Object}` 查询条件
+* `options` `{options=}` 跳转参数
+* `options.force` `{boolean=}` 强制跳转（相同的URL默认不跳转）
+* `options.noCache` `{boolean=}` 禁用页面的cache
 
 ### 重载实例方法
 
