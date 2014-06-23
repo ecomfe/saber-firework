@@ -8,6 +8,18 @@ define(function (require) {
     var dom = require('saber-dom');
     var Abstract = require('saber-firework/Abstract');
     var View = require('saber-firework/View');
+    var widget = require('saber-widget');
+    var Widget = require('saber-widget/Widget');
+
+    function Slider() {
+        Widget.apply(this, arguments);
+    }
+
+    Slider.prototype.type = 'Slider';
+
+    require('saber-lang/inherits')(Slider, Widget);
+
+    widget.register(Slider);
 
     function fireEvent(ele, type, proto) {
         var e = document.createEvent('Event');
@@ -184,8 +196,6 @@ define(function (require) {
                 view.render();
                 var ele = view.query('.slider');
                 var widget = require('saber-widget');
-                require('saber-widget/Slider');
-
                 var slider = widget.slider(ele, {id: 'slider'});
                 
                 expect(widget.get('slider')).toBe(slider);

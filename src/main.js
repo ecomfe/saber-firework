@@ -80,8 +80,10 @@ define(function (require) {
      * @param {string} config.path 请求路径
      * @param {Object} config.action action配置
      * @param {Object} config.query 查询条件
-     * @param {boolean=} config.cached 是否缓存路由
+     * @param {boolean=} config.cached 是否缓存action
      * @param {Object=} config.transition 转场配置
+     * @param {Object} config.options 跳转参数
+     * @param {boolean=} config.optins.noCache 不使用缓存action
      */
     function loadAction(config) {
         // 处理当前正在工作的Action
@@ -163,8 +165,10 @@ define(function (require) {
         var finished;
         // 如果action未缓存
         // 则使用enter
-        if (!cachedAction[config.path]) {
-            finished = action.enter(config.path, config.query, page.main)
+        if (!cachedAction[config.path]
+            || config.options.noCache
+        ) {
+            finished = action.enter(config.path, config.query, page.main, config.options)
                         .then(function () {
                             return page.enter(transition.type, transition);
                         }).then(function () {
@@ -172,7 +176,7 @@ define(function (require) {
                         });
         }
         else {
-            action.wakeup(config.path, config.query);
+            action.wakeup(config.path, config.query, config.options);
             finished = page.enter(transition.type, transition);
         }
 
@@ -213,12 +217,14 @@ define(function (require) {
      * @param {option} config 路由配置
      * @param {string} path 请求路径
      * @param {Object} query 查询条件
+     * @param {Object} options 跳转参数
      */
-    function routeTo(config, path, query) {
+    function routeTo(config, path, query, options) {
         // 设置当前的路由信息
         waitingRoute = extend({}, config);
         waitingRoute.path = path;
         waitingRoute.query = query;
+        waitingRoute.options = options;
 
         // 尝试加载Action
         tryLoadAction();
