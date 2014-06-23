@@ -1,3 +1,8 @@
+# 0.3.1 / 2014-06-23
+
+* 支持单次`redirect`禁用`action`的缓存，详情请参考[action.redirect](doc/action.md#redirecturl-query-options)
+* 更新依赖（[saber-router@0.2.3](https://github.com/ecomfe/saber-router/blob/master/History.md#023--2014-06-23), [saber-viewport@0.2.10](https://github.com/ecomfe/saber-viewport/blob/master/History.md#0210--2014-06-23), [saber-widget@0.2.3](https://github.com/ecomfe/saber-widget/blob/master/History.md#023--2014-06-23)）
+
 # 0.3.0 / 2014-06-16
 
 * 添加`saber-widget`支持，各种`widget`放心用，清理工作框架会搞定
