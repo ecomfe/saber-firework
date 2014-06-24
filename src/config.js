@@ -65,5 +65,5 @@ define({
      *
      * @type {number}
      */
-    timeout: 300
+    timeout: 1000
 });

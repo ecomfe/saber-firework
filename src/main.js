@@ -67,8 +67,11 @@ define(function (require) {
      * @inner
      */
     function loadedAction() {
+        // 页面加载完成
         cur.action.complete();
+        // 设置状态为空闲
         setStatus(STATUS_IDLE);
+        // 尝试加载之前被阻塞的action
         tryLoadAction();
     }
 
@@ -170,6 +173,9 @@ define(function (require) {
         ) {
             finished = action.enter(config.path, config.query, page.main, config.options)
                         .then(function () {
+                            // 转场开始前
+                            // 清除状态重置定时器，防止干扰转场动画
+                            clearTimeout(cur.statusTimer);
                             return page.enter(transition.type, transition);
                         }).then(function () {
                             action.ready();
