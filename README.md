@@ -34,6 +34,24 @@ firework.start();
 * `ele ` `{HTMLElement}` 容器元素
 * `options` `{Object}` 全局配置信息，具体参考[doc/config](doc/config.md)
 
+### .addFilter(url, fn)
+
+添加在加载页面前执行的filter
+
+* `url ` `{string|RegExp=}` filter匹配的url或者url正则表达式，如果不设置则filter对所有url都生效
+* `fn` `Function(route, next, stop, jump)` filter，支持异步操作，有四个参数：
+    * `route` `{Object}` 路由信息，包括页面URL`path`与查询条件`query`等
+    * `next` `{Function}` 执行下一个filter
+    * `stop` `{Function}` 终止页面的加载
+    * `jump` `{Function(num)}` 跳过后续的filter
+
+### .on(name, fn)
+
+绑定事件
+
+* `name ` `{string}` 事件名称，具体请参考[事件说明](#events)
+* `fn` `{Function}` 事件处理函数
+
 ## Events
 
 ### beforeload
@@ -47,16 +65,17 @@ firework.start();
 * `{Action}` before.action 当前的[action对象](doc/action.md)
 * `{Page}` before.page 当前的[page对象](https://github.com/ecomfe/saber-viewport#page)
 
+### beforetransition
+
+转场动画开始前事件，参数同[beforeload](#beforeload)
+
 ### afterload
 
-页面加载完成事件，有两个参数，`after`当前已加载的页面信息 与 `before`之前的页面信息
+页面加载完成事件，参数同[beforeload](#beforeload)
 
-* `{Object}` after 当前已加载的页面信息
-* `{Action}` after.action 当前已加载的[action对象](doc/action.md)
-* `{Page}` after.page 当前已加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
-* `{Object}` before 之前的页面信息
-* `{Action}` before.action 之前的[action对象](doc/action.md)
-* `{Page}` before.page 之前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+### error
+
+页面加载失败事件，参数同[beforeload](#beforeload)
 
 ===
 
