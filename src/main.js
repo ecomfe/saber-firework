@@ -19,6 +19,7 @@ define(function (require) {
 
     var STATUS_IDLE = 0;
     var STATUS_LOAD = 1;
+    var filters = [];
     var cachedAction = {};
     var waitingRoute;
     var cur = {};
@@ -42,10 +43,12 @@ define(function (require) {
      * 当前状态设置
      *
      * @inner
-     * @param {number}
+     * @param {number} status
+     * @param {boolean} force
      */
-    function setStatus(status) {
-        if (status == STATUS_LOAD) {
+    function setStatus(status, force) {
+        clearTimeout(cur.statusTimer);
+        if (status == STATUS_LOAD && !force) {
             // 设置状态回复计时器
             // 在Action加载过久时支持用户切换页面
             cur.statusTimer = setTimeout(
@@ -54,9 +57,6 @@ define(function (require) {
                 },
                 globalConfig.timeout
             );
-        }
-        else if (status == STATUS_IDLE) {
-            clearTimeout(cur.statusTimer);
         }
 
         cur.status = status;
@@ -145,7 +145,7 @@ define(function (require) {
             function (eventArgBack, eventArgFront) {
                 return function (eventName) {
                     exports.emit(eventName, eventArgBack, eventArgFront);
-                }
+                };
             }
         )(
             {
@@ -159,10 +159,7 @@ define(function (require) {
         );
 
         // 在转场结束时触发afterlaod事件
-        page.on(
-            'afterenter', 
-            curry(fireEvent, 'afterload')
-        );
+        page.on('afterenter', curry(fireEvent, 'afterload'));
         // 触发beforeload事件
         fireEvent('beforeload');
 
@@ -172,10 +169,9 @@ define(function (require) {
          * @inner
          */
         function startTransition() {
-            // 转场开始前
+            // 转场开始前 设置强制设置为加载状态
             // 清除状态重置定时器，防止干扰转场动画
-            clearTimeout(cur.statusTimer);
-            cur.status = STATUS_LOAD;
+            setStatus(STATUS_LOAD, true);
             // 触发`beforetransition`
             fireEvent('beforetransition');
 
@@ -229,6 +225,65 @@ define(function (require) {
     }
 
     /**
+     * 执行filter
+     *
+     * @inner
+     * @param {Object} route 路由信息
+     * @return {Promise}
+     */
+    function executeFilter(route) {
+        var resolver = new Resolver();
+        var index = 0;
+
+        /**
+         * 终止action加载
+         *
+         * @inner
+         */
+        function stop() {
+            index = -1;
+            next();
+        }
+
+        /**
+         * 跳过后续的filter
+         * 如果不带参数则跳过剩余所有的filter
+         *
+         * @inner
+         * @param {number} num 跳过后续filter的数量
+         */
+        function jump(num) {
+            index += num || filters.length;
+            next();
+        }
+
+        /**
+         * 执行下一个filter
+         *
+         * @inner
+         */
+        function next() {
+            var item = filters[index++];
+
+            if (!item) {
+                resolver[index > 0 ? 'resolve' : 'reject'](route);
+            }
+            else if ( !item.url
+                || (item.url instanceof RegExp && item.url.test(route.path))
+                || item.url == route.path
+            ) {
+                item.filter(route, next, stop, jump);
+            }
+            else {
+                next();
+            }
+        }
+
+        next();
+        return resolver.promise();
+    }
+
+    /**
      * 尝试加载Action
      *
      * @inner
@@ -242,8 +297,23 @@ define(function (require) {
         }
 
         setStatus(STATUS_LOAD);
-        loadAction(waitingRoute);
-        waitingRoute = null;
+
+        // 执行filter
+        executeFilter(waitingRoute)
+            .then(
+                function () {
+                    var route = waitingRoute;
+                    waitingRoute = null;
+                    loadAction(route);
+                },
+                function () {
+                    if (cur.path) {
+                        router.reset(cur.path);
+                    }
+                    setStatus(STATUS_IDLE);
+                    waitingRoute = null;
+                }
+            );
     }
 
     /**
@@ -326,6 +396,24 @@ define(function (require) {
             path: config.path
         });
         router.start();
+    };
+
+    /**
+     * 添加filter
+     *
+     * @param {string|RegExp=} url
+     * @param {Function} filter
+     */
+    exports.addFilter = function (url, filter) {
+        if (typeof url == 'function') {
+            filter = url;
+            url = null;
+        }
+
+        filters.push({
+            url: url,
+            filter: filter
+        });
     };
 
     return exports;
