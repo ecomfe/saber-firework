@@ -6,6 +6,7 @@
 define(function (require) {
 
     var Emitter = require('saber-emitter');
+    var Resolver = require('saber-promise');
     var Tap = require('saber-tap');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
@@ -62,13 +63,11 @@ define(function (require) {
     }
 
     /**
-     * Action加载完成处理
+     * action加载完成
      *
      * @inner
      */
-    function loadedAction() {
-        // 页面加载完成
-        cur.action.complete();
+    function finishLoad() {
         // 设置状态为空闲
         setStatus(STATUS_IDLE);
         // 尝试加载之前被阻塞的action
@@ -135,26 +134,20 @@ define(function (require) {
         }
 
         var page = viewport.load(config.path, { cached: config.cached });
-        // 在转场结束时触发afterlaod事件
-        page.on(
-            'afterenter', 
-            bind(
-                exports.emit,
-                exports,
-                'afterload',
-                {
-                    action: action,
-                    page: page
-                },
-                {
-                    action: cur.action,
-                    page: cur.page
+
+        /**
+         * 触发全局事件
+         *
+         * @inner
+         * @type {string} eventName 事件名称
+         */
+        var fireEvent = (
+            function (eventArgBack, eventArgFront) {
+                return function (eventName) {
+                    exports.emit(eventName, eventArgBack, eventArgFront);
                 }
-            )
-        );
-        // 触发beforeload事件
-        exports.emit(
-            'beforeload',
+            }
+        )(
             {
                 action: action,
                 page: page
@@ -165,37 +158,74 @@ define(function (require) {
             }
         );
 
+        // 在转场结束时触发afterlaod事件
+        page.on(
+            'afterenter', 
+            curry(fireEvent, 'afterload')
+        );
+        // 触发beforeload事件
+        fireEvent('beforeload');
+
+        /**
+         * 开始转场动画
+         *
+         * @inner
+         */
+        function startTransition() {
+            // 转场开始前
+            // 清除状态重置定时器，防止干扰转场动画
+            clearTimeout(cur.statusTimer);
+            cur.status = STATUS_LOAD;
+            // 触发`beforetransition`
+            fireEvent('beforetransition');
+
+            // 保存相关信息
+            if (config.cached) {
+                cachedAction[config.path] = action;
+            }
+            cur.route = config;
+            cur.page = page;
+            cur.action = action;
+            cur.path = config.path;
+
+            return page.enter(transition.type, transition);
+        }
+
+        /**
+         * action加载失败处理
+         *
+         * @inner
+         */
+        function enterFail() {
+            fireEvent('error');
+
+            page.remove(true);
+            action.dispose();
+
+            if (cur.path) {
+                router.reset(cur.path);
+            }
+
+            return Resolver.rejected();
+        }
+
         var finished;
         // 如果action未缓存
         // 则使用enter
-        if (!cachedAction[config.path]
-            || config.options.noCache
-        ) {
-            finished = action.enter(config.path, config.query, page.main, config.options)
-                        .then(function () {
-                            // 转场开始前
-                            // 清除状态重置定时器，防止干扰转场动画
-                            clearTimeout(cur.statusTimer);
-                            return page.enter(transition.type, transition);
-                        }).then(function () {
-                            action.ready();
-                        });
+        if (!cachedAction[config.path] || config.options.noCache) {
+            finished = action
+                        .enter(config.path, config.query, page.main, config.options)
+                        .then(startTransition, enterFail)
+                        .then(bind(action.ready, action));
         }
         else {
             action.wakeup(config.path, config.query, config.options);
-            finished = page.enter(transition.type, transition);
+            finished = startTransition();
         }
 
-        finished.then(loadedAction);
-
-        if (config.cached) {
-            cachedAction[config.path] = action;
-        }
-
-        cur.route = config;
-        cur.page = page;
-        cur.action = action;
-        cur.path = config.path;
+        finished
+            .then(bind(action.complete, action))
+            .then(finishLoad, finishLoad);
     }
 
     /**
