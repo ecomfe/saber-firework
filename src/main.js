@@ -405,7 +405,7 @@ define(function (require) {
      * @param {Function} filter
      */
     exports.addFilter = function (url, filter) {
-        if (typeof url == 'function') {
+        if (arguments.length == 1) {
             filter = url;
             url = null;
         }
