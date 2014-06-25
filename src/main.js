@@ -63,6 +63,22 @@ define(function (require) {
     }
 
     /**
+     * 停止加载action
+     *
+     * @inner
+     */
+    function stopLoadAction() {
+        // 恢复当前的hash
+        if (cur.path) {
+            router.reset(cur.path);
+        }
+        // 设置状态为空闲
+        setStatus(STATUS_IDLE);
+        // 清理等待的route信息
+        waitingRoute = null;
+    }
+
+    /**
      * action加载完成
      *
      * @inner
@@ -88,17 +104,14 @@ define(function (require) {
      * @param {boolean=} config.optins.noCache 不使用缓存action
      */
     function loadAction(config) {
+
         // 处理当前正在工作的Action
-        if (cur.action) {
-            // 如果需要缓存Action
-            // 则调用sleep
-            if (cur.route.cached) {
-                cur.action.sleep();
-            }
-            // 否则调用leave 离开Action
-            else {
-                cur.action.leave();
-            }
+        // 如果action的leave或者sleep返回false阻止离开则停止加载action
+        if (cur.action
+            && !cur.action[cur.route.cached ? 'sleep' : 'leave']()
+        ) {
+            stopLoadAction();
+            return;
         }
 
         // 获取新Action
@@ -302,17 +315,13 @@ define(function (require) {
         executeFilter(waitingRoute)
             .then(
                 function () {
+                    // filter完成 继续加载页面
                     var route = waitingRoute;
                     waitingRoute = null;
                     loadAction(route);
                 },
-                function () {
-                    if (cur.path) {
-                        router.reset(cur.path);
-                    }
-                    setStatus(STATUS_IDLE);
-                    waitingRoute = null;
-                }
+                // filter阻止加载
+                stopLoadAction
             );
     }
 
@@ -335,7 +344,6 @@ define(function (require) {
         // 尝试加载Action
         tryLoadAction();
     }
-
 
     /**
      * 扩展全局配置项

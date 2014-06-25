@@ -145,21 +145,45 @@ define(function (require) {
      * 页面离开
      *
      * @public
+     * @return {boolean} 是否能离开页面
      */
     Action.prototype.leave = function () {
-        this.emit('leave');
-        this.view.leave();
-        this.dispose();
+        var cancel = false;
+
+        this.emit(
+            'leave',
+            function () {
+                cancel = true;
+            }
+        );
+
+        if (!cancel) {
+            this.view.leave();
+            this.dispose();
+        }
+        return !cancel;
     };
 
     /**
      * 页面休眠
      *
      * @public
+     * @return {boolean} 是否能休眠页面
      */
     Action.prototype.sleep = function () {
-        this.emit('sleep');
-        this.view.sleep();
+        var cancel = false;
+
+        this.emit(
+            'sleep',
+            function () {
+                cancel = true;
+            }
+        );
+
+        if (!cancel) {
+            this.view.sleep();
+        }
+        return !cancel;
     };
 
     /**
