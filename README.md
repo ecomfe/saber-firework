@@ -17,7 +17,7 @@ firework.load({
 firework.start();
 ```
 
-参考[使用指南](doc/guide.md)
+具体请参考[使用指南](doc/guide.md)
 
 ## API
 
@@ -44,6 +44,28 @@ firework.start();
     * `next` `{Function}` 执行下一个filter
     * `stop` `{Function}` 终止页面的加载
     * `jump` `{Function(num)}` 跳过后续的filter
+
+最常见的filter有日志统计，权限验证等，例如：
+
+```javascript
+// 对所有`/admin/`路径下的页面添加登录验证
+firework.addFilter(/^\/admin\//, function (route, next, stop, jump) {
+    if (!isLogin) {
+        // 没登录就乖乖去登录
+        // 通过直接修改路由信息中的`path`来改变实际加载的页面
+        // 同时添加名为`form`的`query`参数，用于登录完成后跳转回之前的页面
+        route.query = { from: route.path };
+        route.path = '/login';
+        // 直接跳过后续的filter
+        jump();
+    }
+    else {
+        // 已经登录了
+        // 就好好继续执行下一个filter吧
+        next();
+    }
+});
+```
 
 ### .on(name, fn)
 
