@@ -40,8 +40,22 @@
 * `ready` 加载完成事件，在完成页面渲染、转场操作后触发
 * `wakeup` 唤醒事件，如果路由信息配置了缓存，则再次进入action时触发，此时不会触发`enter`与`ready`事件
 * `complete` 就绪事件，加载完成或者唤醒后触发，业务逻辑的处理的主要入口
-* `sleep` 休眠事件，如果路由信息配置了缓存，在action切换时触发，此时不会触发`leave`事件
-* `leave` 离开事件，action切换时触发
+* `sleep` 休眠事件，如果路由信息配置了缓存，在action切换时触发，此时不会触发`leave`事件。触发时带有一个函数参数，调用它可以阻止action的切换
+* `leave` 离开事件，action切换时触发。触发时带有一个函数参数，调用它可以阻止action的切换，例如：
+
+```javascript
+{
+    events: {
+        // 注册leave事件
+        leave: function (stop) {
+            if (!window.confirm('确定要离开本页面吗？')) {
+                // 又不走了～
+                stop();
+            }
+        }
+    }
+}
+```
 
 ### 方法
 
