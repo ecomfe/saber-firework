@@ -1,3 +1,12 @@
+# 0.4.0 / 2014-06-26
+
+* 添加`filter`功能，代码统计、权限验证神马的轻松搞定，欲知详情挫[这里](README.md#addfilterurl-fn)
+* 添加全局的`beforetransition`事件，方便在页面开始加载后、转场动画开始前干些事儿
+* 添加全局的`error`事件，页面加载失败时触发
+* 在`action`的`leave`与`sleep`事件中可以通过新增的函数参数（`stop`）来阻止页面的切换，[示例在这里](doc/action.md#%E4%BA%8B%E4%BB%B6)
+* 考虑网络情况，调整默认的页面加载超时时间为`1000`毫秒
+* 更新依赖（[saber-router@0.2.4](https://github.com/ecomfe/saber-router/blob/develop/History.md#024--2014-06-25), [saber-viewport@0.2.11](https://github.com/ecomfe/saber-viewport/blob/develop/History.md#0211--2014-06-25), [saber-widget@0.3.0](https://github.com/ecomfe/saber-widget/blob/develop/History.md#030--2014-06-24)）
+
 # 0.3.2 / 2014-06-24
 
 * 支持单次`redirect`禁用`action`的缓存，详情请参考[action.redirect](doc/action.md#redirecturl-query-options)
