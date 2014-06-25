@@ -17,7 +17,7 @@
 
 转场参数处理器，用于在转场操作前处理转场效果参数（参数具体字段请参考[saber-viewprot](https://github.com/ecomfe/saber-viewport)的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)）
 
-`function (route, oldRoute):Object`
+`Function(route, oldRoute):Object`
 
 * `router` `{Object}` 待转场页面的路由配置信息
 * `oldRoute` `{Object}` 待转出页面的路由配置信息
@@ -31,7 +31,7 @@
         transition: function (route, oldRoute) {
             return {
                 // 根据自定义路由属性`index`设置转场效果时长
-                duration: router.index > oldRoute ? 0.3 : 0.5;
+                duration: router.index > oldRoute.index ? 0.3 : 0.5;
             };
         }
     }

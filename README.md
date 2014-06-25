@@ -17,7 +17,7 @@ firework.load({
 firework.start();
 ```
 
-参考[使用指南](doc/guide.md)
+具体请参考[使用指南](doc/guide.md)
 
 ## API
 
@@ -34,6 +34,46 @@ firework.start();
 * `ele ` `{HTMLElement}` 容器元素
 * `options` `{Object}` 全局配置信息，具体参考[doc/config](doc/config.md)
 
+### .addFilter(url, fn)
+
+添加在加载页面前执行的filter
+
+* `url ` `{string|RegExp=}` filter匹配的url或者url正则表达式，如果不设置则filter对所有url都生效
+* `fn` `Function(route, next, stop, jump)` filter，支持异步操作，有四个参数：
+    * `route` `{Object}` 路由信息，包括页面URL`path`与查询条件`query`等
+    * `next` `{Function}` 执行下一个filter
+    * `stop` `{Function}` 终止页面的加载
+    * `jump` `{Function(num)}` 跳过后续的filter
+
+最常见的filter有日志统计，权限验证等，例如：
+
+```javascript
+// 对所有`/admin/`路径下的页面添加登录验证
+firework.addFilter(/^\/admin\//, function (route, next, stop, jump) {
+    if (!isLogin) {
+        // 没登录就乖乖去登录
+        // 通过直接修改路由信息中的`path`来改变实际加载的页面
+        // 同时添加名为`form`的`query`参数，用于登录完成后跳转回之前的页面
+        route.query = { from: route.path };
+        route.path = '/login';
+        // 直接跳过后续的filter
+        jump();
+    }
+    else {
+        // 已经登录了
+        // 就好好继续执行下一个filter吧
+        next();
+    }
+});
+```
+
+### .on(name, fn)
+
+绑定事件
+
+* `name ` `{string}` 事件名称，具体请参考[事件说明](#events)
+* `fn` `{Function}` 事件处理函数
+
 ## Events
 
 ### beforeload
@@ -47,16 +87,17 @@ firework.start();
 * `{Action}` before.action 当前的[action对象](doc/action.md)
 * `{Page}` before.page 当前的[page对象](https://github.com/ecomfe/saber-viewport#page)
 
+### beforetransition
+
+转场动画开始前事件，参数同[beforeload](#beforeload)
+
 ### afterload
 
-页面加载完成事件，有两个参数，`after`当前已加载的页面信息 与 `before`之前的页面信息
+页面加载完成事件，参数同[beforeload](#beforeload)
 
-* `{Object}` after 当前已加载的页面信息
-* `{Action}` after.action 当前已加载的[action对象](doc/action.md)
-* `{Page}` after.page 当前已加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
-* `{Object}` before 之前的页面信息
-* `{Action}` before.action 之前的[action对象](doc/action.md)
-* `{Page}` before.page 之前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+### error
+
+页面加载失败事件，参数同[beforeload](#beforeload)
 
 ===
 

@@ -6,6 +6,7 @@
 define(function (require) {
 
     var Emitter = require('saber-emitter');
+    var Resolver = require('saber-promise');
     var Tap = require('saber-tap');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
@@ -18,6 +19,7 @@ define(function (require) {
 
     var STATUS_IDLE = 0;
     var STATUS_LOAD = 1;
+    var filters = [];
     var cachedAction = {};
     var waitingRoute;
     var cur = {};
@@ -41,10 +43,12 @@ define(function (require) {
      * 当前状态设置
      *
      * @inner
-     * @param {number}
+     * @param {number} status
+     * @param {boolean} force
      */
-    function setStatus(status) {
-        if (status == STATUS_LOAD) {
+    function setStatus(status, force) {
+        clearTimeout(cur.statusTimer);
+        if (status == STATUS_LOAD && !force) {
             // 设置状态回复计时器
             // 在Action加载过久时支持用户切换页面
             cur.statusTimer = setTimeout(
@@ -54,21 +58,32 @@ define(function (require) {
                 globalConfig.timeout
             );
         }
-        else if (status == STATUS_IDLE) {
-            clearTimeout(cur.statusTimer);
-        }
 
         cur.status = status;
     }
 
     /**
-     * Action加载完成处理
+     * 停止加载action
      *
      * @inner
      */
-    function loadedAction() {
-        // 页面加载完成
-        cur.action.complete();
+    function stopLoadAction() {
+        // 恢复当前的hash
+        if (cur.path) {
+            router.reset(cur.path);
+        }
+        // 设置状态为空闲
+        setStatus(STATUS_IDLE);
+        // 清理等待的route信息
+        waitingRoute = null;
+    }
+
+    /**
+     * action加载完成
+     *
+     * @inner
+     */
+    function finishLoad() {
         // 设置状态为空闲
         setStatus(STATUS_IDLE);
         // 尝试加载之前被阻塞的action
@@ -89,17 +104,14 @@ define(function (require) {
      * @param {boolean=} config.optins.noCache 不使用缓存action
      */
     function loadAction(config) {
+
         // 处理当前正在工作的Action
-        if (cur.action) {
-            // 如果需要缓存Action
-            // 则调用sleep
-            if (cur.route.cached) {
-                cur.action.sleep();
-            }
-            // 否则调用leave 离开Action
-            else {
-                cur.action.leave();
-            }
+        // 如果action的leave或者sleep返回false阻止离开则停止加载action
+        if (cur.action
+            && !cur.action[cur.route.cached ? 'sleep' : 'leave']()
+        ) {
+            stopLoadAction();
+            return;
         }
 
         // 获取新Action
@@ -135,26 +147,20 @@ define(function (require) {
         }
 
         var page = viewport.load(config.path, { cached: config.cached });
-        // 在转场结束时触发afterlaod事件
-        page.on(
-            'afterenter', 
-            bind(
-                exports.emit,
-                exports,
-                'afterload',
-                {
-                    action: action,
-                    page: page
-                },
-                {
-                    action: cur.action,
-                    page: cur.page
-                }
-            )
-        );
-        // 触发beforeload事件
-        exports.emit(
-            'beforeload',
+
+        /**
+         * 触发全局事件
+         *
+         * @inner
+         * @type {string} eventName 事件名称
+         */
+        var fireEvent = (
+            function (eventArgBack, eventArgFront) {
+                return function (eventName) {
+                    exports.emit(eventName, eventArgBack, eventArgFront);
+                };
+            }
+        )(
             {
                 action: action,
                 page: page
@@ -165,37 +171,129 @@ define(function (require) {
             }
         );
 
+        // 在转场结束时触发afterlaod事件
+        page.on('afterenter', curry(fireEvent, 'afterload'));
+        // 触发beforeload事件
+        fireEvent('beforeload');
+
+        /**
+         * 开始转场动画
+         *
+         * @inner
+         */
+        function startTransition() {
+            // 转场开始前 设置强制设置为加载状态
+            // 清除状态重置定时器，防止干扰转场动画
+            setStatus(STATUS_LOAD, true);
+            // 触发`beforetransition`
+            fireEvent('beforetransition');
+
+            // 保存相关信息
+            if (config.cached) {
+                cachedAction[config.path] = action;
+            }
+            cur.route = config;
+            cur.page = page;
+            cur.action = action;
+            cur.path = config.path;
+
+            return page.enter(transition.type, transition);
+        }
+
+        /**
+         * action加载失败处理
+         *
+         * @inner
+         */
+        function enterFail() {
+            fireEvent('error');
+
+            page.remove(true);
+            action.dispose();
+
+            if (cur.path) {
+                router.reset(cur.path);
+            }
+
+            return Resolver.rejected();
+        }
+
         var finished;
         // 如果action未缓存
         // 则使用enter
-        if (!cachedAction[config.path]
-            || config.options.noCache
-        ) {
-            finished = action.enter(config.path, config.query, page.main, config.options)
-                        .then(function () {
-                            // 转场开始前
-                            // 清除状态重置定时器，防止干扰转场动画
-                            clearTimeout(cur.statusTimer);
-                            return page.enter(transition.type, transition);
-                        }).then(function () {
-                            action.ready();
-                        });
+        if (!cachedAction[config.path] || config.options.noCache) {
+            finished = action
+                        .enter(config.path, config.query, page.main, config.options)
+                        .then(startTransition, enterFail)
+                        .then(bind(action.ready, action));
         }
         else {
             action.wakeup(config.path, config.query, config.options);
-            finished = page.enter(transition.type, transition);
+            finished = startTransition();
         }
 
-        finished.then(loadedAction);
+        finished
+            .then(bind(action.complete, action))
+            .then(finishLoad, finishLoad);
+    }
 
-        if (config.cached) {
-            cachedAction[config.path] = action;
+    /**
+     * 执行filter
+     *
+     * @inner
+     * @param {Object} route 路由信息
+     * @return {Promise}
+     */
+    function executeFilter(route) {
+        var resolver = new Resolver();
+        var index = 0;
+
+        /**
+         * 终止action加载
+         *
+         * @inner
+         */
+        function stop() {
+            index = -1;
+            next();
         }
 
-        cur.route = config;
-        cur.page = page;
-        cur.action = action;
-        cur.path = config.path;
+        /**
+         * 跳过后续的filter
+         * 如果不带参数则跳过剩余所有的filter
+         *
+         * @inner
+         * @param {number} num 跳过后续filter的数量
+         */
+        function jump(num) {
+            index += num || filters.length;
+            next();
+        }
+
+        /**
+         * 执行下一个filter
+         *
+         * @inner
+         */
+        function next() {
+            var item = filters[index++];
+
+            if (!item) {
+                resolver[index > 0 ? 'resolve' : 'reject'](route);
+            }
+            else if ( !item.url
+                || (item.url instanceof RegExp && item.url.test(route.path))
+                || item.url == route.path
+            ) {
+                item.filter(route, next, stop, jump);
+            }
+            else {
+                next();
+            }
+        }
+
+        next();
+        return resolver.promise();
     }
 
     /**
@@ -212,8 +310,19 @@ define(function (require) {
         }
 
         setStatus(STATUS_LOAD);
-        loadAction(waitingRoute);
-        waitingRoute = null;
+
+        // 执行filter
+        executeFilter(waitingRoute)
+            .then(
+                function () {
+                    // filter完成 继续加载页面
+                    var route = waitingRoute;
+                    waitingRoute = null;
+                    loadAction(route);
+                },
+                // filter阻止加载
+                stopLoadAction
+            );
     }
 
     /**
@@ -235,7 +344,6 @@ define(function (require) {
         // 尝试加载Action
         tryLoadAction();
     }
-
 
     /**
      * 扩展全局配置项
@@ -296,6 +404,24 @@ define(function (require) {
             path: config.path
         });
         router.start();
+    };
+
+    /**
+     * 添加filter
+     *
+     * @param {string|RegExp=} url
+     * @param {Function} filter
+     */
+    exports.addFilter = function (url, filter) {
+        if (arguments.length == 1) {
+            filter = url;
+            url = null;
+        }
+
+        filters.push({
+            url: url,
+            filter: filter
+        });
     };
 
     return exports;
