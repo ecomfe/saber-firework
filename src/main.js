@@ -66,11 +66,12 @@ define(function (require) {
      * 停止加载action
      *
      * @inner
+     * @param {boolean=} 是否增加访问历史
      */
     function stopLoadAction() {
-        // 恢复当前的hash
-        if (cur.path) {
-            router.reset(cur.path);
+        // 恢复当前的url
+        if (cur.url) {
+            router.reset(cur.url);
         }
         // 设置状态为空闲
         setStatus(STATUS_IDLE);
@@ -196,6 +197,7 @@ define(function (require) {
             cur.page = page;
             cur.action = action;
             cur.path = config.path;
+            cur.url = config.url;
 
             return page.enter(transition.type, transition);
         }
@@ -210,10 +212,6 @@ define(function (require) {
 
             page.remove(true);
             action.dispose();
-
-            if (cur.path) {
-                router.reset(cur.path);
-            }
 
             return Resolver.rejected();
         }
@@ -234,7 +232,7 @@ define(function (require) {
 
         finished
             .then(bind(action.complete, action))
-            .then(finishLoad, finishLoad);
+            .then(finishLoad, stopLoadAction);
     }
 
     /**
@@ -332,14 +330,16 @@ define(function (require) {
      * @param {option} config 路由配置
      * @param {string} path 请求路径
      * @param {Object} query 查询条件
+     * @param {string} url 完整的URL
      * @param {Object} options 跳转参数
      */
-    function routeTo(config, path, query, options) {
+    function routeTo(config, path, query, url, options) {
         // 设置当前的路由信息
         waitingRoute = extend({}, config);
         waitingRoute.path = path;
         waitingRoute.query = query;
         waitingRoute.options = options;
+        waitingRoute.url = url;
 
         // 尝试加载Action
         tryLoadAction();
