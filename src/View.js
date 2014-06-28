@@ -88,6 +88,11 @@ define(function (require) {
 
         // 新建模版引擎
         var tplEngine = new etpl.Engine();
+
+        // 拷贝etpl命名空间的filter、配置
+        tplEngine.options = etpl.options;
+        tplEngine.filters = etpl.filters;
+
         // 保存默认render
         var defaultRender = tplEngine.compile(str);
         // 保存原始的render
