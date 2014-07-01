@@ -116,9 +116,16 @@ define(function (require) {
 
         // 获取新Action
         var action;
+
         if (config.cached) {
             action = cachedAction[config.path];
+            if (action && config.options.noCache) {
+                action.dispose();
+                delete cachedAction[config.path];
+                action = null;
+            }
         }
+
         if (!action) {
             var Constructor;
             if (config.action
@@ -146,7 +153,13 @@ define(function (require) {
             transition.type = false;
         }
 
-        var page = viewport.load(config.path, { cached: config.cached });
+        var page = viewport.load(
+            config.path,
+            {
+                cached: config.cached,
+                noCache: config.options.noCache
+            }
+        );
 
         /**
          * 触发全局事件
@@ -221,7 +234,7 @@ define(function (require) {
         var finished;
         // 如果action未缓存
         // 则使用enter
-        if (!cachedAction[config.path] || config.options.noCache) {
+        if (!cachedAction[config.path]) {
             finished = action
                         .enter(config.path, config.query, page.main, config.options)
                         .then(startTransition, enterFail)
