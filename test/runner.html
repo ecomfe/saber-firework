@@ -31,11 +31,6 @@
                     location: 'dep/saber-lang/0.4.0/src'
                 },
                 {
-                    name: 'saber-tap',
-                    location: '../dep/saber-tap/0.1.2/src',
-                    main: 'tap'
-                },
-                {
                     name: 'saber-dom',
                     location: 'dep/saber-dom/0.4.1/src'
                 },
@@ -43,10 +38,6 @@
                     name: 'saber-promise',
                     location: 'dep/saber-promise/0.1.2/src',
                     main: 'promise'
-                },
-                {
-                    name: 'saber-router',
-                    location: 'dep/saber-router/0.2.4/src'
                 },
                 {
                     name: 'saber-uri',
@@ -63,7 +54,10 @@
             ]
         });
         
-        require(['event.spec', 'abstract.spec', 'action.spec', 'view.spec']);
+        require([
+            'saber-viewport', 'saber-router', 'saber-tap',
+            'main.spec', 'event.spec', 'abstract.spec', 'action.spec', 'view.spec'
+        ]);
 
         </script>
     </body>
