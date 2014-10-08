@@ -178,6 +178,9 @@ define(function (require) {
      *
      * @public
      * @param {Object} data
+     *
+     * @fires View#beforerender
+     *        View#afterrender
      */
     View.prototype.render = function (data) {
         if (!this.main) {
@@ -188,10 +191,24 @@ define(function (require) {
             this.main.className += ' ' + this.className;
         }
 
+        /**
+         * 渲染前事件
+         *
+         * @event
+         * @param {Object} 渲染数据
+         */
         this.emit('beforerender', data);
 
         this.main.innerHTML = 
             this.template.render(this.templateMainTarget, data);
+
+        /**
+         * 渲染后事件
+         *
+         * @event
+         * @param {Object} 渲染数据
+         */
+        this.emit('afterrender', data);
     };
 
     /**
@@ -199,9 +216,16 @@ define(function (require) {
      * 主要进行事件绑定
      *
      * @public
+     * @fires View#ready
      */
     View.prototype.ready = function () {
         bindDomEvents(this);
+
+        /**
+         * 试图就绪事件
+         *
+         * @event
+         */
         this.emit('ready');
     };
 
@@ -309,8 +333,14 @@ define(function (require) {
      * 视图销毁
      *
      * @public
+     * @fires View#dispose
      */
     View.prototype.dispose = function () {
+        /**
+         * 视图销毁事件
+         *
+         * @event
+         */
         this.emit('dispose');
 
         // 解除事件绑定
@@ -330,8 +360,14 @@ define(function (require) {
      * 视图离开
      *
      * @public
+     * @fires View#leave
      */
     View.prototype.leave = function () {
+        /**
+         * 视图离开事件
+         *
+         * @event
+         */
         this.emit('leave');
     };
 
@@ -339,8 +375,14 @@ define(function (require) {
      * 视图休眠
      *
      * @public
+     * @fires View#sleep
      */
     View.prototype.sleep = function () {
+        /**
+         * 视图休眠事件
+         *
+         * @event
+         */
         this.emit('sleep');
     };
 
@@ -348,8 +390,14 @@ define(function (require) {
      * 视图唤醒
      *
      * @public
+     * @fires View#wakeup
      */
     View.prototype.wakeup = function () {
+        /**
+         * 视图唤醒事件
+         *
+         * @event
+         */
         this.emit('wakeup');
     };
 
