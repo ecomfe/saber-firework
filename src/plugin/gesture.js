@@ -5,7 +5,7 @@
 
 define(function (require) {
 
-    var Hammer = require('hammer');
+    var hammer = require('hammer');
     var eventHelper = require('../event');
 
     var plugin = {};
@@ -15,7 +15,7 @@ define(function (require) {
      *
      * @inner
      */
-    function blank () {}
+    function blank() {}
 
     /**
      * 插件初始化
@@ -25,7 +25,7 @@ define(function (require) {
     plugin.init = function () {
         // 使用全局代理的方式
         // 不单独处理事件注册
-        Hammer(document.body);
+        hammer(document.body);
     };
 
     /**

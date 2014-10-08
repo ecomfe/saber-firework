@@ -426,7 +426,7 @@ define(function (require) {
      * 注册插件
      *
      * @public
-     * @param {}
+     * @param {Object} plugin
      */
     exports.register = function (plugin) {
         if (plugin.init) {
