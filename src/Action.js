@@ -90,14 +90,13 @@ define(function (require) {
      */
     Action.prototype.enter = function (url, query, main, options) {
         this.url = url;
-        this.query = extend({}, query);
         this.options = extend({}, options);
 
         this.view.setMain(main);
         this.emit('enter');
 
-        return this.model.fetch(this.query)
-                .then(bind(this.view.render, this.view));
+        return this.model.fetch(query)
+            .then(bind(this.view.render, this.view));
     };
 
     /**
@@ -184,6 +183,16 @@ define(function (require) {
             this.view.sleep();
         }
         return !cancel;
+    };
+
+    /**
+     * 页面刷新
+     *
+     * @public
+     */
+    Action.prototype.refresh = function (query) {
+        return this.model.refresh(query)
+            .then(bind(this.view.refresh, this.view));
     };
 
     /**

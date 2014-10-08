@@ -212,6 +212,24 @@ define(function (require) {
     };
 
     /**
+     * 刷新视图
+     *
+     * @public
+     * @param {*} data
+     *
+     * @fires View#refresh
+     */
+    View.prototype.refresh = function (data) {
+        /**
+         * 视图刷新事件
+         *
+         * @event
+         * @param {Object} 渲染数据
+         */
+        this.emit('refresh', data);
+    };
+
+    /**
      * 视图就绪
      * 主要进行事件绑定
      *

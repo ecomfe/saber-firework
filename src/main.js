@@ -32,7 +32,7 @@ define(function (require) {
      *
      * @inner
      * @param {string} name
-     * @param {function|undefined}
+     * @return {function|undefined}
      */
     function getProcessor(name) {
         var processor = globalConfig.processor || {};
@@ -66,7 +66,6 @@ define(function (require) {
      * 停止加载action
      *
      * @inner
-     * @param {boolean=} 是否增加访问历史
      */
     function stopLoadAction() {
         // 恢复当前的url
@@ -102,9 +101,20 @@ define(function (require) {
      * @param {boolean=} config.cached 是否缓存action
      * @param {Object=} config.transition 转场配置
      * @param {Object} config.options 跳转参数
+     * @param {boolean} config.options.force 强制跳转
      * @param {boolean=} config.optins.noCache 不使用缓存action
      */
     function loadAction(config) {
+        var options = config.options || {};
+
+        // 如果路径未发生变化
+        // 只需要刷新当前action
+        if (config.path == cur.path
+            && !options.force
+        ) {
+            cur.action.refresh(config.query).then(finishLoad);
+            return;
+        }
 
         // 处理当前正在工作的Action
         // 如果action的leave或者sleep返回false阻止离开则停止加载action
@@ -120,7 +130,7 @@ define(function (require) {
 
         if (config.cached) {
             action = cachedAction[config.path];
-            if (action && config.options.noCache) {
+            if (action && options.noCache) {
                 action.dispose();
                 delete cachedAction[config.path];
                 action = null;
@@ -148,7 +158,7 @@ define(function (require) {
             extend(transition, processor(config, cur.route) || {});
         }
 
-        // 如果请求路径没有变化（只改变了Query）
+        // 如果请求路径没有变化
         // 取消转场效果
         if (config.path == cur.path) {
             transition.type = false;
@@ -158,7 +168,7 @@ define(function (require) {
             config.path,
             {
                 cached: config.cached,
-                noCache: config.options.noCache
+                noCache: options.noCache
             }
         );
 
@@ -234,12 +244,12 @@ define(function (require) {
         // 则使用enter
         if (!cachedAction[config.path]) {
             finished = action
-                        .enter(config.path, config.query, page.main, config.options)
+                        .enter(config.path, config.query, page.main, options)
                         .then(startTransition, enterFail)
                         .then(bind(action.ready, action));
         }
         else {
-            action.wakeup(config.path, config.query, config.options);
+            action.wakeup(config.path, config.query, options);
             finished = startTransition();
         }
 
@@ -292,7 +302,7 @@ define(function (require) {
             if (!item) {
                 resolver[index > 0 ? 'resolve' : 'reject'](route);
             }
-            else if ( !item.url
+            else if (!item.url
                 || (item.url instanceof RegExp && item.url.test(route.path))
                 || item.url == route.path
             ) {
@@ -362,7 +372,7 @@ define(function (require) {
      * 扩展全局配置项
      *
      * @inner
-     * @param {Object} 配置项
+     * @param {Object} options 配置项
      * @return {Object}
      */
     function extendGlobalConfig(options) {

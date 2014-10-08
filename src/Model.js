@@ -25,9 +25,22 @@ define(function (require) {
      * 获取数据
      *
      * @public 
+     * @param {Object} query 查询条件
+     * @return {Promise}
      */
-    Model.prototype.fetch = function () {
-        return Resolver.resolved({});
+    Model.prototype.fetch = function (query) {
+        return Resolver.resolved(query);
+    };
+
+    /**
+     * 刷新数据
+     *
+     * @public
+     * @param {Object} query 查询条件
+     * @return {Promise}
+     */
+    Model.prototype.refresh = function (query) {
+        return Resolver.resolved(query);
     };
 
     return Model;
