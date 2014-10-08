@@ -104,16 +104,6 @@ define(function (require) {
      * @param {boolean=} config.optins.noCache 不使用缓存action
      */
     function loadAction(config) {
-
-        // 处理当前正在工作的Action
-        // 如果action的leave或者sleep返回false阻止离开则停止加载action
-        if (cur.action
-            && !cur.action[cur.route.cached ? 'sleep' : 'leave']()
-        ) {
-            stopLoadAction();
-            return;
-        }
-
         // 获取新Action
         var action;
 
@@ -195,6 +185,17 @@ define(function (require) {
          * @inner
          */
         function startTransition() {
+            // 处理当前正在工作的Action
+            // 如果action的leave或者sleep返回false阻止离开则停止加载action
+            if (cur.action
+                && !cur.action[cur.route.cached ? 'sleep' : 'leave']()
+            ) {
+                page.remove(true);
+                action.dispose();
+                stopLoadAction();
+                return Resolver.rejected();
+            }
+
             // 转场开始前 设置强制设置为加载状态
             // 清除状态重置定时器，防止干扰转场动画
             setStatus(STATUS_LOAD, true);
