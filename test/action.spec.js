@@ -42,7 +42,7 @@ define(function (require) {
             expect(fn.calls.count()).toBe(1);
         });
 
-        it('.enter() should set url, query and finish render', function (done) {
+        it('.enter() should set url and finish render', function (done) {
             var url = '/index';
             var query = {filter: 'www'};
             var options = {noCache: true};
@@ -60,8 +60,6 @@ define(function (require) {
 
             action.enter(url, query, ele, options).then(function () {
                 expect(action.url).toEqual(url);
-                expect(action.query).toEqual(query);
-                expect(action.query).not.toBe(query);
                 expect(action.options).toEqual(options);
                 expect(action.options).not.toBe(options);
                 expect(fn.calls.count()).toBe(1);
