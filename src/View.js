@@ -61,7 +61,7 @@ define(function (require) {
      * 字符串判断
      *
      * @public
-     * @param {*}
+     * @param {*} str
      * @return {boolean}
      */
     function isString(str) {
@@ -167,7 +167,7 @@ define(function (require) {
      * 设置容器元素
      *
      * @public
-     * @param {HTMLElement} 视图容器元素
+     * @param {HTMLElement} ele 视图容器元素
      */
     View.prototype.setMain = function (ele) {
         this.main = ele;
