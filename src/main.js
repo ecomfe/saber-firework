@@ -142,6 +142,11 @@ define(function (require) {
             action = new Constructor(config.action);
         }
 
+        // 处理当前正在工作的Action
+        if (cur.action) {
+            cur.action[cur.route.cached ? 'sleep' : 'leave']();
+        }
+
         // 获取页面转场配置参数
         var transition = config.transition || {};
         // 调用全局配置中的处理函数进行转场参数处理
@@ -198,17 +203,6 @@ define(function (require) {
          * @inner
          */
         function startTransition() {
-            // 处理当前正在工作的Action
-            // 如果action的leave或者sleep返回false阻止离开则停止加载action
-            if (cur.action
-                && !cur.action[cur.route.cached ? 'sleep' : 'leave']()
-            ) {
-                page.remove(true);
-                action.dispose();
-                stopLoadAction();
-                return Resolver.rejected();
-            }
-
             // 转场开始前 设置强制设置为加载状态
             // 清除状态重置定时器，防止干扰转场动画
             setStatus(STATUS_LOAD, true);
@@ -273,16 +267,6 @@ define(function (require) {
         var index = 0;
 
         /**
-         * 终止action加载
-         *
-         * @inner
-         */
-        function stop() {
-            index = -1;
-            next();
-        }
-
-        /**
          * 跳过后续的filter
          * 如果不带参数则跳过剩余所有的filter
          *
@@ -303,13 +287,13 @@ define(function (require) {
             var item = filters[index++];
 
             if (!item) {
-                resolver[index > 0 ? 'resolve' : 'reject'](route);
+                resolver.resolve(route);
             }
             else if (!item.url
                 || (item.url instanceof RegExp && item.url.test(route.path))
                 || item.url == route.path
             ) {
-                item.filter(route, next, stop, jump);
+                item.filter(route, next, jump);
             }
             else {
                 next();
@@ -317,6 +301,7 @@ define(function (require) {
         }
 
         next();
+
         return resolver.promise();
     }
 
@@ -333,20 +318,29 @@ define(function (require) {
             return;
         }
 
+        // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
 
+        var path = waitingRoute.path;
+
+        // 处理filter的执行结果
+        function beforeLoad(route) {
+            // 如果改变了path则以静默形式重新加载
+            if (path !== route.path) {
+                // 设置状态为空闲以支持跳转
+                setStatus(STATUS_IDLE);
+                var options = route.options || {};
+                options.slient = true;
+                router.redirect(route.path, route.query, options);
+            }
+            else {
+                waitingRoute = null;
+                loadAction(route);
+            }
+        }
+
         // 执行filter
-        executeFilter(waitingRoute)
-            .then(
-                function () {
-                    // filter完成 继续加载页面
-                    var route = waitingRoute;
-                    waitingRoute = null;
-                    loadAction(route);
-                },
-                // filter阻止加载
-                stopLoadAction
-            );
+        executeFilter(waitingRoute).then(beforeLoad);
     }
 
     /**
