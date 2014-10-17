@@ -329,9 +329,7 @@ define(function (require) {
             if (path !== route.path) {
                 // 设置状态为空闲以支持跳转
                 setStatus(STATUS_IDLE);
-                var options = route.options || {};
-                options.slient = true;
-                router.redirect(route.path, route.query, options);
+                router.redirect(route.path, route.query, route.options);
             }
             else {
                 waitingRoute = null;
