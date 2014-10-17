@@ -111,6 +111,7 @@ define(function (require) {
         // 只需要刷新当前action
         if (config.path == cur.path
             && !options.force
+            && cur.action.refresh
         ) {
             cur.action.refresh(config.query).then(finishLoad);
             return;

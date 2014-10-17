@@ -186,16 +186,6 @@ define(function (require) {
     };
 
     /**
-     * 页面刷新
-     *
-     * @public
-     */
-    Action.prototype.refresh = function (query) {
-        return this.model.refresh(query)
-            .then(bind(this.view.refresh, this.view));
-    };
-
-    /**
      * 页面卸载
      *
      * @public
