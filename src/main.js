@@ -74,6 +74,25 @@ define(function (require) {
     }
 
     /**
+     * 删除缓存的action
+     *
+     * @inner
+     * @param {string} path
+     */
+    function delCache(path) {
+        var action = cachedAction[path];
+        if (!action) {
+            return;
+        }
+        // 如果不是当前显示的action则进行dispose
+        // 如果是当前显示的action，后续leave会处理
+        if (cur.action != action) {
+            action.dispose();
+        }
+        delete cachedAction[path];
+    }
+
+    /**
      * 加载Action
      *
      * @inner
@@ -110,18 +129,14 @@ define(function (require) {
             return;
         }
 
-        // 获取新Action
-        var action;
-
-        if (config.cached) {
-            action = cachedAction[config.path];
-            if (action && options.noCache) {
-                action.dispose();
-                delete cachedAction[config.path];
-                action = null;
-            }
+        if (options.noCache) {
+            delCache(config.path);
         }
 
+        // 首先尝试从cache中取action
+        var action = cachedAction[config.path];
+
+        // 没有从cache中获取到action就创建
         if (!action) {
             var Constructor;
             if (config.action
@@ -135,9 +150,9 @@ define(function (require) {
             action = new Constructor(config.action);
         }
 
-        // 处理当前正在工作的Action
+        // 处理当前正在工作的action
         if (cur.action) {
-            cur.action[cur.route.cached ? 'sleep' : 'leave']();
+            cur.action[cachedAction[cur.path] ? 'sleep' : 'leave']();
         }
 
         // 获取页面转场配置参数
@@ -402,7 +417,7 @@ define(function (require) {
     };
 
     /**
-     * 启动
+     * 启动框架
      *
      * @public
      * @param {HTMLElement} main
@@ -429,6 +444,7 @@ define(function (require) {
     /**
      * 添加filter
      *
+     * @public
      * @param {string|RegExp=} url
      * @param {Function} filter
      */
@@ -442,6 +458,16 @@ define(function (require) {
             url: url,
             filter: filter
         });
+    };
+
+    /**
+     * 删除缓存的action
+     *
+     * @public
+     * @param {string} path
+     */
+    exports.delCachedAction = function (path) {
+        delCache(path);
     };
 
     return exports;
