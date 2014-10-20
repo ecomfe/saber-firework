@@ -168,10 +168,12 @@ define(function (require) {
             }
         )(
             {
+                route: extend({}, config),
                 action: action,
                 page: page
             },
             {
+                route: extend({}, cur.route),
                 action: cur.action,
                 page: cur.page
             }
@@ -209,7 +211,6 @@ define(function (require) {
             cur.route = config;
             cur.page = page;
             cur.path = config.path;
-            cur.url = config.url;
 
             return page
                     .enter(transition.type, transition)
@@ -224,10 +225,7 @@ define(function (require) {
          * @inner
          */
         function enterFail() {
-            // TODO
-            // 考虑添加参数
             fireEvent('error');
-
             return Resolver.rejected();
         }
 
