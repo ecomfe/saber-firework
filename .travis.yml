@@ -12,7 +12,7 @@ before_install:
   - git clone https://github.com/ecomfe/saber-widget.git test/dep/saber-widget/0.3.0
   - git clone https://github.com/ecomfe/saber-viewport.git test/dep/saber-viewport/0.2.12
   - git clone https://github.com/ecomfe/saber-router.git test/dep/saber-router/0.2.6
-  - cd test/dep/saber-router
+  - cd test/dep/saber-router/0.2.6
   - git checkout develop
-  - cd ../../../
+  - cd ../../../../
 install: true
