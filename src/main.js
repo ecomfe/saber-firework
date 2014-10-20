@@ -63,22 +63,6 @@ define(function (require) {
     }
 
     /**
-     * 停止加载action
-     *
-     * @inner
-     */
-    function stopLoadAction() {
-        // 恢复当前的url
-        if (cur.url) {
-            router.reset(cur.url);
-        }
-        // 设置状态为空闲
-        setStatus(STATUS_IDLE);
-        // 清理等待的route信息
-        waitingRoute = null;
-    }
-
-    /**
      * action加载完成
      *
      * @inner
@@ -201,25 +185,33 @@ define(function (require) {
          * 开始转场动画
          *
          * @inner
+         * @param {boolean} error
+         * @return {Promise}
          */
-        function startTransition() {
+        function startTransition(error) {
             // 转场开始前 设置强制设置为加载状态
             // 清除状态重置定时器，防止干扰转场动画
             setStatus(STATUS_LOAD, true);
             // 触发`beforetransition`
             fireEvent('beforetransition');
 
-            // 保存相关信息
-            if (config.cached) {
-                cachedAction[config.path] = action;
+            if (!error) {
+                cur.action = action;
+                if (config.cached) {
+                    cachedAction[config.path] = action;
+                }
             }
+
             cur.route = config;
             cur.page = page;
-            cur.action = action;
             cur.path = config.path;
             cur.url = config.url;
 
-            return page.enter(transition.type, transition);
+            return page
+                    .enter(transition.type, transition)
+                    .then(function () {
+                        return Resolver[error ? 'rejected' : 'resolved']();
+                    });
         }
 
         /**
@@ -228,10 +220,9 @@ define(function (require) {
          * @inner
          */
         function enterFail() {
+            // TODO
+            // 考虑添加参数
             fireEvent('error');
-
-            page.remove(true);
-            action.dispose();
 
             return Resolver.rejected();
         }
@@ -242,7 +233,8 @@ define(function (require) {
         if (!cachedAction[config.path]) {
             finished = action
                         .enter(config.path, config.query, page.main, options)
-                        .then(startTransition, enterFail)
+                        .then(null, enterFail)
+                        .then(startTransition, curry(startTransition, true))
                         .then(bind(action.ready, action));
         }
         else {
@@ -252,7 +244,7 @@ define(function (require) {
 
         finished
             .then(bind(action.complete, action))
-            .then(finishLoad, stopLoadAction);
+            .then(finishLoad, finishLoad);
     }
 
     /**
