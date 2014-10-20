@@ -14,4 +14,5 @@ before_install:
   - git clone https://github.com/ecomfe/saber-router.git test/dep/saber-router/0.2.6
   - cd test/dep/saber-router
   - git checkout develop
+  - cd ../../../
 install: true
