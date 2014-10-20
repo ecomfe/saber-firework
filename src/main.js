@@ -349,13 +349,15 @@ define(function (require) {
                 router.redirect(route.path, route.query, route.options);
             }
             else {
-                waitingRoute = null;
                 loadAction(route);
             }
         }
 
         // 执行filter
         executeFilter(waitingRoute).then(beforeLoad);
+        // 进入加载流程了
+        // 清除等待加载的route信息
+        waitingRoute = null;
     }
 
     /**

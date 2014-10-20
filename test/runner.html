@@ -5,6 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
         <title>Jasmine Spec Runner</title>
         <link rel="stylesheet" type="text/css" href="http://saberlabs.github.io/static/jasmine/2.0.0/jasmine.css">
+        <style>
+            .wrapper {
+                position: absolute;
+                left: -10000px;
+                width: 800px;
+            }
+        </style>
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/jasmine.js"></script>
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/jasmine-html.js"></script>
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/console.js"></script>
@@ -13,6 +20,9 @@
         <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
     </head>
     <body>
+        <div class="wrapper">
+            <div class="viewport"></div>
+        </div>
         <script>
         require.config({
             baseUrl: './',
@@ -50,12 +60,20 @@
                 {
                     name: 'saber-widget',
                     location: 'dep/saber-widget/0.3.0/src'
+                },
+                {
+                    name: 'saber-viewport',
+                    location: 'dep/saber-viewport/0.2.12/src'
+                },
+                {
+                    name: 'saber-router',
+                    location: 'dep/saber-router/0.2.6/src'
                 }
             ]
         });
         
         require([
-            'saber-viewport', 'saber-router', 'saber-tap',
+            'saber-tap',
             'main.spec', 'event.spec', 'abstract.spec', 'action.spec', 'view.spec'
         ]);
 
