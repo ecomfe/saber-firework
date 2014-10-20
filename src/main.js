@@ -26,7 +26,6 @@ define(function (require) {
 
     cur.status = STATUS_IDLE;
 
-
     /**
      * 获取全局配置的附加处理器
      *
@@ -90,6 +89,15 @@ define(function (require) {
      */
     function loadAction(config) {
         var options = config.options || {};
+
+        // 支持异步action
+        if (Object.prototype.toString.call(config.action) == '[object String]') {
+            window.require([config.action], function (action) {
+                config.action = action;
+                loadAction(config);
+            });
+            return;
+        }
 
         // 如果路径未发生变化
         // 只需要刷新当前action
