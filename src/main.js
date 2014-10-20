@@ -95,6 +95,7 @@ define(function (require) {
         // 只需要刷新当前action
         if (config.path == cur.path
             && !options.force
+            && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
             && cur.action.refresh
         ) {
             cur.action.refresh(config.query).then(finishLoad);
@@ -200,6 +201,9 @@ define(function (require) {
                 if (config.cached) {
                     cachedAction[config.path] = action;
                 }
+            }
+            else {
+                cur.action = null;
             }
 
             cur.route = config;
