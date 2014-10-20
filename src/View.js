@@ -9,6 +9,7 @@ define(function (require) {
     var dom = require('saber-dom');
     var etpl = require('etpl');
     var widget = require('saber-widget');
+    var router = require('saber-router');
     var eventHelper = require('./event');
     var globalConfig = require('./config');
 
@@ -254,6 +255,21 @@ define(function (require) {
         context = context || this.main || document.body;
         return dom.queryAll(selector, context);
     };
+
+    /**
+     * 页面跳转
+     *
+     * @public
+     * @param {string} url 跳转地址
+     * @param {Object=} query 查询条件
+     * @param {Object=} options 跳转参数
+     * @param {boolean} options.force 强制跳转（url相同时）
+     * @param {boolean} options.noCache 不使用缓存的action
+     */
+    View.prototype.redirect = function (url, query, options) {
+        router.redirect(url, query, options);
+    };
+
 
     /**
      * Superseded by `addDomEvent`
