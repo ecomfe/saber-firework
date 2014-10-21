@@ -463,6 +463,28 @@ define(function (require) {
     };
 
     /**
+     * 删除filter
+     *
+     * @public
+     * @param {string|RegExp=} url
+     */
+    exports.removeFilter = function (url) {
+        if (!url) {
+            filters = [];
+        }
+        else {
+            var index;
+            var res = filters.some(function (item, i) {
+                index = i;
+                return item.url.toString() == url.toString();
+            });
+            if (res) {
+                filters.splice(index, 1);
+            }
+        }
+    };
+
+    /**
      * 删除缓存的action
      *
      * @public
