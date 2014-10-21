@@ -99,11 +99,7 @@ define(function (require) {
         describe('app', function () {
             var main = document.querySelector('.viewport');
             // 等待Action加载的事件
-            // FIXME
-            // 性能优化
-            // chrome设置成0可以
-            // 但phantomjs还是不行
-            var WAITE_TIME = 100;
+            var WAITE_TIME = 10;
 
             firework.load({path: '/', action: require('mock/index')});
             firework.start(main);
@@ -272,7 +268,7 @@ define(function (require) {
                     setTimeout(function () {
                         expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
                         finish(done);
-                    }, WAITE_TIME);
+                    }, 100);
                 });
 
                 it('support refresh', function (done) {
@@ -530,7 +526,7 @@ define(function (require) {
                         expect(call).toBeTruthy();
                         expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
                         finish(done);
-                    }, WAITE_TIME);
+                    }, 100);
                 });
 
                 it('support default filter', function (done) {

@@ -253,43 +253,63 @@ define(function (require) {
             cur.page = page;
             cur.path = config.path;
 
-            return page
-                    .enter(transition.type, transition)
-                    .then(function () {
-                        return Resolver[error ? 'rejected' : 'resolved']();
-                    });
+            if (error) {
+                return page
+                        .enter(transition.type, transition)
+                        .then(bind(Resolver.rejected, Resolver));
+            }
+            else {
+                return page.enter(transition.type, transition);
+            }
         }
+
+        var method;
+        var delayMethods = ['complete'];
+        var args = [config.path, config.query, options];
 
         /**
          * action加载失败处理
          *
          * @inner
+         * @return {Promise}
          */
         function enterFail() {
             fireEvent('error');
-            return Resolver.rejected();
+            return startTransition(true);
         }
 
-        var finished;
-        // 如果action未缓存
-        // 则使用enter
+        /**
+         * 转场正常完成处理
+         *
+         * @inner
+         */
+        function finishTransition() {
+            delayMethods.forEach(function (name) {
+                action[name]();
+            });
+            finishLoad();
+        }
+
+        // 如果没有缓存则使用enter
+        // 否则使用wakeup
         if (!cachedAction[config.path]) {
-            finished = action
-                        .enter(config.path, config.query, page.main, options)
-                        .then(null, enterFail)
-                        .then(startTransition, curry(startTransition, true))
-                        .then(bind(action.ready, action));
+            method = 'enter';
+            // 补充enter参数
+            args.splice(2, 0, page.main);
+            // 没有缓存时还需要ready调用
+            delayMethods.unshift('ready');
         }
         else {
-            finished = action
-                        .wakeup(config.path, config.query, options)
-                        .then(null, enterFail)
-                        .then(startTransition, curry(startTransition, true));
+            method = 'wakeup';
         }
 
-        finished
-            .then(bind(action.complete, action))
-            .then(finishLoad, finishLoad);
+        // 开始加载action
+        action[method]
+            .apply(action, args)
+            // 开始转场操作
+            .then(startTransition, enterFail)
+            // 转场完成处理
+            .then(finishTransition, finishLoad);
     }
 
     /**
