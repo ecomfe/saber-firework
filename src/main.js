@@ -74,6 +74,23 @@ define(function (require) {
     }
 
     /**
+     * 清除所有的缓存action
+     *
+     * @inner
+     */
+    function clearCache() {
+        var action;
+        Object.keys(cachedAction).forEach(function (path) {
+            action = cachedAction[path];
+            if (cur.action != action) {
+                action.dispose();
+            }
+        });
+        cachedAction = {};
+        viewport.delCache();
+    }
+
+    /**
      * 删除缓存的action
      *
      * @inner
@@ -90,6 +107,7 @@ define(function (require) {
             action.dispose();
         }
         delete cachedAction[path];
+        viewport.delCache(path);
     }
 
     /**
@@ -125,7 +143,7 @@ define(function (require) {
             && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
             && cur.action.refresh
         ) {
-            cur.action.refresh(config.query).then(finishLoad);
+            cur.action.refresh(config.query, config.options).then(finishLoad);
             return;
         }
 
@@ -263,8 +281,10 @@ define(function (require) {
                         .then(bind(action.ready, action));
         }
         else {
-            action.wakeup(config.path, config.query, options);
-            finished = startTransition();
+            finished = action
+                        .wakeup(config.path, config.query, options)
+                        .then(null, enterFail)
+                        .then(startTransition, curry(startTransition, true));
         }
 
         finished
@@ -491,7 +511,12 @@ define(function (require) {
      * @param {string} path
      */
     exports.delCachedAction = function (path) {
-        delCache(path);
+        if (path) {
+            delCache(path);
+        }
+        else {
+            clearCache();
+        }
     };
 
     return exports;
