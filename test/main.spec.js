@@ -9,6 +9,7 @@ define(function (require) {
     var router = require('saber-router');
     var viewport = require('saber-viewport');
     var tap = require('saber-tap');
+    var Resolver = require('saber-promise');
     var extend = require('saber-lang/extend');
 
 
@@ -95,7 +96,7 @@ define(function (require) {
             })
         });
 
-        describe('load action', function () {
+        describe('app', function () {
             var main = document.querySelector('.viewport');
             // 等待Action加载的事件
             // FIXME
@@ -108,6 +109,7 @@ define(function (require) {
             firework.start(main);
 
             function finish(done) {
+                firework.delCachedAction();
                 router.clear();
                 firework.load({path: '/', action: require('mock/index')});
                 router.redirect('/', null, {force: true});
@@ -115,23 +117,168 @@ define(function (require) {
                 setTimeout(done, WAITE_TIME);
             }
 
-            it('success', function (done) {
-                var actionConfig = require('mock/foo');
-                var viewConfig = actionConfig.view;
-                firework.load({path: '/foo', action: actionConfig});
-                router.redirect('/foo');
-                setTimeout(
-                    function () {
-                        expect(main.innerHTML).toEqual('<div class=" ' + viewConfig.className + '">foo</div>');
+            describe('load page', function () {
+
+                it('success', function (done) {
+                    var actionConfig = require('mock/foo');
+                    firework.load({path: '/foo', action: actionConfig});
+                    router.redirect('/foo');
+                    setTimeout(
+                        function () {
+                            expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
+                            finish(done);
+                        },
+                        WAITE_TIME
+                    );
+                });
+
+                it('action events', function (done) {
+                    var events = [];
+                    var actionConfig = {
+                        model: require('mock/fooModel'),
+                        view: require('mock/fooView'),
+                        events: {
+                            init: function () {
+                                events.push('init');
+                            },
+                            enter: function () {
+                                events.push('enter');
+                            },
+                            ready: function () {
+                                events.push('ready');
+                            },
+                            complete: function () {
+                                events.push('complete');
+                            },
+                            leave: function () {
+                                events.push('leave');
+                            }
+                        }
+                    };
+
+                    firework.load({path: '/foo', action: actionConfig});
+
+                    router.redirect('/foo');
+                    setTimeout(function () {
+                        router.redirect('/');
+                        setTimeout(function () {
+                            expect(events).toEqual(['init', 'enter', 'ready', 'complete', 'leave']);
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
+                it('action events with cache', function (done) {
+                    var events = [];
+                    var actionConfig = extend({}, require('mock/foo'));
+                    actionConfig.events = {
+                        init: function () {
+                            events.push('init');
+                        },
+                        enter: function () {
+                            events.push('enter');
+                        },
+                        wakeup: function () {
+                            events.push('wakeup');
+                        },
+                        sleep: function () {
+                            events.push('sleep');
+                        },
+                        ready: function () {
+                            events.push('ready');
+                        },
+                        complete: function () {
+                            events.push('complete');
+                        },
+                        leave: function () {
+                            events.push('leave');
+                        }
+                    };
+
+                    firework.load({path: '/foo', action: actionConfig, cached: true});
+
+                    router.redirect('/foo');
+                    setTimeout(function () {
+                        router.redirect('/');
+                        setTimeout(function () {
+                            router.redirect('/foo');
+                            setTimeout(function () {
+                                router.redirect('/foo~name=saber', null, {noCache: true});
+                                setTimeout(function () {
+                                    expect(events).toEqual([
+                                        'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'complete',
+                                        'leave', 'init', 'enter', 'ready', 'complete'
+                                    ]);
+                                    finish(done);
+                                }, WAITE_TIME);
+                            }, WAITE_TIME);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
+                it('support async action', function (done) {
+                    firework.load({path: '/foo', action: 'mock/foo'});
+                    router.redirect('/foo');
+                    setTimeout(function () {
+                        expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
                         finish(done);
-                    },
-                    WAITE_TIME
-                );
+                    }, WAITE_TIME);
+                });
+
+                it('support refresh', function (done) {
+                    var actionConfig = extend({}, require('mock/foo'));
+                    var res = {};
+
+                    actionConfig.refresh = function (query, options) {
+                        res.query = query;
+                        res.options = options;
+                        return Resolver.resolved();
+                    };
+                    firework.load({path: '/foo', action: actionConfig});
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        router.redirect('/foo~name=saber', null, {type: 'test'});
+                        setTimeout(function () {
+                            expect(res.query).toEqual({name: 'saber'});
+                            expect(res.options).toEqual({type: 'test'});
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
+                it('with the same path', function (done) {
+                    var config = extend({}, require('mock/foo'));
+                    config.events = {
+                        enter: jasmine.createSpy()
+                    };
+                    firework.load({path: '/foo', action: config});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(config.events.enter.calls.count()).toBe(1);
+                        router.redirect('/foo');
+                        setTimeout(function () {
+                            expect(config.events.enter.calls.count()).toBe(1);
+                            router.redirect('/foo~type=test');
+                            setTimeout(function () {
+                                expect(config.events.enter.calls.count()).toBe(2);
+                                router.redirect('/foo~type=test', null, {force: true});
+                                setTimeout(function () {
+                                    expect(config.events.enter.calls.count()).toBe(3);
+                                    finish(done);
+                                }, WAITE_TIME);
+                            }, WAITE_TIME);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
             });
 
-            describe('events', function () {
+            describe('global events', function () {
 
-                it('global events, beforeload -> beforetransition -> afterload', function (done) {
+                it('beforeload -> beforetransition -> afterload', function (done) {
 
                     var events = [];
                     var backs = [];
@@ -172,7 +319,7 @@ define(function (require) {
 
                 });
 
-                it('global event error should emit when load action fail', function (done) {
+                it('error should emit when load action fail', function (done) {
                     firework.on('error', function (back, front) {
                         expect(back.route.url).toEqual('/error');
                         expect(front.route.url).toEqual('/');
