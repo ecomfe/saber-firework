@@ -172,6 +172,192 @@ define(function (require) {
 
                 });
 
+                it('global event error should emit when load action fail', function (done) {
+                    firework.on('error', function (back, front) {
+                        expect(back.route.url).toEqual('/error');
+                        expect(front.route.url).toEqual('/');
+                        finish(done);
+                    });
+                    
+                    firework.load({path: '/error', action: require('mock/error')});
+
+                    router.redirect('/error');
+                });
+
+            });
+
+            describe('filter', function () {
+
+                afterEach(function () {
+                    firework.removeFilter();
+                });
+
+                it('can added by string url', function (done) {
+                    var called = false;
+                    function filter(route, next) {
+                        called = true;
+                        next();
+                    }
+
+                    firework.addFilter('/foo', filter);
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(called).toBeTruthy();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('can added by RegExp', function (done) {
+                    var called = false;
+                    function filter(route, next) {
+                        called = true;
+                        next();
+                    }
+
+                    firework.addFilter(/^\/foo/, filter);
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(called).toBeTruthy();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('can remove', function (done) {
+                    var count = 0;
+                    function filter(route, next) {
+                        count++;
+                        next();
+                    }
+
+                    firework.addFilter('/', filter);
+                    firework.addFilter('/foo', filter);
+                    firework.removeFilter('/foo');
+
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+                    
+                    setTimeout(function () {
+                        expect(count).toBe(0);
+                        firework.removeFilter();
+                        router.redirect('/');
+                        setTimeout(function () {
+                            expect(count).toBe(0);
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
+                it('argument contains route info', function (done) {
+                    var res;
+                    function filter(route, next) {
+                        res = route; 
+                        next();
+                    }
+                    firework.addFilter('/foo', filter);
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo~name=hello', null, {type: 'test'});
+
+                    setTimeout(function () {
+                        expect(res.url).toEqual('/foo~name=hello');
+                        expect(res.path).toEqual('/foo');
+                        expect(res.query).toEqual({name: 'hello'});
+                        expect(res.options).toEqual({type: 'test'});
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+                
+                it('can jump over the remainder filters', function (done) {
+                    var call1 = false;
+                    var call2 = false;
+                    var call3 = false;
+                    var call4 = false;
+
+                    function filter1(route, next, jump) {
+                        call1 = true;
+                        jump(1);
+                    }
+
+                    function filter2(route, next, jump) {
+                        call2 = true;
+                        next();
+                    }
+
+                    function filter3(route, next, jump) {
+                        call3 = true;
+                        jump();
+                    }
+
+                    function filter4(route, next, jump) {
+                        call4 = true;
+                        next();
+                    }
+
+                    firework.addFilter('/foo', filter1);
+                    firework.addFilter('/foo', filter2);
+                    firework.addFilter('/foo', filter3);
+                    firework.addFilter('/foo', filter4);
+
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(call1).toBeTruthy();
+                        expect(call2).toBeFalsy();
+                        expect(call3).toBeTruthy();
+                        expect(call4).toBeFalsy();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('support async', function (done) {
+                    var call = false;
+                    function filter(route, next) {
+                        setTimeout(next, 0);
+                        call = true;
+                    }
+                    firework.addFilter('/foo', filter);
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(call).toBeTruthy();
+                        expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('support default filter', function (done) {
+                    var count = 0;
+                    function filter(route, next) {
+                        count++;
+                        next();
+                    }
+                    firework.addFilter(filter);
+
+                    firework.load({path: '/foo', action: require('mock/foo')});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        expect(count).toBe(1);
+                        router.redirect('/');
+                        setTimeout(function () {
+                            expect(count).toBe(2);
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
             });
 
         });
