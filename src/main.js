@@ -151,6 +151,11 @@ define(function (require) {
             delCache(config.path);
         }
 
+        // 处理当前正在工作的action
+        if (cur.action) {
+            cur.action[cachedAction[cur.path] ? 'sleep' : 'leave']();
+        }
+
         // 首先尝试从cache中取action
         var action = cachedAction[config.path];
 
@@ -166,11 +171,6 @@ define(function (require) {
                 Constructor = Action;
             }
             action = new Constructor(config.action);
-        }
-
-        // 处理当前正在工作的action
-        if (cur.action) {
-            cur.action[cachedAction[cur.path] ? 'sleep' : 'leave']();
         }
 
         // 获取页面转场配置参数
