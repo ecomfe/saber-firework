@@ -216,6 +216,56 @@ define(function (require) {
                     }, WAITE_TIME);
                 });
 
+                it('action events with error & cache', function (done) {
+                    var errorModel = extend({}, require('mock/errorModel'));
+                    errorModel.fetch = function (query) {
+                        if (!query.type) {
+                            return Resolver.rejected();
+                        }
+                        else {
+                            return Resolver.resolved();
+                        }
+                    };
+                    var events = [];
+                    var errorAction = extend({}, require('mock/error'));
+                    errorAction.model = errorModel;
+                    errorAction.events = {
+                        init: function () {
+                            events.push('init');
+                        },
+                        enter: function () {
+                            events.push('enter');
+                        },
+                        ready: function () {
+                            events.push('ready');
+                        },
+                        complete: function () {
+                            events.push('complete');
+                        },
+                        sleep: function () {
+                            events.push('sleep');
+                        },
+                        wakeup: function () {
+                            events.push('wakeup');
+                        },
+                        leave: function () {
+                            events.push('leave');
+                        }
+                    };
+
+                    firework.load({path: '/error', action: errorAction});
+
+                    router.redirect('/error~type=test');
+                    setTimeout(function () {
+                        router.redirect('/error');
+                        setTimeout(function () {
+                            expect(main.innerHTML).toEqual('<div></div>');
+                            expect(events).toEqual(['init', 'enter', 'ready', 'complete', 'leave', 'init', 'enter']);
+                            finish(done)
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
                 it('support async action', function (done) {
                     firework.load({path: '/foo', action: 'mock/foo'});
                     router.redirect('/foo');
