@@ -77,16 +77,30 @@ define(function (require) {
 
         it('.render() should render view', function () {
             var data = {name: 'treelite'};
-            var tpl = '<!-- target:renderMain -->${name}';
+            var tpl = '${name}';
             var view = new View({
                     template: tpl,
-                    templateMainTarget: 'renderMain',
                     main: main,
                 });
 
             view.render(data);
 
             expect(main.innerHTML).toEqual(data.name);
+        });
+
+        it('.render() supoort targets', function () {
+            var data = {name: 'treelite'};
+            var tpl = '<!-- target:main -->${name}<!-- target:test -->test${name}';
+            var view = new View({
+                    template: tpl,
+                    templateMainTarget: 'main',
+                    main: main,
+                });
+
+            view.render(data);
+            expect(main.innerHTML).toEqual(data.name);
+
+            expect(view.template.render('test', data)).toEqual('test' + data.name);
         });
 
         it('.ready() should bind dom events', function (done) {
