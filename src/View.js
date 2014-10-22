@@ -59,18 +59,6 @@ define(function (require) {
     }
 
     /**
-     * 字符串判断
-     *
-     * @public
-     * @param {*} str
-     * @return {boolean}
-     */
-    function isString(str) {
-        return Object.prototype.toString.call(str)
-                    === '[object String]';
-    }
-
-    /**
      * 编译模版
      *
      * @public
@@ -152,7 +140,7 @@ define(function (require) {
         // 如果是字符串或者数组
         // 则表示模版还未编译
         if (Array.isArray(this.template)
-            || isString(this.template)
+            || typeof this.template === 'string'
         ) {
             compileTemplate(this, this.template);
         }
