@@ -118,7 +118,7 @@ define(function (require) {
 
     /**
      * View
-     * 
+     *
      * @constructor
      * @param {Object} options 配置信息
      * @param {string|Array.<string>} options.template 模版字符串
@@ -200,7 +200,7 @@ define(function (require) {
          */
         this.emit('beforerender', data);
 
-        this.main.innerHTML = 
+        this.main.innerHTML =
             this.template.render(this.templateMainTarget, data);
 
         /**

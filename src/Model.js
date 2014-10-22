@@ -24,7 +24,7 @@ define(function (require) {
     /**
      * 获取数据
      *
-     * @public 
+     * @public
      * @param {Object} query 查询条件
      * @return {Promise}
      */

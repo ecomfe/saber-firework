@@ -97,7 +97,7 @@ define(function (require) {
 
         return res;
     }
-    
+
     /**
      * 生成统一的事件处理函数
      *
@@ -192,7 +192,7 @@ define(function (require) {
 
     /**
      * 获取元素的uid
-     * 
+     *
      * @inner
      * @param {HTMLElement} ele
      * @return {number}
@@ -200,10 +200,10 @@ define(function (require) {
     function getUID(ele) {
         return ele[KEY_UID];
     }
-    
+
     /**
      * 创建元素的uid
-     * 
+     *
      * @inner
      * @param {HTMLElement} ele
      * @return {number}

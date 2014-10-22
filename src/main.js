@@ -176,7 +176,7 @@ define(function (require) {
         // 获取页面转场配置参数
         var transition = config.transition || {};
         // 调用全局配置中的处理函数进行转场参数处理
-        var processor = getProcessor('transition'); 
+        var processor = getProcessor('transition');
         if (processor) {
             extend(transition, processor(config, cur.route) || {});
         }
