@@ -67,7 +67,7 @@ define(function (require) {
      */
     function isString(str) {
         return Object.prototype.toString.call(str)
-                    == '[object String]';
+                    === '[object String]';
     }
 
     /**

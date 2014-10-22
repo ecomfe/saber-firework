@@ -61,7 +61,7 @@ define(function (require) {
         var res = false;
         var eles = dom.queryAll(selector, main);
         eles.some(function (ele) {
-            return res = ele == target;
+            return res = ele === target;
         });
         return res;
     }
@@ -80,7 +80,7 @@ define(function (require) {
         var res = [];
         var handlers = eventHost.handlers[type] || [];
 
-        while (handlers.delegateCount && target && target != eventHost.ele) {
+        while (handlers.delegateCount && target && target !== eventHost.ele) {
             var handler;
             var max = handlers.delegateCount;
             for (var i = 0; i < max && (handler = handlers[i]); i++) {
@@ -293,7 +293,7 @@ define(function (require) {
 
         handlers.some(function (item, index) {
             var res = false;
-            if (item.fn == fn && item.selector == selector) {
+            if (item.fn === fn && item.selector === selector) {
                 handlers.splice(index, 1);
                 res = true;
             }

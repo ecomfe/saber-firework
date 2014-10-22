@@ -47,7 +47,7 @@ define(function (require) {
      */
     function setStatus(status, force) {
         clearTimeout(cur.statusTimer);
-        if (status == STATUS_LOAD && !force) {
+        if (status === STATUS_LOAD && !force) {
             // 设置状态回复计时器
             // 在Action加载过久时支持用户切换页面
             cur.statusTimer = setTimeout(
@@ -82,7 +82,7 @@ define(function (require) {
         var action;
         Object.keys(cachedAction).forEach(function (path) {
             action = cachedAction[path];
-            if (cur.action != action) {
+            if (cur.action !== action) {
                 action.dispose();
             }
         });
@@ -103,7 +103,7 @@ define(function (require) {
         }
         // 如果不是当前显示的action则进行dispose
         // 如果是当前显示的action，后续leave会处理
-        if (cur.action != action) {
+        if (cur.action !== action) {
             action.dispose();
         }
         delete cachedAction[path];
@@ -128,7 +128,7 @@ define(function (require) {
         var options = config.options || {};
 
         // 支持异步action
-        if (Object.prototype.toString.call(config.action) == '[object String]') {
+        if (Object.prototype.toString.call(config.action) === '[object String]') {
             window.require([config.action], function (action) {
                 config.action = action;
                 loadAction(config);
@@ -138,7 +138,7 @@ define(function (require) {
 
         // 如果路径未发生变化
         // 只需要刷新当前action
-        if (config.path == cur.path
+        if (config.path === cur.path
             && !options.force
             && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
             && cur.action.refresh
@@ -183,7 +183,7 @@ define(function (require) {
 
         // 如果请求路径没有变化
         // 取消转场效果
-        if (config.path == cur.path) {
+        if (config.path === cur.path) {
             transition.type = false;
         }
 
@@ -348,7 +348,7 @@ define(function (require) {
             }
             else if (!item.url
                 || (item.url instanceof RegExp && item.url.test(route.path))
-                || item.url == route.path
+                || item.url === route.path
             ) {
                 item.filter(route, next, jump);
             }
@@ -371,7 +371,7 @@ define(function (require) {
         // 如果没有待加载的路由信息
         // 或者当前不是空闲状态
         // 都不再继续加载Action
-        if (!waitingRoute || cur.status != STATUS_IDLE) {
+        if (!waitingRoute || cur.status !== STATUS_IDLE) {
             return;
         }
 
@@ -491,7 +491,7 @@ define(function (require) {
      * @param {Function} filter
      */
     exports.addFilter = function (url, filter) {
-        if (arguments.length == 1) {
+        if (arguments.length === 1) {
             filter = url;
             url = null;
         }
@@ -516,7 +516,7 @@ define(function (require) {
             var index;
             var res = filters.some(function (item, i) {
                 index = i;
-                return item.url.toString() == url.toString();
+                return item.url.toString() === url.toString();
             });
             if (res) {
                 filters.splice(index, 1);
