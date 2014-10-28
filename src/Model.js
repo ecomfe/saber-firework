@@ -33,13 +33,14 @@ define(function (require) {
     };
 
     /**
-     * 刷新数据
+     * 重新获取数据
+     * 在被缓存的action被wakeup时调用
      *
      * @public
      * @param {Object} query 查询条件
      * @return {Promise}
      */
-    Model.prototype.refresh = function (query) {
+    Model.prototype.refetch = function (query) {
         return Resolver.resolved(query);
     };
 

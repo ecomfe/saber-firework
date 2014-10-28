@@ -128,7 +128,7 @@ define(function (require) {
                     );
                 });
 
-                it('action events', function (done) {
+                it('check action events', function (done) {
                     var events = [];
                     var actionConfig = {
                         model: require('mock/fooModel'),
@@ -164,7 +164,7 @@ define(function (require) {
                     }, WAITE_TIME);
                 });
 
-                it('action events with cache', function (done) {
+                it('check action events with cache', function (done) {
                     var events = [];
                     var actionConfig = extend({}, require('mock/foo'));
                     actionConfig.events = {
@@ -212,7 +212,7 @@ define(function (require) {
                     }, WAITE_TIME);
                 });
 
-                it('action events with error & cache', function (done) {
+                it('check action events with error & cache', function (done) {
                     var errorModel = extend({}, require('mock/errorModel'));
                     errorModel.fetch = function (query) {
                         if (!query.type) {
@@ -258,6 +258,34 @@ define(function (require) {
                             expect(main.innerHTML).toEqual('<div></div>');
                             expect(events).toEqual(['init', 'enter', 'ready', 'complete', 'leave', 'init', 'enter']);
                             finish(done)
+                        }, WAITE_TIME);
+                    }, WAITE_TIME);
+                });
+
+                it('check cahced action flow', function (done) {
+                    var action = extend({}, require('mock/foo'));
+                    var view = extend({}, require('mock/fooView'));
+                    var query = {name: 'saber'};
+                    var res;
+
+                    view.events = {
+                        wakeup: function (data) {
+                            res = data;
+                        }
+                    };
+
+                    action.view = view;
+
+                    firework.load({path: '/foo', action: action, cached: true});
+                    router.redirect('/foo');
+                    setTimeout(function () {
+                        router.redirect('/');
+                        setTimeout(function () {
+                            router.redirect('/foo', query);
+                            setTimeout(function () {
+                                expect(res).toEqual(query);
+                                finish(done);
+                            }, WAITE_TIME);
                         }, WAITE_TIME);
                     }, WAITE_TIME);
                 });

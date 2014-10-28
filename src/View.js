@@ -394,15 +394,17 @@ define(function (require) {
      * 视图唤醒
      *
      * @public
+     * @param {Object} data
+     *
      * @fires View#wakeup
      */
-    View.prototype.wakeup = function () {
+    View.prototype.wakeup = function (data) {
         /**
          * 视图唤醒事件
          *
          * @event
          */
-        this.emit('wakeup');
+        this.emit('wakeup', data);
     };
 
     return View;

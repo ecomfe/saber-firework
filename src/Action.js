@@ -9,7 +9,6 @@ define(function (require) {
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var router = require('saber-router');
-    var Resolver = require('saber-promise');
 
     var Abstract = require('./Abstract');
     var View = require('./View');
@@ -110,12 +109,12 @@ define(function (require) {
      */
     Action.prototype.wakeup = function (path, query, options) {
         this.path = path;
-        this.query = extend({}, query);
         this.options = extend({}, options);
 
         this.emit('wakeup');
-        this.view.wakeup();
-        return Resolver.resolved();
+
+        return this.model.refetch(query)
+            .then(bind(this.view.wakeup, this.view));
     };
 
     /**
