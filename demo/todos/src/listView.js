@@ -23,13 +23,13 @@ define(function (require) {
         'click: .toggle': function (ele, e) {
             this.emit('complete', ele.getAttribute('data-id'), ele.checked);
         },
-        'tap: #clear-completed': function () {
+        'click: #clear-completed': function () {
             this.emit('clear');
         },
         'click: #toggle-all': function (ele) {
             this.emit('completeAll', ele.checked);
         },
-        'tap: .destroy': function (ele) {
+        'click: .destroy': function (ele) {
             this.emit('remove', ele.getAttribute('data-id'));
         }
     };

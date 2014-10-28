@@ -6,9 +6,7 @@ define(function () {
 
     var config = {};
 
-    config.template = '<!-- target:main -->hello ${name}';
-
-    config.templateMainTarget = 'main';
+    config.template = 'hello ${name}';
 
     return config;
 });
