@@ -42,8 +42,8 @@ define(function (require) {
             expect(fn.calls.count()).toBe(1);
         });
 
-        it('.enter() should set url and finish render', function (done) {
-            var url = '/index';
+        it('.enter() should set path and finish render', function (done) {
+            var path = '/index';
             var query = {filter: 'www'};
             var options = {noCache: true};
             var ele = document.createElement('div');
@@ -58,8 +58,8 @@ define(function (require) {
             spyOn(action.view, 'setMain').and.callThrough();
             spyOn(action.view, 'render').and.callThrough();
 
-            action.enter(url, query, ele, options).then(function () {
-                expect(action.url).toEqual(url);
+            action.enter(path, query, ele, options).then(function () {
+                expect(action.path).toEqual(path);
                 expect(action.options).toEqual(options);
                 expect(action.options).not.toBe(options);
                 expect(fn.calls.count()).toBe(1);

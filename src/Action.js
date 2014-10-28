@@ -84,12 +84,12 @@ define(function (require) {
      * 完成数据请求，页面渲染
      *
      * @public
-     * @param {string} url 当前的访问地址
+     * @param {string} path 当前的访问路径
      * @param {Object} query 查询条件
      * @param {HTMLElement} main 视图容器
      */
-    Action.prototype.enter = function (url, query, main, options) {
-        this.url = url;
+    Action.prototype.enter = function (path, query, main, options) {
+        this.path = path;
         this.options = extend({}, options);
 
         this.view.setMain(main);
@@ -103,13 +103,13 @@ define(function (require) {
      * 唤醒页面
      *
      * @public
-     * @param {string} url 当前的访问地址
+     * @param {string} path 当前的访问地址
      * @param {Object} query 查询条件
      * @param {Object} options 跳转参数
      * @return {Promise}
      */
-    Action.prototype.wakeup = function (url, query, options) {
-        this.url = url;
+    Action.prototype.wakeup = function (path, query, options) {
+        this.path = path;
         this.query = extend({}, query);
         this.options = extend({}, options);
 
