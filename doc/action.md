@@ -12,7 +12,7 @@ Action
 
 `saber-firework`通过配置信息构建Action对象，配置信息为`Object`类型，包含以下字段：
 
-* **constructor** `{Function=}` 构造函数，默认为`saber-firework/Action`
+* **constructor** `{Function=}` 构造函数，默认为[saber-firework/Action](../src/Action.js)
 * **model** `{Object}` model配置信息，具体请参考[model配置说明](model.md#configure)
 * **view** `{Object}` view配置信息，具体请参考[view配置说明](view.md#configure)
 * **events** `{Object=}` 事件配置，`key`为事件名称，`value`为事件回调函数，支持直接注册`view`或者`model`的事件比如`{ 'view:add': function () {...} }`，事件回调函数中的`this`指针指向当前的action实例

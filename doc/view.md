@@ -1,6 +1,8 @@
 View
 ===
 
+页面视图管理
+
 * [Configure](#configure)
 * [Properties](#properties)
 * [Methods](#methods)
@@ -10,7 +12,7 @@ View
 
 `saber-firework`通过配置信息构建View对象，配置信息为`Object`类型，包含以下字段：
 
-* **constructor** `{Function=}` 构造函数，默认为`saber-firework/View`
+* **constructor** `{Function=}` 构造函数，默认为[saber-firework/View](../src/View.js)
 * **template** `{string|Array.<string>}` 模版字符串，具体请参考[etpl的模版语法](https://github.com/ecomfe/etpl/blob/master/doc/syntax.md)
 * **templateMainTarget** `{string=}` 模版主target名称，用于初始渲染视图，如果不设置则默认模版中的第一个target
 * **className** `{string=}` 容器元素附加的className
