@@ -1,4 +1,5 @@
-# 全局配置信息
+全局配置信息
+===
 
 `Object`类型，支持如下字段：
 
@@ -19,9 +20,9 @@
 
 `Function(route, oldRoute):Object`
 
-* `router` `{Object}` 待转场页面的路由配置信息
-* `oldRoute` `{Object}` 待转出页面的路由配置信息
-* `{Object}` 返回转场参数
+* **router** `{Object}` 待转场页面的路由配置信息
+* **oldRoute** `{Object}` 待转出页面的路由配置信息
+* _return_ `{Object}` 返回转场参数
 
 比如需要根据路由配置改变转场效果时长：
 
