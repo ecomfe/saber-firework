@@ -26,6 +26,9 @@ define(function (require) {
 
     cur.status = STATUS_IDLE;
 
+    var exports = {};
+    Emitter.mixin(exports);
+
     /**
      * 获取全局配置的附加处理器
      *
@@ -258,9 +261,7 @@ define(function (require) {
                         .enter(transition.type, transition)
                         .then(bind(Resolver.rejected, Resolver));
             }
-            else {
-                return page.enter(transition.type, transition);
-            }
+            return page.enter(transition.type, transition);
         }
 
         var method;
@@ -438,10 +439,6 @@ define(function (require) {
 
         return config;
     }
-
-    var exports = {};
-
-    Emitter.mixin(exports);
 
     /**
      * 加载path配置信息

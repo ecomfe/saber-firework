@@ -331,9 +331,7 @@ define(function (require) {
         if (uid) {
             return eventHosts[uid];
         }
-        else {
-            return new EventHost(ele);
-        }
+        return new EventHost(ele);
     }
 
     /**
