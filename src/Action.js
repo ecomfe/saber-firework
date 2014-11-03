@@ -9,7 +9,6 @@ define(function (require) {
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var router = require('saber-router');
-    var Resolver = require('saber-promise');
 
     var Abstract = require('./Abstract');
     var View = require('./View');
@@ -84,39 +83,38 @@ define(function (require) {
      * 完成数据请求，页面渲染
      *
      * @public
-     * @param {string} url 当前的访问地址
+     * @param {string} path 当前的访问路径
      * @param {Object} query 查询条件
      * @param {HTMLElement} main 视图容器
      */
-    Action.prototype.enter = function (url, query, main, options) {
-        this.url = url;
-        this.query = extend({}, query);
+    Action.prototype.enter = function (path, query, main, options) {
+        this.path = path;
         this.options = extend({}, options);
 
         this.view.setMain(main);
         this.emit('enter');
 
-        return this.model.fetch(this.query)
-                .then(bind(this.view.render, this.view));
+        return this.model.fetch(query)
+            .then(bind(this.view.render, this.view));
     };
 
     /**
      * 唤醒页面
      *
      * @public
-     * @param {string} url 当前的访问地址
+     * @param {string} path 当前的访问地址
      * @param {Object} query 查询条件
      * @param {Object} options 跳转参数
      * @return {Promise}
      */
-    Action.prototype.wakeup = function (url, query, options) {
-        this.url = url;
-        this.query = extend({}, query);
+    Action.prototype.wakeup = function (path, query, options) {
+        this.path = path;
         this.options = extend({}, options);
 
         this.emit('wakeup');
-        this.view.wakeup();
-        return Resolver.resolved();
+
+        return this.model.refetch(query)
+            .then(bind(this.view.wakeup, this.view));
     };
 
     /**
@@ -145,45 +143,21 @@ define(function (require) {
      * 页面离开
      *
      * @public
-     * @return {boolean} 是否能离开页面
      */
     Action.prototype.leave = function () {
-        var cancel = false;
-
-        this.emit(
-            'leave',
-            function () {
-                cancel = true;
-            }
-        );
-
-        if (!cancel) {
-            this.view.leave();
-            this.dispose();
-        }
-        return !cancel;
+        this.emit('leave');
+        this.view.leave();
+        this.dispose();
     };
 
     /**
      * 页面休眠
      *
      * @public
-     * @return {boolean} 是否能休眠页面
      */
     Action.prototype.sleep = function () {
-        var cancel = false;
-
-        this.emit(
-            'sleep',
-            function () {
-                cancel = true;
-            }
-        );
-
-        if (!cancel) {
-            this.view.sleep();
-        }
-        return !cancel;
+        this.emit('sleep');
+        this.view.sleep();
     };
 
     /**

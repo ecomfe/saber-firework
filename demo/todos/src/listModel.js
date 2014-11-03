@@ -20,7 +20,8 @@ define(function (require) {
     config.fetch = function (query) {
         var res = {};
         res.todos = [];
-        if (query.filter) {
+        query = this.query = query || this.query;
+        if (query && query.filter) {
             res.todos = todos.filter(function (item) {
                 return item.completed == (query.filter == 'complete');
             });

@@ -39,7 +39,7 @@ define({
          *
          * @type {boolean}
          */
-        transition: false,
+        transition: false
 
     },
 

@@ -12,8 +12,8 @@ define(function (require) {
 
     config.model = require('./listModel');
 
-    config.refresh = function () {
-        this.model.fetch(this.query).then(
+    config.refresh = function (query) {
+        return this.model.fetch(query).then(
             bind(this.view.render, this.view)
         );
     };

@@ -1,12 +1,11 @@
-/**
- * @file index view
- */
-
 define(function () {
 
     var config = {};
 
-    config.template = 'hello ${name}';
+    config.className = 'error';
+
+    config.template = '${name}';
 
     return config;
+
 });

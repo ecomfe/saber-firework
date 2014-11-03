@@ -1,18 +1,19 @@
-# Guide
+Guide
+===
 
 ## Step 1 配置路由信息
 
 使用`saber-firework`的第一步是进行配置，首先新建`app.js`作为应用的主框架文件，在其中使用`.load()`方法加载路由配置
 
-```javascript
+```js
 /**
  * @file app
  */
 define(function (require) {
 
-    var firework = require('saber-firework');
+    var app = require('saber-firework');
 
-    firework.load([
+    app.load([
         // 配置首页
         {path: '/', action: require('./index')}
     ]);
@@ -38,7 +39,7 @@ action配置参数较多,同时为了便于复用，一般都作为一个模块�
 
 ### Action配置
 
-```javascript
+```js
 /**
  * @file index
  */
@@ -59,13 +60,13 @@ action配置参数较多,同时为了便于复用，一般都作为一个模块�
 
 action配置中最关键的就是`model`与`view`字段，表明action对应的model与view配置信息，基于与action配置相同的考虑，独立模块书写，使用`require('./xx')`方式引用
 
-更多请参考[Action配置说明](action.md)
+更多请参考[Action配置说明](action.md#configure)
 
 接下来新建`indexModel.js`配置对应的`model`
 
 ### Model配置
 
-```javascript
+```js
 /**
  * @file index model
  */
@@ -89,13 +90,13 @@ action配置中最关键的就是`model`与`view`字段，表明action对应的m
 
 `.fetch()`需要返回一个`Promise`对象，实例中直接使用了`Resolver.resolved()`构造了一个静态数据并返回，实际项目中通常是使用[saber-ajax](https://github.com/ecomfe/saber-ajax)进行异步请求，并返回对应的`Promise`对象
 
-更多请参考[Model配置说明](model.md)
+更多请参考[Model配置说明](model.md#configure)
 
 搞定了model接着来新建`indexView.js`配置对应的`view`
 
 ### View配置
 
-```javascript
+```js
 /**
  * @file index view
  */
@@ -104,9 +105,7 @@ define(function () {
 
     var config = {};
 
-    config.template = '<!-- target:main -->hello ${name}';
-
-    config.templateMainTarget = 'main';
+    config.template = 'hello ${name}';
 
     return config;
 });
@@ -116,13 +115,13 @@ define(function () {
 
 在页面加载时框架会用`model.fetch()`获取的数据来渲染`templateMainTarget`指定的模版完成页面的渲染
 
-更多请参考[View配置说明](view.md)
+更多请参考[View配置说明](view.md#configure)
 
 ## Step 3 启动应用
 
 搞定了所有配置，接下来就该启动应用啦，继续编辑之前的`app.js`，添加启动逻辑
 
-```javascript
+```js
 /**
  * @file app
  */

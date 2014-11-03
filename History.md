@@ -1,3 +1,15 @@
+# 1.0.0 / 2014-11-03
+
+* 全局事件增加了`route`路由信息
+* 支持Action的异步加载，具体请参考[路由配置信息](doc/route.md)
+* 增加[delCachedAction()](README.md#delcachedactionpath)方法，用于清除缓存的Action
+* `Action`添加了`refresh`流程，该流程是默认关闭的，启用后在只改变页面`query`的情况下会走页面的`refresh`流程
+* `View`提供[afterrender](doc/view.md#afterrender)事件，方便在渲染结束后根据渲染参数进行些其它操作
+* `View`添加[redirect](doc/view.md#redirecturl-query-options)方法，方便页面处理
+* `redirect`支持的静默跳转，可以在不改变当前URL的情况下切换页面
+* `etpl`升级至[3.0.0](https://github.com/ecomfe/etpl#documents)
+* 出于消除重复历史记录的考虑，`filter`取消了`stop`参数，`action`的`leave`与`sleep`方法也不再提供能阻止页面离开的参数
+
 # 0.4.2 / 2014-10-08
 
 * 修复下一个页面加载失败可能导致当前页面不可用的问题
@@ -11,7 +23,7 @@
 * 添加`filter`功能，代码统计、权限验证神马的轻松搞定，欲知详情挫[这里](README.md#addfilterurl-fn)
 * 添加全局的`beforetransition`事件，方便在页面开始加载后、转场动画开始前干些事儿
 * 添加全局的`error`事件，页面加载失败时触发
-* 在`action`的`leave`与`sleep`事件中可以通过新增的函数参数（`stop`）来阻止页面的切换，[示例在这里](doc/action.md#%E4%BA%8B%E4%BB%B6)
+* ~~在`action`的`leave`与`sleep`事件中可以通过新增的函数参数（`stop`）来阻止页面的切换，[示例在这里](doc/action.md#%E4%BA%8B%E4%BB%B6)~~
 * 考虑网络情况，调整默认的页面加载超时时间为`1000`毫秒
 * 更新依赖（[saber-router@0.2.4](https://github.com/ecomfe/saber-router/blob/develop/History.md#024--2014-06-25), [saber-viewport@0.2.11](https://github.com/ecomfe/saber-viewport/blob/develop/History.md#0211--2014-06-25), [saber-widget@0.3.0](https://github.com/ecomfe/saber-widget/blob/develop/History.md#030--2014-06-24)）
 

@@ -61,7 +61,7 @@ define(function (require) {
         var res = false;
         var eles = dom.queryAll(selector, main);
         eles.some(function (ele) {
-            return res = ele == target;
+            return res = ele === target;
         });
         return res;
     }
@@ -80,7 +80,7 @@ define(function (require) {
         var res = [];
         var handlers = eventHost.handlers[type] || [];
 
-        while (handlers.delegateCount && target && target != eventHost.ele) {
+        while (handlers.delegateCount && target && target !== eventHost.ele) {
             var handler;
             var max = handlers.delegateCount;
             for (var i = 0; i < max && (handler = handlers[i]); i++) {
@@ -97,7 +97,7 @@ define(function (require) {
 
         return res;
     }
-    
+
     /**
      * 生成统一的事件处理函数
      *
@@ -192,7 +192,7 @@ define(function (require) {
 
     /**
      * 获取元素的uid
-     * 
+     *
      * @inner
      * @param {HTMLElement} ele
      * @return {number}
@@ -200,10 +200,10 @@ define(function (require) {
     function getUID(ele) {
         return ele[KEY_UID];
     }
-    
+
     /**
      * 创建元素的uid
-     * 
+     *
      * @inner
      * @param {HTMLElement} ele
      * @return {number}
@@ -293,7 +293,7 @@ define(function (require) {
 
         handlers.some(function (item, index) {
             var res = false;
-            if (item.fn == fn && item.selector == selector) {
+            if (item.fn === fn && item.selector === selector) {
                 handlers.splice(index, 1);
                 res = true;
             }
@@ -331,9 +331,7 @@ define(function (require) {
         if (uid) {
             return eventHosts[uid];
         }
-        else {
-            return new EventHost(ele);
-        }
+        return new EventHost(ele);
     }
 
     /**
@@ -426,7 +424,7 @@ define(function (require) {
      * 注册插件
      *
      * @public
-     * @param {}
+     * @param {Object} plugin
      */
     exports.register = function (plugin) {
         if (plugin.init) {

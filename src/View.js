@@ -9,6 +9,7 @@ define(function (require) {
     var dom = require('saber-dom');
     var etpl = require('etpl');
     var widget = require('saber-widget');
+    var router = require('saber-router');
     var eventHelper = require('./event');
     var globalConfig = require('./config');
 
@@ -58,18 +59,6 @@ define(function (require) {
     }
 
     /**
-     * 字符串判断
-     *
-     * @public
-     * @param {*}
-     * @return {boolean}
-     */
-    function isString(str) {
-        return Object.prototype.toString.call(str)
-                    == '[object String]';
-    }
-
-    /**
      * 编译模版
      *
      * @public
@@ -88,6 +77,11 @@ define(function (require) {
 
         // 新建模版引擎
         var tplEngine = new etpl.Engine();
+
+        // 拷贝etpl命名空间的filter、配置
+        tplEngine.options = etpl.options;
+        tplEngine.filters = etpl.filters;
+
         // 保存默认render
         var defaultRender = tplEngine.compile(str);
         // 保存原始的render
@@ -112,7 +106,7 @@ define(function (require) {
 
     /**
      * View
-     * 
+     *
      * @constructor
      * @param {Object} options 配置信息
      * @param {string|Array.<string>} options.template 模版字符串
@@ -146,7 +140,7 @@ define(function (require) {
         // 如果是字符串或者数组
         // 则表示模版还未编译
         if (Array.isArray(this.template)
-            || isString(this.template)
+            || typeof this.template === 'string'
         ) {
             compileTemplate(this, this.template);
         }
@@ -162,7 +156,7 @@ define(function (require) {
      * 设置容器元素
      *
      * @public
-     * @param {HTMLElement} 视图容器元素
+     * @param {HTMLElement} ele 视图容器元素
      */
     View.prototype.setMain = function (ele) {
         this.main = ele;
@@ -173,6 +167,9 @@ define(function (require) {
      *
      * @public
      * @param {Object} data
+     *
+     * @fires View#beforerender
+     *        View#afterrender
      */
     View.prototype.render = function (data) {
         if (!this.main) {
@@ -183,10 +180,24 @@ define(function (require) {
             this.main.className += ' ' + this.className;
         }
 
+        /**
+         * 渲染前事件
+         *
+         * @event
+         * @param {Object} 渲染数据
+         */
         this.emit('beforerender', data);
 
-        this.main.innerHTML = 
+        this.main.innerHTML =
             this.template.render(this.templateMainTarget, data);
+
+        /**
+         * 渲染后事件
+         *
+         * @event
+         * @param {Object} 渲染数据
+         */
+        this.emit('afterrender', data);
     };
 
     /**
@@ -194,9 +205,16 @@ define(function (require) {
      * 主要进行事件绑定
      *
      * @public
+     * @fires View#ready
      */
     View.prototype.ready = function () {
         bindDomEvents(this);
+
+        /**
+         * 试图就绪事件
+         *
+         * @event
+         */
         this.emit('ready');
     };
 
@@ -225,6 +243,21 @@ define(function (require) {
         context = context || this.main || document.body;
         return dom.queryAll(selector, context);
     };
+
+    /**
+     * 页面跳转
+     *
+     * @public
+     * @param {string} url 跳转地址
+     * @param {Object=} query 查询条件
+     * @param {Object=} options 跳转参数
+     * @param {boolean} options.force 强制跳转（url相同时）
+     * @param {boolean} options.noCache 不使用缓存的action
+     */
+    View.prototype.redirect = function (url, query, options) {
+        router.redirect(url, query, options);
+    };
+
 
     /**
      * Superseded by `addDomEvent`
@@ -304,8 +337,14 @@ define(function (require) {
      * 视图销毁
      *
      * @public
+     * @fires View#dispose
      */
     View.prototype.dispose = function () {
+        /**
+         * 视图销毁事件
+         *
+         * @event
+         */
         this.emit('dispose');
 
         // 解除事件绑定
@@ -325,8 +364,14 @@ define(function (require) {
      * 视图离开
      *
      * @public
+     * @fires View#leave
      */
     View.prototype.leave = function () {
+        /**
+         * 视图离开事件
+         *
+         * @event
+         */
         this.emit('leave');
     };
 
@@ -334,8 +379,14 @@ define(function (require) {
      * 视图休眠
      *
      * @public
+     * @fires View#sleep
      */
     View.prototype.sleep = function () {
+        /**
+         * 视图休眠事件
+         *
+         * @event
+         */
         this.emit('sleep');
     };
 
@@ -343,9 +394,17 @@ define(function (require) {
      * 视图唤醒
      *
      * @public
+     * @param {Object} data
+     *
+     * @fires View#wakeup
      */
-    View.prototype.wakeup = function () {
-        this.emit('wakeup');
+    View.prototype.wakeup = function (data) {
+        /**
+         * 视图唤醒事件
+         *
+         * @event
+         */
+        this.emit('wakeup', data);
     };
 
     return View;
