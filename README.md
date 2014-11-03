@@ -87,6 +87,12 @@ firework.addFilter(/^\/admin\//, function (route, next, jump) {
 });
 ```
 
+#### delCachedAction(path)
+
+删除缓存的Action
+
+* **path** `{string}` 页面路径
+
 #### on(name, fn)
 
 绑定事件
