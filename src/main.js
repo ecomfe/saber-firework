@@ -410,9 +410,9 @@ define(function (require) {
         // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
 
-        // 如果是第一次加载action
-        // 首屏渲染
-        if (!cur.action) {
+        // 如果是第一次加载action并且有首屏数据
+        // 则走首屏渲染逻辑
+        if (!cur.action && cur.page) {
             initFirstAction(waitingRoute);
             waitingRoute = null;
             finishLoad();
