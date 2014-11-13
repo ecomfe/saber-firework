@@ -377,7 +377,7 @@ define(function (require) {
      * 首屏渲染
      *
      * @inner
-     * @param {Object} 路由信息
+     * @param {Object} route 路由信息
      */
     function initFirstAction(route) {
         var action = createAction(route.action);
