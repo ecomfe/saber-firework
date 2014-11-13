@@ -12,13 +12,6 @@ define({
     index: 'index',
 
     /**
-     * 默认路径
-     *
-     * @type {string}
-     */
-    path: '/',
-
-    /**
      * 预加载的模版
      *
      * @type {Array.<string>}
