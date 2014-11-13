@@ -114,6 +114,25 @@ define(function (require) {
     }
 
     /**
+     * 创建Action对象
+     *
+     * @inner
+     * @param {Object=} config 配置信息
+     * @return {Action}
+     */
+    function createAction(config) {
+        var Constructor;
+        if (config && config.constructor !== Object
+        ) {
+            Constructor = config.constructor;
+        }
+        else {
+            Constructor = Action;
+        }
+        return new Constructor(config);
+    }
+
+    /**
      * 加载Action
      *
      * @inner
@@ -164,16 +183,7 @@ define(function (require) {
 
         // 没有从cache中获取到action就创建
         if (!action) {
-            var Constructor;
-            if (config.action
-                && config.action.constructor !== Object
-            ) {
-                Constructor = config.action.constructor;
-            }
-            else {
-                Constructor = Action;
-            }
-            action = new Constructor(config.action);
+            action = createAction(config.action);
         }
 
         // 获取页面转场配置参数
@@ -364,6 +374,27 @@ define(function (require) {
     }
 
     /**
+     * 首屏渲染
+     *
+     * @inner
+     * @param {Object} 路由信息
+     */
+    function initFirstAction(route) {
+        var action = createAction(route.action);
+
+        // 视图与数据已经ready了
+        // 跳过enter
+        // TODO 考虑数据注入
+        action.view.setMain(cur.page.main);
+        action.ready();
+        action.complete();
+
+        cur.route = route;
+        cur.path = route.path;
+        cur.action = action;
+    }
+
+    /**
      * 尝试加载Action
      *
      * @inner
@@ -378,6 +409,15 @@ define(function (require) {
 
         // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
+
+        // 如果是第一次加载action
+        // 首屏渲染
+        if (!cur.action) {
+            initFirstAction(waitingRoute);
+            waitingRoute = null;
+            finishLoad();
+            return;
+        }
 
         var path = waitingRoute.path;
 
@@ -467,15 +507,14 @@ define(function (require) {
         var config = extendGlobalConfig(options);
 
         // 初始化viewport
-        viewport.init(main, config.viewport);
+        cur.page = viewport.init(main, config.viewport);
 
         // 启用无延迟点击
         Tap.mixin(document.body);
 
         // 初始化router
         router.config({
-            index: config.index,
-            path: config.path
+            index: config.index
         });
         router.start();
     };
