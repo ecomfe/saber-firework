@@ -84,6 +84,12 @@ define(function (require) {
 
         // 保存默认render
         var defaultRender = tplEngine.compile(str);
+
+        // 如果没有默认render就是模版编译失败了
+        if (!defaultRender) {
+            throw new Error('compile template fail');
+        }
+
         // 保存原始的render
         var orgRender = tplEngine.render;
 
