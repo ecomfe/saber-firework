@@ -22,6 +22,7 @@ define(function (require) {
     var filters = [];
     var cachedAction = {};
     var waitingRoute;
+    var initialData;
     var cur = {};
 
     cur.status = STATUS_IDLE;
@@ -402,8 +403,9 @@ define(function (require) {
 
         // 视图与数据已经ready了
         // 跳过enter
-        // TODO 考虑数据注入
         action.view.setMain(cur.page.main);
+        // 使用初始化数据填充首屏model
+        action.model.fulfill(initialData);
         fireEvent('beforetransition');
         action.ready();
         action.complete();
@@ -521,10 +523,14 @@ define(function (require) {
      * @public
      * @param {HTMLElement} main
      * @param {Object} options 全局配置信息 完整配置参考`./config.js`
+     * @param {Object=} initial 首屏初始化参数
      */
-    exports.start = function (main, options) {
+    exports.start = function (main, options, initial) {
         // 扩展全局配置信息
         var config = extendGlobalConfig(options);
+
+        // 保存首屏初始化数据
+        initialData = initial;
 
         // 初始化viewport
         cur.page = viewport.init(main, config.viewport);

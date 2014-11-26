@@ -22,6 +22,14 @@ define(function (require) {
     inherits(Model, Abstract);
 
     /**
+     * 填充数据
+     *
+     * @public
+     * @param {*} data
+     */
+    Model.prototype.fulfill = function () {};
+
+    /**
      * 获取数据
      *
      * @public
