@@ -382,12 +382,32 @@ define(function (require) {
     function initFirstAction(route) {
         var action = createAction(route.action);
 
+        function fireEvent(eventName) {
+            exports.emit(
+                eventName,
+                {
+                    route: null,
+                    action: null,
+                    page: null
+                },
+                {
+                    route: route,
+                    action: action,
+                    page: cur.page
+                }
+            );
+        }
+
+        fireEvent('beforeload');
+
         // 视图与数据已经ready了
         // 跳过enter
         // TODO 考虑数据注入
         action.view.setMain(cur.page.main);
+        fireEvent('beforetransition');
         action.ready();
         action.complete();
+        fireEvent('afterload');
 
         cur.route = route;
         cur.path = route.path;
