@@ -134,6 +134,30 @@ define(function (require) {
     }
 
     /**
+     * 保存当前Action相关信息
+     *
+     * @inner
+     * @param {Action} action
+     * @param {Object} route
+     * @param {Page} page
+     */
+    function dumpInfo(action, route, page) {
+        if (action) {
+            cur.action = action;
+            if (route.cached) {
+                cachedAction[route.path] = action;
+            }
+        }
+        else {
+            cur.action = null;
+        }
+
+        cur.route = route;
+        cur.page = page;
+        cur.path = route.path;
+    }
+
+    /**
      * 加载Action
      *
      * @inner
@@ -253,19 +277,7 @@ define(function (require) {
             // 触发`beforetransition`
             fireEvent('beforetransition');
 
-            if (!error) {
-                cur.action = action;
-                if (config.cached) {
-                    cachedAction[config.path] = action;
-                }
-            }
-            else {
-                cur.action = null;
-            }
-
-            cur.route = config;
-            cur.page = page;
-            cur.path = config.path;
+            dumpInfo(!error && action, config, page);
 
             if (error) {
                 return page
@@ -380,8 +392,9 @@ define(function (require) {
      * @inner
      * @param {Object} route 路由信息
      */
-    function initFirstAction(route) {
+    function initFirstScreen(route) {
         var action = createAction(route.action);
+        var page = viewport.front(route.path, {cached: route.cached});
 
         function fireEvent(eventName) {
             exports.emit(
@@ -394,16 +407,15 @@ define(function (require) {
                 {
                     route: route,
                     action: action,
-                    page: cur.page
+                    page: page
                 }
             );
         }
 
         fireEvent('beforeload');
-
         // 视图与数据已经ready了
         // 跳过enter
-        action.view.setMain(cur.page.main);
+        action.view.setMain(page.main);
         // 使用初始化数据填充首屏model
         action.model.fulfill(initialData);
         fireEvent('beforetransition');
@@ -411,9 +423,7 @@ define(function (require) {
         action.complete();
         fireEvent('afterload');
 
-        cur.route = route;
-        cur.path = route.path;
-        cur.action = action;
+        dumpInfo(action, route, page);
     }
 
     /**
@@ -432,10 +442,9 @@ define(function (require) {
         // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
 
-        // 如果是第一次加载action并且有首屏数据
-        // 则走首屏渲染逻辑
-        if (!cur.action && cur.page) {
-            initFirstAction(waitingRoute);
+        // 首屏渲染逻辑
+        if (!cur.action) {
+            initFirstScreen(waitingRoute);
             waitingRoute = null;
             finishLoad();
             return;
@@ -533,7 +542,7 @@ define(function (require) {
         initialData = initial;
 
         // 初始化viewport
-        cur.page = viewport.init(main, config.viewport);
+        viewport.init(main, config.viewport);
 
         // 启用无延迟点击
         Tap.mixin(document.body);
