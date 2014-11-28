@@ -83,18 +83,20 @@ define(function (require) {
      * 完成数据请求，页面渲染
      *
      * @public
+     * @param {HTMLElement} main 视图容器
      * @param {string} path 当前的访问路径
      * @param {Object} query 查询条件
-     * @param {HTMLElement} main 视图容器
+     * @param {string} string 原始URL
+     * @param {Object=} options 跳转参数
      */
-    Action.prototype.enter = function (path, query, main, options) {
+    Action.prototype.enter = function (main, path, query, url, options) {
         this.path = path;
         this.options = extend({}, options);
 
         this.view.setMain(main);
         this.emit('enter');
 
-        return this.model.fetch(query)
+        return this.model.fetch(url, query)
             .then(bind(this.view.render, this.view));
     };
 
@@ -104,16 +106,17 @@ define(function (require) {
      * @public
      * @param {string} path 当前的访问地址
      * @param {Object} query 查询条件
+     * @param {string} string 原始URL
      * @param {Object} options 跳转参数
      * @return {Promise}
      */
-    Action.prototype.wakeup = function (path, query, options) {
+    Action.prototype.wakeup = function (path, query, url, options) {
         this.path = path;
         this.options = extend({}, options);
 
         this.emit('wakeup');
 
-        return this.model.refetch(query)
+        return this.model.refetch(url, query)
             .then(bind(this.view.wakeup, this.view));
     };
 

@@ -6,6 +6,7 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
+    var ajax = require('saber-ajax');
     var Resolver = require('saber-promise');
     var Abstract = require('./Abstract');
 
@@ -33,11 +34,18 @@ define(function (require) {
      * 获取数据
      *
      * @public
-     * @param {Object} query 查询条件
+     * @param {string} url
      * @return {Promise}
      */
-    Model.prototype.fetch = function (query) {
-        return Resolver.resolved(query);
+    Model.prototype.fetch = function (url) {
+        var me = this;
+        return ajax.get(url).then(
+            function (data) {
+                data = JSON.parse(data);
+                me.fulfill(data);
+                return data;
+            }
+        );
     };
 
     /**
@@ -48,7 +56,7 @@ define(function (require) {
      * @param {Object} query 查询条件
      * @return {Promise}
      */
-    Model.prototype.refetch = function (query) {
+    Model.prototype.refetch = function (url, query) {
         return Resolver.resolved(query);
     };
 

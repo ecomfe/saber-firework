@@ -277,7 +277,7 @@ define(function (require) {
 
         var method;
         var delayMethods = ['complete'];
-        var args = [config.path, config.query, options];
+        var args = [config.path, config.query, config.url, options];
 
         /**
          * action加载失败处理
@@ -307,7 +307,7 @@ define(function (require) {
         if (!cachedAction[config.path]) {
             method = 'enter';
             // 补充enter参数
-            args.splice(2, 0, page.main);
+            args.unshift(page.main);
             // 没有缓存时还需要ready调用
             delayMethods.unshift('ready');
         }
