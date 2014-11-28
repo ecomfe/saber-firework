@@ -391,10 +391,10 @@ define(function (require) {
      *
      * @inner
      * @param {Object} route 路由信息
+     * @param {Page} page
      */
-    function initFirstScreen(route) {
+    function initFirstScreen(route, page) {
         var action = createAction(route.action);
-        var page = viewport.front(route.path, {cached: route.cached});
 
         function fireEvent(eventName) {
             exports.emit(
@@ -442,15 +442,20 @@ define(function (require) {
         // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
 
+        var page;
+        var path = waitingRoute.path;
+
         // 首屏渲染逻辑
-        if (!cur.action) {
-            initFirstScreen(waitingRoute);
+        // 第一次加载action且能获取到起始页面
+        if (!cur.action
+            && (page = viewport.front(path, {cached: waitingRoute.cached}))
+        ) {
+            initFirstScreen(waitingRoute, page);
             waitingRoute = null;
             finishLoad();
             return;
         }
 
-        var path = waitingRoute.path;
 
         // 处理filter的执行结果
         function beforeLoad(route) {
