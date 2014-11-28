@@ -7,6 +7,7 @@ define(function (require) {
   
     var Abstract = require('saber-firework/Abstract');
     var Action = require('saber-firework/Action');
+    var Resolver = require('saber-promise');
 
     describe('Action', function () {
 
@@ -44,6 +45,7 @@ define(function (require) {
 
         it('.enter() should set path and finish render', function (done) {
             var path = '/index';
+            var url = '/index?filter=www';
             var query = {filter: 'www'};
             var options = {noCache: true};
             var ele = document.createElement('div');
@@ -54,17 +56,20 @@ define(function (require) {
                     }
                 });
 
+            action.model.fetch = function () {
+                return Resolver.resolved();
+            };
             spyOn(action.model, 'fetch').and.callThrough();
             spyOn(action.view, 'setMain').and.callThrough();
             spyOn(action.view, 'render').and.callThrough();
 
-            action.enter(path, query, ele, options).then(function () {
+            action.enter(ele, path, query, url, options).then(function () {
                 expect(action.path).toEqual(path);
                 expect(action.options).toEqual(options);
                 expect(action.options).not.toBe(options);
                 expect(fn.calls.count()).toBe(1);
                 expect(action.view.setMain).toHaveBeenCalledWith(ele);
-                expect(action.model.fetch).toHaveBeenCalledWith(query);
+                expect(action.model.fetch).toHaveBeenCalledWith(url, query);
                 expect(action.view.render).toHaveBeenCalled();
                 done();
             });

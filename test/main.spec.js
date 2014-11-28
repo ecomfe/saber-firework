@@ -216,7 +216,7 @@ define(function (require) {
 
                 it('check action events with error & cache', function (done) {
                     var errorModel = extend({}, require('mock/errorModel'));
-                    errorModel.fetch = function (query) {
+                    errorModel.fetch = function (url, query) {
                         if (!query.type) {
                             return Resolver.rejected();
                         }
@@ -252,8 +252,8 @@ define(function (require) {
                     };
 
                     firework.load({path: '/error', action: errorAction});
-
                     router.redirect('/error?type=test');
+
                     setTimeout(function () {
                         router.redirect('/error');
                         setTimeout(function () {
