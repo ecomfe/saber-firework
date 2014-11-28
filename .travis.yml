@@ -9,6 +9,7 @@ before_install:
   - git clone https://github.com/ecomfe/saber-promise.git test/dep/saber-promise/1.0.0
   - git clone https://github.com/ecomfe/etpl.git test/dep/etpl/3.0.0
   - git clone https://github.com/ecomfe/saber-widget.git test/dep/saber-widget/1.0.0
+  - git clone https://github.com/ecomfe/saber-ajax.git test/dep/saber-ajax/1.0.0
   - git clone --branch=develop https://github.com/ecomfe/saber-uri.git test/dep/saber-uri/1.0.1
   - git clone --branch=develop https://github.com/ecomfe/saber-viewport.git test/dep/saber-viewport/1.0.1
   - git clone --branch=feature/2.0 https://github.com/ecomfe/saber-router.git test/dep/saber-router/2.0.0

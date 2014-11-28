@@ -21,7 +21,8 @@
         "saber-lang": "~1.0.0",
         "saber-tap": "~1.0.0",
         "saber-promise": "~1.0.0",
-        "saber-widget": "~1.0.0"
+        "saber-widget": "~1.0.0",
+        "saber-ajax": "~1.0.0"
     },
     "scripts": {
         "pretest": "node test/ws.js start",
