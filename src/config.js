@@ -58,5 +58,12 @@ define({
      *
      * @type {number}
      */
-    timeout: 1000
+    timeout: 1000,
+
+    /**
+     * 首屏数据的全局变量名
+     *
+     * @type {string}
+     */
+    initialDataKey: 'rebas'
 });
