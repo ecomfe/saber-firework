@@ -6,6 +6,7 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
+    var extend = require('saber-lang/extend');
     var dom = require('saber-dom');
     var etpl = require('etpl');
     var widget = require('saber-widget');
@@ -75,12 +76,18 @@ define(function (require) {
 
         str = str.join('');
 
-        // 新建模版引擎
-        var tplEngine = new etpl.Engine();
+        var config = extend({}, globalConfig.templateConfig || {});
+        var filters = {};
+        if (config.filters) {
+            filters = config.filters;
+            delete config.filters;
+        }
 
-        // 拷贝etpl命名空间的filter、配置
-        tplEngine.options = etpl.options;
-        tplEngine.filters = etpl.filters;
+        // 新建模版引擎
+        var tplEngine = new etpl.Engine(config);
+        Object.keys(filters).forEach(function (key) {
+            tplEngine.addFilter(key, filters[key]);
+        });
 
         // 保存默认render
         var defaultRender = tplEngine.compile(str);

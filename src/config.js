@@ -19,6 +19,13 @@ define({
     template: [],
 
     /**
+     * 模版引擎配置信息
+     *
+     * @type {Object}
+     */
+    templateConfig: {},
+
+    /**
      * 视图配置
      * 参见`saber-viewport`的全局配置参数
      * https://github.com/ecomfe/saber-viewport
