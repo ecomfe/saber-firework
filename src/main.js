@@ -324,6 +324,8 @@ define(function (require) {
         }
         else {
             method = 'wakeup';
+            // 已缓存时需要调用revived
+            delayMethods.unshift('revived');
         }
 
         // 开始加载action

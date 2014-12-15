@@ -179,6 +179,9 @@ define(function (require) {
                         wakeup: function () {
                             events.push('wakeup');
                         },
+                        revived: function () {
+                            events.push('revived');
+                        },
                         sleep: function () {
                             events.push('sleep');
                         },
@@ -204,7 +207,7 @@ define(function (require) {
                                 router.redirect('/foo?name=saber', null, {noCache: true});
                                 setTimeout(function () {
                                     expect(events).toEqual([
-                                        'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'complete',
+                                        'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'revived', 'complete',
                                         'leave', 'init', 'enter', 'ready', 'complete'
                                     ]);
                                     finish(done);

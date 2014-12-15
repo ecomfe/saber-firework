@@ -224,11 +224,26 @@ define(function (require) {
         bindDomEvents(this);
 
         /**
-         * 试图就绪事件
+         * 视图就绪事件
          *
          * @event
          */
         this.emit('ready');
+    };
+
+    /**
+     * 视图苏醒
+     *
+     * @public
+     * @fires View#revived
+     */
+    View.prototype.revived = function () {
+        /**
+         * 视图苏醒事件
+         *
+         * @event
+         */
+        this.emit('revived');
     };
 
     /**

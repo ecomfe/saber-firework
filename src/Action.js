@@ -133,6 +133,16 @@ define(function (require) {
     };
 
     /**
+     * 页面苏醒
+     *
+     * @public
+     */
+    Action.prototype.revived = function () {
+        this.emit('revived');
+        this.view.revived();
+    };
+
+    /**
      * 页面呈现完成
      * 业务逻辑处理的主要入口
      *
