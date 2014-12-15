@@ -88,6 +88,7 @@ define(function (require) {
             expect(main.innerHTML).toEqual(data.name);
         });
 
+
         it('.render() supoort targets', function () {
             var data = {name: 'treelite'};
             var tpl = '<!-- target:main -->${name}<!-- target:test -->test${name}';
@@ -171,6 +172,71 @@ define(function (require) {
                 expect(fn.calls.any()).toBeFalsy();
                 done();
             }, 0);
+        });
+
+        describe('.query/queryAll', function () {
+            var tpl = '<span></span><div class="item"><span></span></div><div class="item"></div>';
+
+            it ('return element with one context', function () {
+                var view = new View({
+                    main: main,
+                    template: tpl
+                });
+
+                view.render();
+
+                var context = main.children[1];
+                var ele = view.query('span', context);
+                expect(ele.tagName).toEqual('SPAN');
+
+                ele = view.query('.item', context);
+                expect(ele).toBeNull();
+
+                var eles = view.queryAll('span', context);
+                expect(eles.length).toBe(1);
+
+                eles = view.queryAll('.item', context);
+                expect(eles.length).toBe(0);
+            });
+
+            it ('return element with default context', function () {
+                var view = new View({
+                    main: main,
+                    template: tpl
+                });
+
+                view.render();
+
+                var ele = view.query('.item');
+                expect(ele.className).toEqual('item');
+                expect(ele.previousSibling.tagName).toEqual('SPAN');
+
+                ele = view.query('.no-exist');
+                expect(ele).toBeNull();
+
+                var eles = view.queryAll('.item');
+                expect(eles.length).toBe(2);
+
+                eles = view.queryAll('.no-exist-item');
+                expect(eles.length).toBe(0);
+            });
+
+            it('return null or empty array while the main element do not exist', function () {
+                var view = new View({
+                    main: main,
+                    template: tpl
+                });
+
+                view.render();
+
+                view.main = null;
+
+                var ele = view.query('.item');
+                expect(ele).toBeNull();
+
+                var eles = view.queryAll('span');
+                expect(eles.length).toBe(0);
+            });
         });
 
         describe('.dipose()', function () {
