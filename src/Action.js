@@ -126,10 +126,11 @@ define(function (require) {
      * 进行事件注册
      *
      * @public
+     * @param {boolean} isFirst 是否时首屏渲染
      */
-    Action.prototype.ready = function () {
-        this.emit('ready');
-        this.view.ready();
+    Action.prototype.ready = function (isFirst) {
+        this.emit('ready', isFirst);
+        this.view.ready(isFirst);
     };
 
     /**

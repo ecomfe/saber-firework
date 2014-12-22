@@ -426,7 +426,7 @@ define(function (require) {
 
         fireEvent('beforetransition');
 
-        action.ready();
+        action.ready(true);
         action.complete();
 
         fireEvent('afterload');
