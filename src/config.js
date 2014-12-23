@@ -12,6 +12,13 @@ define({
     index: 'index',
 
     /**
+     * 是否启用前端路由
+     *
+     * @type {boolean}
+     */
+    route: true,
+
+    /**
      * 预加载的模版
      *
      * @type {Array.<string>}

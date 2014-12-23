@@ -558,7 +558,8 @@ define(function (require) {
 
         // 初始化router
         router.config({
-            index: config.index
+            index: config.index,
+            disabled: !config.route
         });
         router.start();
     };
