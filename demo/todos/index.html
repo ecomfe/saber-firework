@@ -37,21 +37,21 @@
               <!-- if: !${filter} -->
               <a class="selected">All</a>
               <!-- else -->
-              <a href="#/">All</a>
+              <a href="index.html">All</a>
               <!-- /if -->
             </li>
             <li>
               <!-- if: ${filter} == 'active' -->
               <a class="selected">Active</a>
               <!-- else -->
-              <a href="#/~filter=active">Active</a>
+              <a href="?filter=active">Active</a>
               <!-- /if -->
             </li>
             <li>
               <!-- if: ${filter} == 'complete' -->
               <a class="selected">Completed</a>
               <!-- else -->
-              <a href="#/~filter=complete">Completed</a>
+              <a href="?filter=complete">Completed</a>
               <!-- /if -->
             </li>
           </ul>
@@ -100,11 +100,11 @@
                 },
                 {
                     name: 'saber-router',
-                    location: '../../dep/saber-router/1.0.0/src'
+                    location: '../../dep/saber-router/2.0.0/src'
                 },
                 {
                     name: 'saber-viewport',
-                    location: '../../dep/saber-viewport/1.0.0/src'
+                    location: '../../dep/saber-viewport/1.0.1/src'
                 },
                 {
                     name: 'saber-run',
@@ -112,7 +112,7 @@
                 },
                 {
                     name: 'saber-uri',
-                    location: '../../dep/saber-uri/1.0.0/src'
+                    location: '../../dep/saber-uri/1.0.1/src'
                 },
                 {
                     name: 'saber-dom',
@@ -142,10 +142,18 @@
                     location: '../../dep/etpl/3.0.0/src'
                 },
                 {
+                    name: 'saber-env',
+                    location: '../../dep/saber-env/1.0.0/src'
+                },
+                {
                     name: 'saber-widget',
                     location: '../../dep/saber-widget/1.0.0/src'
+                },
+                {
+                    name: 'saber-ajax',
+                    location: '../../dep/saber-ajax/1.0.0/src',
+                    main: 'ajax'
                 }
-
             ]
         });
 

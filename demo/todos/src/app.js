@@ -8,7 +8,7 @@ define(function (require) {
 
     Resolver.disableExceptionCapture();
 
-    firework.load({path: '/', action: require('./list')});
+    firework.load({path: '/demo/todos/index.html', action: require('./list')});
 
     firework.start('todoapp');
 });
