@@ -647,6 +647,26 @@ define(function (require) {
         }
     };
 
+    /**
+     * 停止App
+     * For Test
+     *
+     * @public
+     */
+    exports.stop = function () {
+        var router = globalConfig.router;
+
+        router.stop();
+        router.clear();
+        routes = [];
+
+        filters = [];
+        waitingRoute = null;
+        cur = {status: STATUS_IDLE};
+
+        exports.delCachedAction();
+    };
+
     return exports;
 
 });

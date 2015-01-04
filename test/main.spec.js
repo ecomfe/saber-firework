@@ -12,90 +12,7 @@ define(function (require) {
     var Resolver = require('saber-promise');
     var extend = require('saber-lang/extend');
 
-
-    var libs = {};
-
-    function mockLib(name, lib) {
-        var item = libs[name] || {};
-
-        Object.keys(lib).forEach(function (key) {
-            item[key] = lib[key];
-            lib[key] = jasmine.createSpy();
-        });
-
-        libs[name] = item;
-    }
-
-    function unmockLib(name, lib) {
-        var item = libs[name];
-        Object.keys(item).forEach(function (key) {
-            lib[key] = item[key];
-        });
-    }
-
     describe('main', function () {
-
-        describe('.start()', function () {
-
-            beforeEach(function () {
-                mockLib('tap', tap);
-                mockLib('router', router);
-                mockLib('viewport', viewport);
-            });
-
-            afterEach(function () {
-                unmockLib('tap', tap);
-                unmockLib('router', router);
-                unmockLib('viewport', viewport);
-            });
-
-            it('should init viewport, router, tap and then start router', function () {
-                var main = 'MainHTMLElement';
-                var options = {};
-
-                firework.start(main, options);
-
-                expect(viewport.init).toHaveBeenCalledWith(main, {transition: false});
-                expect(tap.mixin).toHaveBeenCalled();
-                expect(router.start).toHaveBeenCalled();
-            });
-        });
-
-        /*
-        describe('.load()', function () {
-
-            beforeEach(function () {
-                mockLib('tap', tap);
-                mockLib('router', router);
-                mockLib('viewport', viewport);
-            });
-
-            afterEach(function () {
-                unmockLib('tap', tap);
-                unmockLib('router', router);
-                unmockLib('viewport', viewport);
-            });
-
-            it('should add route config', function () {
-                var path = '/'
-                var route = {path: path};
-
-                firework.load(route);
-                expect(router.add).toHaveBeenCalled();
-                expect(router.add.calls.argsFor(0)[0]).toEqual(path);
-            });
-
-            it('should add array route config', function () {
-                var paths = ['/', '/home'];
-                var routes = [{path: paths[0]}, {path: paths[1]}];
-
-                firework.load(routes);
-                expect(router.add.calls.count()).toBe(2);
-                expect(router.add.calls.argsFor(0)[0]).toEqual(paths[0]);
-                expect(router.add.calls.argsFor(1)[0]).toEqual(paths[1]);
-            })
-        });
-        */
 
         describe('app', function () {
             var main = document.querySelector('.viewport');
@@ -113,6 +30,12 @@ define(function (require) {
                 // 等待一下，完成index页面的加载
                 setTimeout(done, WAITE_TIME);
             }
+
+            /*
+            afterAll(function () {
+                firework.stop();
+            });
+            */
 
             describe('load page', function () {
 
@@ -586,6 +509,68 @@ define(function (require) {
             });
 
         });
+
+        /**
+        describe('extension', function () {
+
+            describe('first screen', function () {
+
+                var WAITE_TIME = 10;
+                var main = document.querySelector('.viewport-fs')
+
+                afterEach(function () {
+                    firework.stop();
+                    location.hash = '/';
+                });
+
+                afterAll(function () {
+                    var config = require('saber-firework/config');
+                    config.firstScreen = false;
+                });
+
+                it('do not render again', function (done) {
+                    firework.load({path: '/', action: require('./mock/foo')});
+                    firework.start(main, {firstScreen: true});
+
+                    setTimeout(function () {
+                        expect(main.innerHTML).toEqual('<div><h1>Hello</h1></div>');
+                        done();
+                    }, WAITE_TIME);
+                });
+
+                it('fire events', function (done) {
+                    var action = require('./mock/foo');
+                    var events = [];
+                    action.events = {
+                        init: function () {
+                            events.push('init');
+                        },
+                        enter: function () {
+                            events.push('enter');
+                        },
+                        ready: function () {
+                            events.push('ready');
+                        },
+                        complete: function () {
+                            events.push('complete');
+                        },
+                        leave: function () {
+                            events.push('leave');
+                        }
+                    };
+                    firework.load({path: '/', action: action});
+                    firework.start(main, {firstScreen: true});
+
+                    setTimeout(function () {
+                        expect(events).toEqual(['init', 'ready', 'complete']);
+                        done();
+                    }, WAITE_TIME);
+                });
+
+            });
+
+        });
+        */
 
     });
 });
