@@ -1,5 +1,5 @@
 /**
- * @file detail model
+ * @file index model
  * @author treelite(c.xinle@gmail.com)
  */
 
@@ -9,8 +9,8 @@ define(function (require) {
 
     var config = {};
 
-    config.fetch = function (query) {
-        return Resolver.resolved({name: 'Detail', query: JSON.stringify(query)});
+    config.fetch = function () {
+        return Resolver.resolved({name: 'Home'});
     };
 
     return config;

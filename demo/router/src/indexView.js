@@ -7,7 +7,7 @@ define(function () {
 
     var config = {};
 
-    config.template = '<h1>${name}</h1><p><strong>Query:&nbsp;<strong>${query}</p><p><a href="#/">Home</a></p>';
+    config.template = '<h1>${name}</h1><p><a href="detail.html?type=popstate">Detail</a></p>';
 
     return config;
 
