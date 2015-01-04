@@ -11,11 +11,11 @@ define(function (require) {
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var curry = require('saber-lang/curry');
-    var router = require('saber-router');
     var viewport = require('saber-viewport');
-    var Action = require('./Action');
+    var mm = require('saber-mm');
 
     var globalConfig = require('./config');
+
 
     var STATUS_IDLE = 0;
     var STATUS_LOAD = 1;
@@ -25,9 +25,6 @@ define(function (require) {
     var cur = {};
 
     cur.status = STATUS_IDLE;
-
-    var exports = {};
-    Emitter.mixin(exports);
 
     /**
      * 获取全局配置的附加处理器
@@ -114,25 +111,6 @@ define(function (require) {
     }
 
     /**
-     * 创建Action对象
-     *
-     * @inner
-     * @param {Object=} config 配置信息
-     * @return {Action}
-     */
-    function createAction(config) {
-        var Constructor;
-        if (config && config.constructor !== Object
-        ) {
-            Constructor = config.constructor;
-        }
-        else {
-            Constructor = Action;
-        }
-        return new Constructor(config);
-    }
-
-    /**
      * 保存当前Action相关信息
      *
      * @inner
@@ -157,7 +135,7 @@ define(function (require) {
     }
 
     /**
-     * 加载Action
+     * 启动Action
      *
      * @inner
      * @param {Object} config 路由信息
@@ -169,46 +147,10 @@ define(function (require) {
      * @param {Object} config.options 跳转参数
      * @param {boolean} config.options.force 强制跳转
      * @param {boolean=} config.optins.noCache 不使用缓存action
+     * @param {Object} action
      */
-    function loadAction(config) {
+    function enterAction(config, action) {
         var options = config.options || {};
-
-        // 支持异步action
-        if (Object.prototype.toString.call(config.action) === '[object String]') {
-            window.require([config.action], function (action) {
-                config.action = action;
-                loadAction(config);
-            });
-            return;
-        }
-
-        // 如果路径未发生变化
-        // 只需要刷新当前action
-        if (config.path === cur.path
-            && !options.force
-            && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
-            && cur.action.refresh
-        ) {
-            cur.action.refresh(config.query, config.options).then(finishLoad);
-            return;
-        }
-
-        if (options.noCache) {
-            delCache(config.path);
-        }
-
-        // 处理当前正在工作的action
-        if (cur.action) {
-            cur.action[cachedAction[cur.path] ? 'sleep' : 'leave']();
-        }
-
-        // 首先尝试从cache中取action
-        var action = cachedAction[config.path];
-
-        // 没有从cache中获取到action就创建
-        if (!action) {
-            action = createAction(config.action);
-        }
 
         // 获取页面转场配置参数
         var transition = config.transition || {};
@@ -338,6 +280,55 @@ define(function (require) {
     }
 
     /**
+     * 加载Action
+     *
+     * @inner
+     * @param {Object} config 路由信息
+     * @param {string} config.path 请求路径
+     * @param {Object} config.action action配置
+     * @param {Object} config.query 查询条件
+     * @param {boolean=} config.cached 是否缓存action
+     * @param {Object=} config.transition 转场配置
+     * @param {Object} config.options 跳转参数
+     * @param {boolean} config.options.force 强制跳转
+     * @param {boolean=} config.optins.noCache 不使用缓存action
+     */
+    function loadAction(config) {
+        var options = config.options || {};
+
+        // 如果路径未发生变化
+        // 只需要刷新当前action
+        if (config.path === cur.path
+            && !options.force
+            && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
+            && cur.action.refresh
+        ) {
+            cur.action.refresh(config.query, config.options).then(finishLoad);
+            return;
+        }
+
+        if (options.noCache) {
+            delCache(config.path);
+        }
+
+        // 处理当前正在工作的action
+        if (cur.action) {
+            cur.action[cachedAction[cur.path] ? 'sleep' : 'leave']();
+        }
+
+        // 首先尝试从cache中取action
+        var action = cachedAction[config.path];
+
+        // 没有从cache中获取到action就创建
+        if (!action) {
+            mm.create(config.action).then(curry(enterAction, config));
+        }
+        else {
+            enterAction(config, action);
+        }
+    }
+
+    /**
      * 执行filter
      *
      * @inner
@@ -391,11 +382,14 @@ define(function (require) {
      * 首屏渲染
      *
      * @inner
-     * @param {Object} route 路由信息
      * @param {Page} page
+     * @param {Object} action
      */
-    function initFirstScreen(route, page) {
-        var action = createAction(route.action);
+    function loadFirstScreen(page, action) {
+        var route = waitingRoute;
+        if (!route) {
+            return;
+        }
 
         function fireEvent(eventName) {
             exports.emit(
@@ -432,6 +426,10 @@ define(function (require) {
         fireEvent('afterload');
 
         dumpInfo(action, route, page);
+
+        waitingRoute = null;
+
+        finishLoad();
     }
 
     /**
@@ -450,19 +448,20 @@ define(function (require) {
         // 设置当前状态为正在加载中
         setStatus(STATUS_LOAD);
 
-        var page;
         var path = waitingRoute.path;
 
         // 首屏渲染逻辑
         // 第一次加载action且能获取到起始页面
+        /**
+         * TODO 首屏加载逻辑
+        var page;
         if (!cur.action
             && (page = viewport.front(path, {cached: waitingRoute.cached}))
         ) {
-            initFirstScreen(waitingRoute, page);
-            waitingRoute = null;
-            finishLoad();
+            mm.create(waitingRoute.action).then(curry(loadFirstScreen, page));
             return;
         }
+        */
 
 
         // 处理filter的执行结果
@@ -471,7 +470,7 @@ define(function (require) {
             if (path !== route.path) {
                 // 设置状态为空闲以支持跳转
                 setStatus(STATUS_IDLE);
-                router.redirect(route.path, route.query, route.options);
+                globalConfig.router.redirect(route.path, route.query, route.options);
             }
             else {
                 loadAction(route);
@@ -521,8 +520,19 @@ define(function (require) {
             config.template = [config.template];
         }
 
+        // 如果没有制定路由器则使用默认的hash路由
+        if (!config.router) {
+            config.router = require('saber-router');
+            config.router.controller(require('saber-router/controller/hash'));
+        }
+
         return config;
     }
+
+    var routes = [];
+    var exports = {};
+
+    Emitter.mixin(exports);
 
     /**
      * 加载path配置信息
@@ -534,9 +544,18 @@ define(function (require) {
         if (!Array.isArray(paths)) {
             paths = [paths];
         }
-        paths.forEach(function (item) {
-            router.add(item.path, curry(routeTo, item));
-        });
+
+        // 如果还没有制定router
+        // 则先缓存路由信息
+        // 否则直接添加路由
+        if (!globalConfig.router) {
+            routes = routes.concat(paths);
+        }
+        else {
+            paths.forEach(function (item) {
+                globalConfig.router.add(item.path, curry(routeTo, item));
+            });
+        }
     };
 
     /**
@@ -550,17 +569,26 @@ define(function (require) {
         // 扩展全局配置信息
         var config = extendGlobalConfig(options);
 
+        var router = config.router;
+
+        mm.config({
+            template: config.template,
+            templateConfig: config.templateConfig,
+            router: router
+        });
+
         // 初始化viewport
         viewport.init(main, config.viewport);
 
         // 启用无延迟点击
         Tap.mixin(document.body);
 
-        // 初始化router
-        router.config({
-            index: config.index,
-            disabled: !config.route
+        // 添加路由
+        routes.forEach(function (item) {
+            router.add(item.path, curry(routeTo, item));
         });
+
+        // 启动路由
         router.start();
     };
 

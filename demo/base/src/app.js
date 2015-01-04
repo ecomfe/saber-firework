@@ -8,8 +8,8 @@ define(function (require) {
 
     Resolver.disableExceptionCapture();
 
-    firework.load({path: '/demo/base/index.html', action: require('./index')});
-    firework.load({path: '/demo/base/detail', action: require('./detail')});
+    firework.load({path: '/', action: require('./index')});
+    firework.load({path: '/detail', action: require('./detail')});
 
     firework.start('viewport');
 });

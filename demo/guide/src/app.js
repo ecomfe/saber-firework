@@ -8,7 +8,7 @@ define(function (require) {
 
     firework.load([
         // 配置首页
-        {path: '/demo/guide/index.html', action: require('./index')}
+        {path: '/', action: require('./index')}
     ]);
 
 	// Engine start ~

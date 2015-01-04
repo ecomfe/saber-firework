@@ -57,11 +57,11 @@ define(function (require) {
 
                 expect(viewport.init).toHaveBeenCalledWith(main, {transition: false});
                 expect(tap.mixin).toHaveBeenCalled();
-                expect(router.config).toHaveBeenCalled();
                 expect(router.start).toHaveBeenCalled();
             });
         });
 
+        /*
         describe('.load()', function () {
 
             beforeEach(function () {
@@ -95,6 +95,7 @@ define(function (require) {
                 expect(router.add.calls.argsFor(1)[0]).toEqual(paths[1]);
             })
         });
+        */
 
         describe('app', function () {
             var main = document.querySelector('.viewport');
@@ -102,7 +103,6 @@ define(function (require) {
             var WAITE_TIME = 10;
 
             firework.load({path: '/', action: require('mock/index')});
-            firework.load({path: '/test/runner.html', action: require('mock/index')});
             firework.start(main);
 
             function finish(done) {
@@ -110,7 +110,6 @@ define(function (require) {
                 router.clear();
                 firework.load({path: '/', action: require('mock/index')});
                 router.redirect('/', null, {force: true});
-                history.replaceState({}, '', '/test/runner.html');
                 // 等待一下，完成index页面的加载
                 setTimeout(done, WAITE_TIME);
             }
@@ -204,7 +203,7 @@ define(function (require) {
                         setTimeout(function () {
                             router.redirect('/foo');
                             setTimeout(function () {
-                                router.redirect('/foo?name=saber', null, {noCache: true});
+                                router.redirect('/foo~name=saber', null, {noCache: true});
                                 setTimeout(function () {
                                     expect(events).toEqual([
                                         'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'revived', 'complete',
@@ -219,7 +218,7 @@ define(function (require) {
 
                 it('check action events with error & cache', function (done) {
                     var errorModel = extend({}, require('mock/errorModel'));
-                    errorModel.fetch = function (url, query) {
+                    errorModel.fetch = function (query) {
                         if (!query.type) {
                             return Resolver.rejected();
                         }
@@ -255,8 +254,8 @@ define(function (require) {
                     };
 
                     firework.load({path: '/error', action: errorAction});
-                    router.redirect('/error?type=test');
 
+                    router.redirect('/error~type=test');
                     setTimeout(function () {
                         router.redirect('/error');
                         setTimeout(function () {
@@ -317,7 +316,7 @@ define(function (require) {
                     router.redirect('/foo');
 
                     setTimeout(function () {
-                        router.redirect('/foo?name=saber', null, {type: 'test'});
+                        router.redirect('/foo~name=saber', null, {type: 'test'});
                         setTimeout(function () {
                             expect(res.query).toEqual({name: 'saber'});
                             expect(res.options).toEqual({type: 'test'});
@@ -340,10 +339,10 @@ define(function (require) {
                         router.redirect('/foo');
                         setTimeout(function () {
                             expect(config.events.enter.calls.count()).toBe(1);
-                            router.redirect('/foo?type=test');
+                            router.redirect('/foo~type=test');
                             setTimeout(function () {
                                 expect(config.events.enter.calls.count()).toBe(2);
-                                router.redirect('/foo?type=test', null, {force: true});
+                                router.redirect('/foo~type=test', null, {force: true});
                                 setTimeout(function () {
                                     expect(config.events.enter.calls.count()).toBe(3);
                                     finish(done);
@@ -381,12 +380,12 @@ define(function (require) {
                         fronts.push(front);
                     });
 
-                    router.redirect('/?spec=events');
+                    router.redirect('/~spec=events');
 
                     setTimeout(function () {
                         expect(events).toEqual(['beforeload', 'beforetransition', 'afterload']);
                         expect(fronts[0].route.url).toEqual('/');
-                        expect(backs[0].route.url).toEqual('/?spec=events');
+                        expect(backs[0].route.url).toEqual('/~spec=events');
                         expect(backs[0].route.query).toEqual({spec: 'events'});
                         expect(fronts[0]).toBe(fronts[1]);
                         expect(fronts[0]).toBe(fronts[2]);
@@ -489,10 +488,10 @@ define(function (require) {
                     firework.addFilter('/foo', filter);
                     firework.load({path: '/foo', action: require('mock/foo')});
 
-                    router.redirect('/foo?name=hello', null, {type: 'test'});
+                    router.redirect('/foo~name=hello', null, {type: 'test'});
 
                     setTimeout(function () {
-                        expect(res.url).toEqual('/foo?name=hello');
+                        expect(res.url).toEqual('/foo~name=hello');
                         expect(res.path).toEqual('/foo');
                         expect(res.query).toEqual({name: 'hello'});
                         expect(res.options).toEqual({type: 'test'});

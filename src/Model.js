@@ -8,7 +8,7 @@ define(function (require) {
     var inherits = require('saber-lang/inherits');
     var ajax = require('saber-ajax');
     var Resolver = require('saber-promise');
-    var Abstract = require('./Abstract');
+    var BaseClass = require('saber-mm/Model');
 
     /**
      * Model
@@ -16,19 +16,10 @@ define(function (require) {
      * @constructor
      */
     function Model(options) {
-        Abstract.call(this, options);
-        this.init();
+        BaseClass.call(this, options);
     }
 
-    inherits(Model, Abstract);
-
-    /**
-     * 填充数据
-     *
-     * @public
-     * @param {*} data
-     */
-    Model.prototype.fulfill = function () {};
+    inherits(Model, BaseClass);
 
     /**
      * 获取数据
@@ -53,6 +44,7 @@ define(function (require) {
      * 在被缓存的action被wakeup时调用
      *
      * @public
+     * @param {string} url
      * @param {Object} query 查询条件
      * @return {Promise}
      */

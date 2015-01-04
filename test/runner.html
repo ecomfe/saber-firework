@@ -32,6 +32,10 @@
                     location: '../src'
                 },
                 {
+                    name: 'saber-mm',
+                    location: 'dep/saber-mm/0.1.0/src'
+                },
+                {
                     name: 'saber-emitter',
                     location: 'dep/saber-emitter/1.0.0/src',
                     main: 'emitter'
@@ -68,22 +72,13 @@
                 {
                     name: 'saber-router',
                     location: 'dep/saber-router/2.0.0/src'
-                },
-                {
-                    name: 'saber-env',
-                    location: 'dep/saber-env/1.0.0/src'
-                },
-                {
-                    name: 'saber-ajax',
-                    location: 'dep/saber-ajax/1.0.0/src',
-                    main: 'ajax'
                 }
             ]
         });
         
         require([
             'saber-tap',
-            'main.spec', 'event.spec', 'abstract.spec', 'action.spec', 'view.spec'
+            'main.spec'
         ]);
 
         </script>
