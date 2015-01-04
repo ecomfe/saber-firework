@@ -452,17 +452,13 @@ define(function (require) {
 
         // 首屏渲染逻辑
         // 第一次加载action且能获取到起始页面
-        /**
-         * TODO 首屏加载逻辑
         var page;
-        if (!cur.action
+        if (globalConfig.firstScreen && !cur.action
             && (page = viewport.front(path, {cached: waitingRoute.cached}))
         ) {
             mm.create(waitingRoute.action).then(curry(loadFirstScreen, page));
             return;
         }
-        */
-
 
         // 处理filter的执行结果
         function beforeLoad(route) {
@@ -574,7 +570,10 @@ define(function (require) {
         mm.config({
             template: config.template,
             templateConfig: config.templateConfig,
-            router: router
+            router: router,
+            Presenter: config.Presenter,
+            View: config.View,
+            Model: config.Model
         });
 
         // 初始化viewport

@@ -12,13 +12,6 @@ define({
     index: 'index',
 
     /**
-     * 是否启用前端路由
-     *
-     * @type {boolean}
-     */
-    route: true,
-
-    /**
      * 预加载的模版
      *
      * @type {Array.<string>}
@@ -72,12 +65,5 @@ define({
      *
      * @type {number}
      */
-    timeout: 1000,
-
-    /**
-     * 首屏数据的全局变量名
-     *
-     * @type {string}
-     */
-    initialDataKey: 'rebas'
+    timeout: 1000
 });
