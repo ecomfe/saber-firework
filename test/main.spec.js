@@ -31,12 +31,6 @@ define(function (require) {
                 setTimeout(done, WAITE_TIME);
             }
 
-            /*
-            afterAll(function () {
-                firework.stop();
-            });
-            */
-
             describe('load page', function () {
 
                 it('success', function (done) {
@@ -185,34 +179,6 @@ define(function (require) {
                             expect(main.innerHTML).toEqual('<div></div>');
                             expect(events).toEqual(['init', 'enter', 'ready', 'complete', 'leave', 'init', 'enter']);
                             finish(done)
-                        }, WAITE_TIME);
-                    }, WAITE_TIME);
-                });
-
-                it('check cahced action flow', function (done) {
-                    var action = extend({}, require('mock/foo'));
-                    var view = extend({}, require('mock/fooView'));
-                    var query = {name: 'saber'};
-                    var res;
-
-                    view.events = {
-                        wakeup: function (data) {
-                            res = data;
-                        }
-                    };
-
-                    action.view = view;
-
-                    firework.load({path: '/foo', action: action, cached: true});
-                    router.redirect('/foo');
-                    setTimeout(function () {
-                        router.redirect('/');
-                        setTimeout(function () {
-                            router.redirect('/foo', query);
-                            setTimeout(function () {
-                                expect(res).toEqual(query);
-                                finish(done);
-                            }, WAITE_TIME);
                         }, WAITE_TIME);
                     }, WAITE_TIME);
                 });
@@ -509,68 +475,6 @@ define(function (require) {
             });
 
         });
-
-        /**
-        describe('extension', function () {
-
-            describe('first screen', function () {
-
-                var WAITE_TIME = 10;
-                var main = document.querySelector('.viewport-fs')
-
-                afterEach(function () {
-                    firework.stop();
-                    location.hash = '/';
-                });
-
-                afterAll(function () {
-                    var config = require('saber-firework/config');
-                    config.firstScreen = false;
-                });
-
-                it('do not render again', function (done) {
-                    firework.load({path: '/', action: require('./mock/foo')});
-                    firework.start(main, {firstScreen: true});
-
-                    setTimeout(function () {
-                        expect(main.innerHTML).toEqual('<div><h1>Hello</h1></div>');
-                        done();
-                    }, WAITE_TIME);
-                });
-
-                it('fire events', function (done) {
-                    var action = require('./mock/foo');
-                    var events = [];
-                    action.events = {
-                        init: function () {
-                            events.push('init');
-                        },
-                        enter: function () {
-                            events.push('enter');
-                        },
-                        ready: function () {
-                            events.push('ready');
-                        },
-                        complete: function () {
-                            events.push('complete');
-                        },
-                        leave: function () {
-                            events.push('leave');
-                        }
-                    };
-                    firework.load({path: '/', action: action});
-                    firework.start(main, {firstScreen: true});
-
-                    setTimeout(function () {
-                        expect(events).toEqual(['init', 'ready', 'complete']);
-                        done();
-                    }, WAITE_TIME);
-                });
-
-            });
-
-        });
-        */
 
     });
 });
