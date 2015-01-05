@@ -1,7 +1,7 @@
 saber-firework [![Build Status](https://travis-ci.org/ecomfe/saber-firework.png)](https://travis-ci.org/ecomfe/saber-firework)
 ===
 
-移动端`MVP`开发框架，使用[etpl](https://github.com/ecomfe/etpl)作为模版引擎，结合[页面转场](https://github.com/ecomfe/saber-viewport)与[路由管理](https://github.com/ecomfe/saber-router)，提供完整的`SPA`解决方案。
+移动端`SPA`开发框架，基于[MVP](https://github.com/ecomfe/saber-mm)架构，结合[页面转场](https://github.com/ecomfe/saber-viewport)与[路由管理](https://github.com/ecomfe/saber-router)，提供完整的`SPA`解决方案。
 
 ## Installation
 
@@ -32,7 +32,7 @@ app.load({
 app.start();
 ```
 
-具体请参考[使用指南](doc/guide.md)
+更多内容请参考[使用指南](doc/guide.md)
 
 ## API
 
@@ -111,15 +111,15 @@ firework.addFilter(/^\/admin\//, function (route, next, jump) {
         * **path** `{string}` 地址
         * **query** `{Object}` 查询条件
         * **url** `{string}` 完整URL
-    * **action** `{Action}` 待加载的[action对象](doc/action.md)
-    * **page** `{Page}` 待加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
+    * **action** `{Action}` 待加载的[Action对象](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md)
+    * **page** `{Page}` 待加载的[Page对象](https://github.com/ecomfe/saber-viewport#page)
 * **before** `{Object}` 当前页面信息
     * **route** `{Object}` 当前页面的路由信息
         * **path** `{string}` 地址
         * **query** `{Object}` 查询条件
         * **url** `{string}` 完整URL
-    * **action** `{Action}` 当前的[action对象](doc/action.md)
-    * **page** `{Page}` 当前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+    * **action** `{Action}` 当前的[Action对象](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md)
+    * **page** `{Page}` 当前的[Page对象](https://github.com/ecomfe/saber-viewport#page)
 
 #### beforetransition
 
@@ -135,6 +135,6 @@ firework.addFilter(/^\/admin\//, function (route, next, jump) {
 
 ### Classes
 
-* [Action](doc/action.md)对象，页面行为控制
-* [View](doc/view.md)对象，页面视图管理
-* [Model](doc/model.md)对象，页面数据管理
+* [Action](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md)，页面管理对象
+* [View](https://github.com/ecomfe/saber-mm/blob/master/doc/view.md)，视图管理对象
+* [Model](https://github.com/ecomfe/saber-mm/blob/master/doc/view.md)，数据管理对象

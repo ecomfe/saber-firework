@@ -35,7 +35,7 @@ action配置参数较多,同时为了便于复用，一般都作为一个模块�
 
 `saber-firework`按照`MVP`的思想将一个页面划分为三个模块：`action`、`view`与`model`，分别控制页面的整体逻辑、视图逻辑、数据逻辑，`action`可以使用自己的`view`与`model`属性引用对应的`view`与`model`对象，`view`与`model`通过事件通知`action`，但`view`与`model`之间不能直接通信。
 
-上一步中配置了`/index`的路由信息，这里添加一个`index.js`来配置对应的Action信息
+上一步中配置了`/`的路由信息，这里添加一个`index.js`来配置对应的Action信息
 
 ### Action配置
 
@@ -60,7 +60,7 @@ action配置参数较多,同时为了便于复用，一般都作为一个模块�
 
 action配置中最关键的就是`model`与`view`字段，表明action对应的model与view配置信息，基于与action配置相同的考虑，独立模块书写，使用`require('./xx')`方式引用
 
-更多请参考[Action配置说明](action.md#configure)
+更多请参考[Action配置说明](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md#configure)
 
 接下来新建`indexModel.js`配置对应的`model`
 
@@ -90,7 +90,7 @@ action配置中最关键的就是`model`与`view`字段，表明action对应的m
 
 `.fetch()`需要返回一个`Promise`对象，实例中直接使用了`Resolver.resolved()`构造了一个静态数据并返回，实际项目中通常是使用[saber-ajax](https://github.com/ecomfe/saber-ajax)进行异步请求，并返回对应的`Promise`对象
 
-更多请参考[Model配置说明](model.md#configure)
+更多请参考[Model配置说明](https://github.com/ecomfe/saber-mm/blob/master/doc/model.md#configure)
 
 搞定了model接着来新建`indexView.js`配置对应的`view`
 
@@ -115,7 +115,7 @@ define(function () {
 
 在页面加载时框架会用`model.fetch()`获取的数据来渲染`templateMainTarget`指定的模版完成页面的渲染
 
-更多请参考[View配置说明](view.md#configure)
+更多请参考[View配置说明](https://github.com/ecomfe/saber-mm/blob/master/doc/view.md#configure)
 
 ## Step 3 启动应用
 
