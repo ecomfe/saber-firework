@@ -587,6 +587,11 @@ define(function (require) {
             router.add(item.path, curry(routeTo, item));
         });
 
+        router.config({
+            path: config.path,
+            index: config.index
+        });
+
         // 启动路由
         router.start();
     };

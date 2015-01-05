@@ -9,7 +9,14 @@ define({
      *
      * @type {string}
      */
-    index: 'index',
+    index: '',
+
+    /**
+     * 默认路径
+     *
+     * @type {string}
+     */
+    path: '/',
 
     /**
      * 预加载的模版
