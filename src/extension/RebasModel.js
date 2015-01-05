@@ -28,12 +28,12 @@ define(function (require) {
      * @param {string} url
      * @return {Promise}
      */
-    Model.prototype.fetch = function (url) {
+    Model.prototype.fetch = function (query, url) {
         var me = this;
         return ajax.get(url).then(
             function (data) {
                 data = JSON.parse(data);
-                me.fulfill(data);
+                me.fill(data);
                 return data;
             }
         );

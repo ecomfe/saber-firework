@@ -415,7 +415,7 @@ define(function (require) {
         // 使用初始化数据填充首屏model
         var initialData = window[globalConfig.initialDataKey];
         if (initialData) {
-            action.model.fulfill(initialData);
+            action.model.fill(initialData);
         }
 
         fireEvent('beforetransition');
