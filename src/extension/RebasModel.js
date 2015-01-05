@@ -22,6 +22,13 @@ define(function (require) {
     inherits(Model, BaseClass);
 
     /**
+     * 数据填充
+     *
+     * @public
+     */
+    Model.prototype.fill = function () {};
+
+    /**
      * 获取数据
      *
      * @public

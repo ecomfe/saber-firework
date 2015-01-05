@@ -516,7 +516,7 @@ define(function (require) {
             config.template = [config.template];
         }
 
-        // 如果没有制定路由器则使用默认的hash路由
+        // 如果没有指定路由器则使用默认的hash路由
         if (!config.router) {
             config.router = require('saber-router');
             config.router.controller(require('saber-router/controller/hash'));
