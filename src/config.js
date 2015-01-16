@@ -33,6 +33,13 @@ define({
     templateConfig: {},
 
     /**
+     * 通用模版数据
+     *
+     * @type {Object}
+     */
+    templateData: {},
+
+    /**
      * 视图配置
      * 参见`saber-viewport`的全局配置参数
      * https://github.com/ecomfe/saber-viewport
