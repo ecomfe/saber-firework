@@ -287,6 +287,7 @@ define(function (require) {
      * @param {string} config.path 请求路径
      * @param {Object} config.action action配置
      * @param {Object} config.query 查询条件
+     * @param {Object} config.params 路径参数
      * @param {boolean=} config.cached 是否缓存action
      * @param {Object=} config.transition 转场配置
      * @param {Object} config.options 跳转参数
@@ -303,7 +304,14 @@ define(function (require) {
             && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
             && cur.action.refresh
         ) {
-            cur.action.refresh(config.query, config.options).then(finishLoad);
+            var ret = cur.action.refresh(config.query, config.params, config.options);
+            // 兼容refresh同步的情况
+            if (!ret || typeof ret.then !== 'function') {
+                finishLoad();
+            }
+            else {
+                ret.then(finishLoad);
+            }
             return;
         }
 
@@ -409,9 +417,10 @@ define(function (require) {
 
         fireEvent('beforeload');
 
+        action.set(route.path);
         // 视图与数据已经ready了
         // 跳过enter
-        action.view.setMain(page.main);
+        action.view.set(page.main);
         // 使用初始化数据填充首屏model
         var initialData = window[globalConfig.initialDataKey];
         if (initialData) {
