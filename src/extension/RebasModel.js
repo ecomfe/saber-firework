@@ -6,7 +6,7 @@
 define(function (require) {
 
     var inherits = require('saber-lang/inherits');
-    var ajax = require('saber-ajax');
+    var ajax = require('saber-ajax/ejson');
     var Resolver = require('saber-promise');
     var BaseClass = require('saber-mm/Model');
 
@@ -22,6 +22,20 @@ define(function (require) {
     inherits(Model, BaseClass);
 
     /**
+     * 设置参数
+     *
+     * @public
+     * @param {Object=} query 查询条件
+     * @param {Object=} params 路径参数
+     * @param {string=} path 路径
+     */
+    Model.prototype.set = function (query, params, path) {
+        this.path = path || this.path;
+        this.query = query || this.query;
+        this.params = params || this.params;
+    };
+
+    /**
      * 数据填充
      *
      * @public
@@ -32,14 +46,12 @@ define(function (require) {
      * 获取数据
      *
      * @public
-     * @param {string} url
      * @return {Promise}
      */
-    Model.prototype.fetch = function (query, url) {
+    Model.prototype.fetch = function () {
         var me = this;
-        return ajax.get(url).then(
+        return ajax.get(this.path, this.query).then(
             function (data) {
-                data = JSON.parse(data);
                 me.fill(data);
                 return data;
             }
