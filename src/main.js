@@ -230,7 +230,7 @@ define(function (require) {
 
         var method;
         var delayMethods = ['complete'];
-        var args = [config.path, config.query, config.url, options];
+        var args = [config.path, config.query, config.params, options];
 
         /**
          * action加载失败处理
@@ -417,6 +417,7 @@ define(function (require) {
         if (initialData) {
             action.model.fill(initialData);
         }
+        action.model.set(route.query, route.params, route.path)
 
         fireEvent('beforetransition');
 
@@ -487,14 +488,16 @@ define(function (require) {
      * @param {option} config 路由配置
      * @param {string} path 请求路径
      * @param {Object} query 查询条件
+     * @param {Object} params 路径参数
      * @param {string} url 完整的URL
      * @param {Object} options 跳转参数
      */
-    function routeTo(config, path, query, url, options) {
+    function routeTo(config, path, query, params, url, options) {
         // 设置当前的路由信息
         waitingRoute = extend({}, config);
         waitingRoute.path = path;
         waitingRoute.query = query;
+        waitingRoute.params = params;
         waitingRoute.options = options;
         waitingRoute.url = url;
 
@@ -570,6 +573,7 @@ define(function (require) {
         mm.config({
             template: config.template,
             templateConfig: config.templateConfig,
+            templateData : config.templateData,
             router: router,
             Presenter: config.Presenter,
             View: config.View,
