@@ -40,6 +40,20 @@ define({
     templateData: {},
 
     /**
+     * 是否启用同构模式
+     *
+     * @type {boolean}
+     */
+    isomorphic: false,
+
+    /**
+     * 数据同步的key
+     *
+     * @type {string}
+     */
+    initialDataKey: '__rebas__',
+
+    /**
      * 视图配置
      * 参见`saber-viewport`的全局配置参数
      * https://github.com/ecomfe/saber-viewport
