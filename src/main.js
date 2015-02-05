@@ -230,7 +230,7 @@ define(function (require) {
 
         var method;
         var delayMethods = ['complete'];
-        var args = [config.path, config.query, config.params, options];
+        var args = [config.path, config.query, options];
 
         /**
          * action加载失败处理
@@ -287,7 +287,6 @@ define(function (require) {
      * @param {string} config.path 请求路径
      * @param {Object} config.action action配置
      * @param {Object} config.query 查询条件
-     * @param {Object} config.params 路径参数
      * @param {boolean=} config.cached 是否缓存action
      * @param {Object=} config.transition 转场配置
      * @param {Object} config.options 跳转参数
@@ -304,7 +303,7 @@ define(function (require) {
             && cur.action // 会有存在cur.path但不存在cur.action的情况，比如action加载失败
             && cur.action.refresh
         ) {
-            var ret = cur.action.refresh(config.query, config.params, config.options);
+            var ret = cur.action.refresh(config.query, config.options);
             // 兼容refresh同步的情况
             if (!ret || typeof ret.then !== 'function') {
                 finishLoad();
@@ -426,7 +425,6 @@ define(function (require) {
         if (initialData) {
             action.model.fill(initialData);
         }
-        action.model.set(route.query, route.params, route.path)
 
         fireEvent('beforetransition');
 
@@ -463,7 +461,7 @@ define(function (require) {
         // 首屏渲染逻辑
         // 第一次加载action且能获取到起始页面
         var page;
-        if (globalConfig.firstScreen && !cur.action
+        if (globalConfig.isomorphic && !cur.action
             && (page = viewport.front(path, {cached: waitingRoute.cached}))
         ) {
             mm.create(waitingRoute.action).then(curry(loadFirstScreen, page));
@@ -505,8 +503,9 @@ define(function (require) {
         // 设置当前的路由信息
         waitingRoute = extend({}, config);
         waitingRoute.path = path;
-        waitingRoute.query = query;
-        waitingRoute.params = params;
+        // 考虑再三，还是将query与params合并吧
+        // 同构、同构，前后端思路要统一嘛
+        waitingRoute.query = extend(params, query);
         waitingRoute.options = options;
         waitingRoute.url = url;
 
