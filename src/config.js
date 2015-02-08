@@ -51,7 +51,7 @@ define({
      *
      * @type {string}
      */
-    initialDataKey: '__rebas__',
+    syncDataKey: '__rebas__',
 
     /**
      * 视图配置

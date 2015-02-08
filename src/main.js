@@ -386,6 +386,16 @@ define(function (require) {
     }
 
     /**
+     * 获取前后端同步的数据
+     *
+     * @inner
+     * @return {Object}
+     */
+    function getSyncData() {
+        return window[globalConfig.syncDataKey] || {};
+    }
+
+    /**
      * 首屏渲染
      *
      * @inner
@@ -420,11 +430,8 @@ define(function (require) {
         // 视图与数据已经ready了
         // 跳过enter
         action.view.set(page.main);
-        // 使用初始化数据填充首屏model
-        var initialData = window[globalConfig.initialDataKey];
-        if (initialData) {
-            action.model.fill(initialData);
-        }
+        // 使用同步数据填充首屏model
+        action.model.fill(getSyncData().model);
 
         fireEvent('beforetransition');
 
@@ -581,7 +588,7 @@ define(function (require) {
         mm.config({
             template: config.template,
             templateConfig: config.templateConfig,
-            templateData : config.templateData,
+            templateData : extend({}, getSyncData().templateData, config.templateData),
             router: router,
             Presenter: config.Presenter,
             View: config.View,
