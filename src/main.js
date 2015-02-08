@@ -24,13 +24,16 @@ define(function (require) {
     var waitingRoute;
     var cur = {};
 
+    var exports = {};
+    Emitter.mixin(exports);
+
     cur.status = STATUS_IDLE;
 
     /**
      * 获取全局配置的附加处理器
      *
      * @inner
-     * @param {string} name
+     * @param {string} name 处理器名称
      * @return {function|undefined}
      */
     function getProcessor(name) {
@@ -42,8 +45,8 @@ define(function (require) {
      * 当前状态设置
      *
      * @inner
-     * @param {number} status
-     * @param {boolean} force
+     * @param {number} status 状态
+     * @param {boolean} force 是否强制设置
      */
     function setStatus(status, force) {
         clearTimeout(cur.statusTimer);
@@ -94,7 +97,7 @@ define(function (require) {
      * 删除缓存的action
      *
      * @inner
-     * @param {string} path
+     * @param {string} path 路由
      */
     function delCache(path) {
         var action = cachedAction[path];
@@ -114,9 +117,9 @@ define(function (require) {
      * 保存当前Action相关信息
      *
      * @inner
-     * @param {Action} action
-     * @param {Object} route
-     * @param {Page} page
+     * @param {Action} action action对象
+     * @param {Object} route 路由信息
+     * @param {Page} page 页面对象
      */
     function dumpInfo(action, route, page) {
         if (action) {
@@ -147,7 +150,7 @@ define(function (require) {
      * @param {Object} config.options 跳转参数
      * @param {boolean} config.options.force 强制跳转
      * @param {boolean=} config.optins.noCache 不使用缓存action
-     * @param {Object} action
+     * @param {Object} action Action对象
      */
     function enterAction(config, action) {
         var options = config.options || {};
@@ -208,7 +211,7 @@ define(function (require) {
          * 开始转场动画
          *
          * @inner
-         * @param {boolean} error
+         * @param {boolean} error 是否发生了加载错误
          * @return {Promise}
          */
         function startTransition(error) {
@@ -399,8 +402,8 @@ define(function (require) {
      * 首屏渲染
      *
      * @inner
-     * @param {Page} page
-     * @param {Object} action
+     * @param {Page} page 页面对象
+     * @param {Object} action Action对象
      */
     function loadFirstScreen(page, action) {
         var route = waitingRoute;
@@ -544,15 +547,12 @@ define(function (require) {
     }
 
     var routes = [];
-    var exports = {};
-
-    Emitter.mixin(exports);
 
     /**
-     * 加载path配置信息
+     * 加载路由配置信息
      *
      * @public
-     * @param {Object} paths
+     * @param {Object} paths 路由配置
      */
     exports.load = function (paths) {
         if (!Array.isArray(paths)) {
@@ -576,7 +576,7 @@ define(function (require) {
      * 启动框架
      *
      * @public
-     * @param {HTMLElement} main
+     * @param {HTMLElement} main 主元素
      * @param {Object} options 全局配置信息 完整配置参考`./config.js`
      */
     exports.start = function (main, options) {
@@ -588,7 +588,7 @@ define(function (require) {
         mm.config({
             template: config.template,
             templateConfig: config.templateConfig,
-            templateData : extend({}, getSyncData().templateData, config.templateData),
+            templateData: extend({}, getSyncData().templateData, config.templateData),
             router: router,
             Presenter: config.Presenter,
             View: config.View,
@@ -619,8 +619,8 @@ define(function (require) {
      * 添加filter
      *
      * @public
-     * @param {string|RegExp=} url
-     * @param {Function} filter
+     * @param {string|RegExp=} url url
+     * @param {Function} filter 过滤器
      */
     exports.addFilter = function (url, filter) {
         if (arguments.length === 1) {
@@ -638,7 +638,7 @@ define(function (require) {
      * 删除filter
      *
      * @public
-     * @param {string|RegExp=} url
+     * @param {string|RegExp=} url url
      */
     exports.removeFilter = function (url) {
         if (!url) {
@@ -660,7 +660,7 @@ define(function (require) {
      * 删除缓存的action
      *
      * @public
-     * @param {string} path
+     * @param {string} path 路径
      */
     exports.delCachedAction = function (path) {
         if (path) {
