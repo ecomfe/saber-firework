@@ -392,10 +392,12 @@ define(function (require) {
      * 获取前后端同步的数据
      *
      * @inner
-     * @return {Object}
+     * @param {string=} name 数据名称
+     * @return {*}
      */
-    function getSyncData() {
-        return window[globalConfig.syncDataKey] || {};
+    function getSyncData(name) {
+        var store = extend({}, window[globalConfig.syncDataKey]);
+        return name ? store[name] : store;
     }
 
     /**
@@ -434,7 +436,7 @@ define(function (require) {
         // 跳过enter
         action.view.set(page.main);
         // 使用同步数据填充首屏model
-        action.model.fill(getSyncData().model);
+        action.model.fill(getSyncData('model'));
 
         fireEvent('beforetransition');
 
@@ -588,7 +590,7 @@ define(function (require) {
         mm.config({
             template: config.template,
             templateConfig: config.templateConfig,
-            templateData: extend({}, getSyncData().templateData, config.templateData),
+            templateData: extend({}, getSyncData('templateData'), config.templateData),
             router: router,
             Presenter: config.Presenter,
             View: config.View,
@@ -690,6 +692,15 @@ define(function (require) {
 
         exports.delCachedAction();
     };
+
+    /**
+     * 获取同步的数据
+     *
+     * @public
+     * @param {name=} 数据名称
+     * @return {*}
+     */
+    exports.getSyncData = getSyncData;
 
     return exports;
 
