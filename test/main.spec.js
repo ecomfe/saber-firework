@@ -241,6 +241,94 @@ define(function (require) {
                     }, WAITE_TIME);
                 });
 
+                it('wait other action', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    var p2 = extend({}, require('mock/foo'));
+                    p1.events = {
+                        enter: jasmine.createSpy('p1')
+                    };
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+
+                    router.redirect('/foo');
+                    router.redirect('/boo');
+
+                    expect(p1.events.enter).not.toHaveBeenCalled();
+                    expect(p2.events.enter).not.toHaveBeenCalled();
+
+                    setTimeout(function () {
+                        expect(p1.events.enter).toHaveBeenCalled();
+                        expect(p2.events.enter).toHaveBeenCalled();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('only wait the last action', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    var p2 = extend({}, require('mock/foo'));
+                    var p3 = extend({}, require('mock/foo'));
+                    p1.events = {
+                        enter: jasmine.createSpy('p1')
+                    };
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+                    p3.events = {
+                        enter: jasmine.createSpy('p3')
+                    };
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+                    firework.load({path: '/new', action: p3});
+
+                    router.redirect('/foo');
+                    router.redirect('/boo');
+                    router.redirect('/new');
+
+                    expect(p1.events.enter).not.toHaveBeenCalled();
+                    expect(p2.events.enter).not.toHaveBeenCalled();
+                    expect(p3.events.enter).not.toHaveBeenCalled();
+
+                    setTimeout(function () {
+                        expect(p1.events.enter).toHaveBeenCalled();
+                        expect(p2.events.enter).not.toHaveBeenCalled();
+                        expect(p3.events.enter).toHaveBeenCalled();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('timeout', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    p1.model = extend({}, require('mock/fooModel'));
+                    p1.model.fetch = function () {
+                        var resolver = new Resolver();
+                        setTimeout(function () {
+                            resolver.resolve();
+                        }, 1300);
+                        return resolver.promise();
+                    };
+                    var p2 = extend({}, require('mock/foo'));
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        router.redirect('/boo');
+                        setTimeout(function () {
+                            expect(p2.events.enter).toHaveBeenCalled();
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, 1100);
+
+                });
+
             });
 
             describe('global events', function () {
