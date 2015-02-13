@@ -14,7 +14,7 @@
     ],
     "dependencies": {
         "etpl": "~3.0.0",
-        "saber-viewport": "~1.0.1",
+        "saber-viewport": "~1.1.0",
         "saber-mm": "~0.1.0",
         "saber-router": "~2.0.0",
         "saber-dom": "~1.0.0",
@@ -22,8 +22,7 @@
         "saber-lang": "~1.0.0",
         "saber-tap": "~1.0.0",
         "saber-promise": "~1.0.0",
-        "saber-widget": "~1.0.0",
-        "saber-ajax": "~1.0.0"
+        "saber-widget": "~1.0.0"
     },
     "scripts": {
         "pretest": "node test/ws.js start",
