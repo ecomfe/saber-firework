@@ -19,6 +19,13 @@ define({
     path: '/',
 
     /**
+     * 默认根路径
+     *
+     * @type {string}
+     */
+    root: '',
+
+    /**
      * 预加载的模版
      *
      * @type {Array.<string>}

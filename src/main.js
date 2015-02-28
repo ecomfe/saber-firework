@@ -568,7 +568,8 @@ define(function (require) {
 
         router.config({
             path: config.path,
-            index: config.index
+            index: config.index,
+            root: config.root
         });
 
         // 启动路由
