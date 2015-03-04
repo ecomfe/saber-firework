@@ -1,35 +1,43 @@
 {
-    "name": "saber-firework",
-    "version": "1.0.0",
-    "description": "移动端`MVP`开发框架",
-    "main": "main",
-    "maintainers": [
-        {
-            "name": "treelite",
-            "email": "c.xinle@gmail.com"
-        }
-    ],
-    "contributors": [
-        { "name": "mycoin", "email": "nqliujiangtao@gmail.com" }
-    ],
+  "name": "saber-firework",
+  "version": "1.0.0",
+  "description": "移动端`MVP`开发框架",
+  "main": "main",
+  "maintainers": [
+    {
+      "name": "treelite",
+      "email": "c.xinle@gmail.com"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "mycoin",
+      "email": "nqliujiangtao@gmail.com"
+    }
+  ],
+  "edp": {
     "dependencies": {
-        "etpl": "~3.0.0",
-        "saber-viewport": "~1.1.0",
-        "saber-mm": "~0.1.0",
-        "saber-router": "~2.0.0",
-        "saber-dom": "~1.0.0",
-        "saber-emitter": "~1.0.0",
-        "saber-lang": "~1.0.0",
-        "saber-tap": "~1.0.0",
-        "saber-promise": "~1.0.0",
-        "saber-widget": "~1.0.0"
-    },
-    "scripts": {
-        "pretest": "node test/ws.js start",
-        "test": "phantomjs test/run-jasmine.js http://localhost:8848/test/runner.html",
-        "posttest": "node test/ws.js stop"
-    },
-    "license": "BSD",
-    "repository": "git://github.com/ecomfe/saber-firework.git",
-    "bugs": "https://github.com/ecomfe/saber-firework/issues"
+      "etpl": "~3.0.0",
+      "saber-viewport": "~1.1.0",
+      "saber-mm": "~0.1.0",
+      "saber-router": "~2.0.0-alpha.1",
+      "saber-dom": "~1.0.0",
+      "saber-emitter": "~2.0.0-alpha.1",
+      "saber-lang": "~2.0.0-alpha.1",
+      "saber-tap": "~1.0.0",
+      "saber-promise": "~2.0.0-alpha.1",
+      "saber-widget": "~1.0.0"
+    }
+  },
+  "devDependencies": {
+    "phantomjs": "^1.9.16"
+  },
+  "scripts": {
+    "pretest": "node test/ws.js start",
+    "test": "phantomjs test/run-jasmine.js http://localhost:8848/test/runner.html",
+    "posttest": "node test/ws.js stop"
+  },
+  "license": "BSD",
+  "repository": "git://github.com/ecomfe/saber-firework.git",
+  "bugs": "https://github.com/ecomfe/saber-firework/issues"
 }
