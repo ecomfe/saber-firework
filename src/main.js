@@ -119,7 +119,7 @@ define(function (require) {
      * @param {Object=} route.transition 转场配置
      * @param {Object} route.options 跳转参数
      * @param {boolean} route.options.force 强制跳转
-     * @param {boolean=} route.optins.noCache 不使用缓存action
+     * @param {boolean=} route.options.noCache 不使用缓存action
      * @param {Object} action Action对象
      */
     function enterAction(route, action) {
@@ -270,7 +270,7 @@ define(function (require) {
      * @param {Object=} route.transition 转场配置
      * @param {Object} route.options 跳转参数
      * @param {boolean} route.options.force 强制跳转
-     * @param {boolean=} route.optins.noCache 不使用缓存action
+     * @param {boolean=} route.options.noCache 不使用缓存action
      */
     function loadAction(route) {
         var options = route.options || {};
@@ -493,6 +493,9 @@ define(function (require) {
     function extendGlobalConfig(options) {
         var config = extend(globalConfig, options);
 
+        // 扩展templateData
+        config.templateData = extend({}, getSyncData('templateData'), config.templateData);
+
         if (!Array.isArray(config.template)) {
             config.template = [config.template];
         }
@@ -504,6 +507,29 @@ define(function (require) {
         }
 
         return config;
+    }
+
+    /**
+     * 获取saber-mm的配置信息
+     *
+     * @inner
+     * @param {Object} options 配置项
+     * @return {Object}
+     */
+    function getConfig4mm(options) {
+        var res = {};
+        var names = [
+            'template', 'templateConfig', 'templateData',
+            'router', 'Presenter', 'View', 'Model'
+        ];
+
+        names.forEach(function (name) {
+            if (name in options) {
+                res[name] = options[name];
+            }
+        });
+
+        return res;
     }
 
     var routes = [];
@@ -545,15 +571,7 @@ define(function (require) {
 
         var router = config.router;
 
-        mm.config({
-            template: config.template,
-            templateConfig: config.templateConfig,
-            templateData: extend({}, getSyncData('templateData'), config.templateData),
-            router: router,
-            Presenter: config.Presenter,
-            View: config.View,
-            Model: config.Model
-        });
+        mm.config(getConfig4mm(config));
 
         // 初始化viewport
         viewport.init(main, config.viewport);
