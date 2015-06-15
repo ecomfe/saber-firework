@@ -34,7 +34,7 @@ app.start();
 
 更多内容请参考[使用指南](doc/guide.md)
 
-从 2.0 开始，`saber-firework` 将能支持同构的移动端项目，只需要引入同构的插件就能让 `saber-firework` 作为同构项目的浏览器端运行环境来工作了：
+从 2.0 开始，`saber-firework` 能支持同构的移动端项目了～ 只需要引入同构的插件就能让 `saber-firework` 作为同构项目的浏览器端运行环境来工作：
 
 ```js
 var app = require('saber-firework');
