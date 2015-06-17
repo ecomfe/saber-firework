@@ -121,7 +121,7 @@ define(function (require) {
                     router.redirect('/foo');
                     setTimeout(
                         function () {
-                            expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
+                            expect(main.innerHTML).toEqual('<div class="foo">foo</div>');
                             finish(done);
                         },
                         WAITE_TIME
@@ -297,7 +297,7 @@ define(function (require) {
                     firework.load({path: '/foo', action: 'mock/foo'});
                     router.redirect('/foo');
                     setTimeout(function () {
-                        expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
+                        expect(main.innerHTML).toEqual('<div class="foo">foo</div>');
                         finish(done);
                     }, 100);
                 });
@@ -555,7 +555,7 @@ define(function (require) {
 
                     setTimeout(function () {
                         expect(call).toBeTruthy();
-                        expect(main.innerHTML).toEqual('<div class=" foo">foo</div>');
+                        expect(main.innerHTML).toEqual('<div class="foo">foo</div>');
                         finish(done);
                     }, 100);
                 });

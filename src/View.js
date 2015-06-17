@@ -172,12 +172,15 @@ define(function (require) {
      *        View#afterrender
      */
     View.prototype.render = function (data) {
-        if (!this.main) {
+        var ele = this.main;
+
+        if (!ele) {
             return;
         }
 
-        if (this.className) {
-            this.main.className += ' ' + this.className;
+        var className = this.className;
+        if (className && !dom.hasClass(ele, className)) {
+            dom.addClass(ele, className);
         }
 
         /**
@@ -188,7 +191,7 @@ define(function (require) {
          */
         this.emit('beforerender', data);
 
-        this.main.innerHTML =
+        ele.innerHTML =
             this.template.render(this.templateMainTarget, data);
 
         /**

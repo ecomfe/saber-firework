@@ -104,6 +104,33 @@ define(function (require) {
             expect(view.template.render('test', data)).toEqual('test' + data.name);
         });
 
+        it('.render() should set className', function () {
+            var config = {
+                template: 'hello ${content}',
+                className: 'hello',
+                main: main
+            };
+
+            var view = new View(config);
+            view.render();
+
+            expect(main.className.trim()).toEqual(config.className);
+        });
+
+        it('.render() do not repeat setting className', function () {
+            var clsName = main.className = 'hello world'
+            var config = {
+                template: 'hello ${content}',
+                className: 'hello',
+                main: main
+            };
+
+            var view = new View(config);
+            view.render();
+
+            expect(main.className).toEqual(clsName);
+        });
+
         it('.ready() should bind dom events', function (done) {
             var tpl = '<!-- target:readyMain --><div class="box"><div class="inner"></div></div>';
             var fn = jasmine.createSpy('fn');
