@@ -16,7 +16,7 @@ define(function (require) {
         describe('app', function () {
             var main = document.querySelector('.viewport');
             // 等待Action加载的事件
-            var WAITE_TIME = 10;
+            var WAITE_TIME = 30;
 
             firework.load({path: '/', action: require('mock/index')});
             firework.start(main);
