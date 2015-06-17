@@ -7,7 +7,7 @@ define(function (require) {
 
     var Emitter = require('saber-emitter');
     var Resolver = require('saber-promise');
-    var Tap = require('saber-tap');
+    var FastClick = require('fastclick');
     var extend = require('saber-lang/extend');
     var bind = require('saber-lang/bind');
     var curry = require('saber-lang/curry');
@@ -577,7 +577,7 @@ define(function (require) {
         viewport.init(main, config.viewport);
 
         // 启用无延迟点击
-        Tap.mixin(document.body);
+        FastClick.attach(document.body);
 
         // 添加路由
         routes.forEach(function (item) {
