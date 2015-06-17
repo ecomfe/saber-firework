@@ -8,7 +8,6 @@ define(function (require) {
     var firework = require('saber-firework');
     var router = require('saber-router');
     var viewport = require('saber-viewport');
-    var tap = require('saber-tap');
     var Resolver = require('saber-promise');
     var extend = require('saber-lang/extend');
 
