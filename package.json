@@ -37,7 +37,7 @@
     "test": "phantomjs test/run-jasmine.js http://localhost:8848/test/runner.html",
     "posttest": "node test/ws.js stop"
   },
-  "license": "BSD",
+  "license": "MIT",
   "repository": "git://github.com/ecomfe/saber-firework.git",
   "bugs": "https://github.com/ecomfe/saber-firework/issues"
 }
