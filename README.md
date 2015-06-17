@@ -1,5 +1,7 @@
-saber-firework [![Build Status](https://travis-ci.org/ecomfe/saber-firework.png)](https://travis-ci.org/ecomfe/saber-firework)
+saber-firework
 ===
+
+![Bower version](https://img.shields.io/bower/v/saber-firework.svg?style=flat-square) [![Build Status](https://img.shields.io/travis/ecomfe/saber-firework/1.0/develop.svg?style=flat-square)](https://travis-ci.org/ecomfe/saber-firework) [![License](https://img.shields.io/github/license/ecomfe/saber-firework.svg?style=flat-square)](./LICENSE) [![EFE Mobile Team](https://img.shields.io/badge/EFE-Mobile_Team-blue.svg?style=flat-square)](http://efe.baidu.com)
 
 移动端`MVP`开发框架，使用[etpl](https://github.com/ecomfe/etpl)作为模版引擎，结合[页面转场](https://github.com/ecomfe/saber-viewport)与[路由管理](https://github.com/ecomfe/saber-router)，提供完整的`SPA`解决方案。
 
