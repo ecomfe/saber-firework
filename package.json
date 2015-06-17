@@ -27,7 +27,7 @@
         "pretest": "node -e \"$(curl -sf http://saberlabs.github.io/static/test/depend.js)\"",
         "test": "phantomjs test/run-jasmine.js test/runner.html"
     },
-    "license": "BSD",
+    "license": "MIT",
     "repository": "git://github.com/ecomfe/saber-firework.git",
     "bugs": "https://github.com/ecomfe/saber-firework/issues"
 }
