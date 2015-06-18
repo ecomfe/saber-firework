@@ -1,3 +1,8 @@
+# 2.0.0 / 2015-06-18
+
+* 首屏页面支持 server 渲染，与 [rebas](https://github.com/ecomfe/rebas) 配合提供全新的同构体验～
+* 拆分 `MVP` 的实现为独立的模块：[saber-mm](https://github.com/ecomfe/saber-mm)
+
 # 1.0.0 / 2014-11-03
 
 * 全局事件增加了`route`路由信息
