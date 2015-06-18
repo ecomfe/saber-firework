@@ -25,8 +25,7 @@
       "saber-emitter": "~2.0.0",
       "saber-lang": "~2.0.0",
       "fastclick": "~1.0.6",
-      "saber-promise": "~2.0.0",
-      "saber-widget": "~1.4.0"
+      "saber-promise": "~2.0.0"
     }
   },
   "devDependencies": {
