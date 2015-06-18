@@ -17,11 +17,14 @@
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/console.js"></script>
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/boot.js"></script>
         <script src="http://saberlabs.github.io/static/jasmine/2.0.0/console-reporter.js"></script>
-        <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-6-6/esl.js"></script>
+        <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-6/esl.js"></script>
     </head>
     <body>
         <div class="wrapper">
             <div class="viewport"></div>
+        </div>
+        <div class="wrapper">
+            <div class="viewport-fs"><h1>Hello</h1></div>
         </div>
         <script>
         require.config({
@@ -32,13 +35,17 @@
                     location: '../src'
                 },
                 {
+                    name: 'saber-mm',
+                    location: 'dep/saber-mm/1.0.0/src'
+                },
+                {
                     name: 'saber-emitter',
-                    location: 'dep/saber-emitter/1.0.0/src',
+                    location: 'dep/saber-emitter/2.0.0/src',
                     main: 'emitter'
                 },
                 {
                     name: 'saber-lang',
-                    location: 'dep/saber-lang/1.0.0/src'
+                    location: 'dep/saber-lang/2.0.0/src'
                 },
                 {
                     name: 'saber-dom',
@@ -46,12 +53,12 @@
                 },
                 {
                     name: 'saber-promise',
-                    location: 'dep/saber-promise/1.0.0/src',
+                    location: 'dep/saber-promise/2.0.0/src',
                     main: 'promise'
                 },
                 {
                     name: 'saber-uri',
-                    location: 'dep/saber-uri/1.0.0/src'
+                    location: 'dep/saber-uri/1.0.6/src'
                 },
                 {
                     name: 'etpl',
@@ -63,18 +70,18 @@
                 },
                 {
                     name: 'saber-viewport',
-                    location: 'dep/saber-viewport/1.0.0/src'
+                    location: 'dep/saber-viewport/1.1.0/src'
                 },
                 {
                     name: 'saber-router',
-                    location: 'dep/saber-router/1.0.0/src'
+                    location: 'dep/saber-router/2.0.0/src'
                 }
             ]
         });
         
         require([
-            'saber-tap',
-            'main.spec', 'event.spec', 'abstract.spec', 'action.spec', 'view.spec'
+            'fastclick',
+            'main.spec'
         ]);
 
         </script>

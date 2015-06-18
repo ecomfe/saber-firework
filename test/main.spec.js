@@ -8,98 +8,15 @@ define(function (require) {
     var firework = require('saber-firework');
     var router = require('saber-router');
     var viewport = require('saber-viewport');
-    var tap = require('saber-tap');
     var Resolver = require('saber-promise');
     var extend = require('saber-lang/extend');
 
-
-    var libs = {};
-
-    function mockLib(name, lib) {
-        var item = libs[name] || {};
-
-        Object.keys(lib).forEach(function (key) {
-            item[key] = lib[key];
-            lib[key] = jasmine.createSpy();
-        });
-
-        libs[name] = item;
-    }
-
-    function unmockLib(name, lib) {
-        var item = libs[name];
-        Object.keys(item).forEach(function (key) {
-            lib[key] = item[key];
-        });
-    }
-
     describe('main', function () {
-
-        describe('.start()', function () {
-
-            beforeEach(function () {
-                mockLib('tap', tap);
-                mockLib('router', router);
-                mockLib('viewport', viewport);
-            });
-
-            afterEach(function () {
-                unmockLib('tap', tap);
-                unmockLib('router', router);
-                unmockLib('viewport', viewport);
-            });
-
-            it('should init viewport, router, tap and then start router', function () {
-                var main = 'MainHTMLElement';
-                var options = {};
-
-                firework.start(main, options);
-
-                expect(viewport.init).toHaveBeenCalledWith(main, {transition: false});
-                expect(tap.mixin).toHaveBeenCalled();
-                expect(router.config).toHaveBeenCalled();
-                expect(router.start).toHaveBeenCalled();
-            });
-        });
-
-        describe('.load()', function () {
-
-            beforeEach(function () {
-                mockLib('tap', tap);
-                mockLib('router', router);
-                mockLib('viewport', viewport);
-            });
-
-            afterEach(function () {
-                unmockLib('tap', tap);
-                unmockLib('router', router);
-                unmockLib('viewport', viewport);
-            });
-
-            it('should add route config', function () {
-                var path = '/'
-                var route = {path: path};
-
-                firework.load(route);
-                expect(router.add).toHaveBeenCalled();
-                expect(router.add.calls.argsFor(0)[0]).toEqual(path);
-            });
-
-            it('should add array route config', function () {
-                var paths = ['/', '/home'];
-                var routes = [{path: paths[0]}, {path: paths[1]}];
-
-                firework.load(routes);
-                expect(router.add.calls.count()).toBe(2);
-                expect(router.add.calls.argsFor(0)[0]).toEqual(paths[0]);
-                expect(router.add.calls.argsFor(1)[0]).toEqual(paths[1]);
-            })
-        });
 
         describe('app', function () {
             var main = document.querySelector('.viewport');
             // 等待Action加载的事件
-            var WAITE_TIME = 10;
+            var WAITE_TIME = 30;
 
             firework.load({path: '/', action: require('mock/index')});
             firework.start(main);
@@ -177,6 +94,9 @@ define(function (require) {
                         wakeup: function () {
                             events.push('wakeup');
                         },
+                        revived: function () {
+                            events.push('revived');
+                        },
                         sleep: function () {
                             events.push('sleep');
                         },
@@ -202,7 +122,7 @@ define(function (require) {
                                 router.redirect('/foo~name=saber', null, {noCache: true});
                                 setTimeout(function () {
                                     expect(events).toEqual([
-                                        'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'complete',
+                                        'init', 'enter', 'ready', 'complete', 'sleep', 'wakeup', 'revived', 'complete',
                                         'leave', 'init', 'enter', 'ready', 'complete'
                                     ]);
                                     finish(done);
@@ -258,34 +178,6 @@ define(function (require) {
                             expect(main.innerHTML).toEqual('<div></div>');
                             expect(events).toEqual(['init', 'enter', 'ready', 'complete', 'leave', 'init', 'enter']);
                             finish(done)
-                        }, WAITE_TIME);
-                    }, WAITE_TIME);
-                });
-
-                it('check cahced action flow', function (done) {
-                    var action = extend({}, require('mock/foo'));
-                    var view = extend({}, require('mock/fooView'));
-                    var query = {name: 'saber'};
-                    var res;
-
-                    view.events = {
-                        wakeup: function (data) {
-                            res = data;
-                        }
-                    };
-
-                    action.view = view;
-
-                    firework.load({path: '/foo', action: action, cached: true});
-                    router.redirect('/foo');
-                    setTimeout(function () {
-                        router.redirect('/');
-                        setTimeout(function () {
-                            router.redirect('/foo', query);
-                            setTimeout(function () {
-                                expect(res).toEqual(query);
-                                finish(done);
-                            }, WAITE_TIME);
                         }, WAITE_TIME);
                     }, WAITE_TIME);
                 });
@@ -346,6 +238,94 @@ define(function (require) {
                             }, WAITE_TIME);
                         }, WAITE_TIME);
                     }, WAITE_TIME);
+                });
+
+                it('wait other action', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    var p2 = extend({}, require('mock/foo'));
+                    p1.events = {
+                        enter: jasmine.createSpy('p1')
+                    };
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+
+                    router.redirect('/foo');
+                    router.redirect('/boo');
+
+                    expect(p1.events.enter).not.toHaveBeenCalled();
+                    expect(p2.events.enter).not.toHaveBeenCalled();
+
+                    setTimeout(function () {
+                        expect(p1.events.enter).toHaveBeenCalled();
+                        expect(p2.events.enter).toHaveBeenCalled();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('only wait the last action', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    var p2 = extend({}, require('mock/foo'));
+                    var p3 = extend({}, require('mock/foo'));
+                    p1.events = {
+                        enter: jasmine.createSpy('p1')
+                    };
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+                    p3.events = {
+                        enter: jasmine.createSpy('p3')
+                    };
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+                    firework.load({path: '/new', action: p3});
+
+                    router.redirect('/foo');
+                    router.redirect('/boo');
+                    router.redirect('/new');
+
+                    expect(p1.events.enter).not.toHaveBeenCalled();
+                    expect(p2.events.enter).not.toHaveBeenCalled();
+                    expect(p3.events.enter).not.toHaveBeenCalled();
+
+                    setTimeout(function () {
+                        expect(p1.events.enter).toHaveBeenCalled();
+                        expect(p2.events.enter).not.toHaveBeenCalled();
+                        expect(p3.events.enter).toHaveBeenCalled();
+                        finish(done);
+                    }, WAITE_TIME);
+                });
+
+                it('timeout', function (done) {
+                    var p1 = extend({}, require('mock/foo'));
+                    p1.model = extend({}, require('mock/fooModel'));
+                    p1.model.fetch = function () {
+                        var resolver = new Resolver();
+                        setTimeout(function () {
+                            resolver.resolve();
+                        }, 1300);
+                        return resolver.promise();
+                    };
+                    var p2 = extend({}, require('mock/foo'));
+                    p2.events = {
+                        enter: jasmine.createSpy('p2')
+                    };
+
+                    firework.load({path: '/foo', action: p1});
+                    firework.load({path: '/boo', action: p2});
+
+                    router.redirect('/foo');
+
+                    setTimeout(function () {
+                        router.redirect('/boo');
+                        setTimeout(function () {
+                            expect(p2.events.enter).toHaveBeenCalled();
+                            finish(done);
+                        }, WAITE_TIME);
+                    }, 1100);
+
                 });
 
             });

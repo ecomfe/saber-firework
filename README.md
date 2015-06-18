@@ -1,7 +1,9 @@
-saber-firework [![Build Status](https://travis-ci.org/ecomfe/saber-firework.png)](https://travis-ci.org/ecomfe/saber-firework)
+saber-firework
 ===
 
-移动端`MVP`开发框架，使用[etpl](https://github.com/ecomfe/etpl)作为模版引擎，结合[页面转场](https://github.com/ecomfe/saber-viewport)与[路由管理](https://github.com/ecomfe/saber-router)，提供完整的`SPA`解决方案。
+![Bower version](https://img.shields.io/bower/v/saber-firework.svg?style=flat-square) [![Build Status](https://img.shields.io/travis/ecomfe/saber-firework.svg?style=flat-square)](https://travis-ci.org/ecomfe/saber-firework) [![License](https://img.shields.io/github/license/ecomfe/saber-firework.svg?style=flat-square)](./LICENSE) [![EFE Mobile Team](https://img.shields.io/badge/EFE-Mobile_Team-blue.svg?style=flat-square)](http://efe.baidu.com)
+
+移动端`SPA`开发框架，基于[MVP](https://github.com/ecomfe/saber-mm)架构，结合[页面转场](https://github.com/ecomfe/saber-viewport)与[路由管理](https://github.com/ecomfe/saber-router)，提供完整的`SPA`解决方案。
 
 ## Installation
 
@@ -32,60 +34,64 @@ app.load({
 app.start();
 ```
 
-具体请参考[使用指南](doc/guide.md)
+更多内容请参考[使用指南](doc/guide.md)
+
+从 2.0 开始，`saber-firework` 能支持同构的移动端项目了～ 只需要引入同构的插件就能让 `saber-firework` 作为同构项目的浏览器端运行环境来工作：
+
+```js
+var app = require('saber-firework');
+
+// 引入同构插件
+require('saber-firework/extension/isomorphic');
+
+// 欢迎进入同构的世界～
+...
+```
 
 ## API
 
 * [Methods](#methods)
 * [Events](#events)
-* [Classes](#classes)
 
 ### Methods
-
-#### load(route)
-
-加载路由配置信息
-
-* **route** `{Object|Array.<Object>}` 路由配置信息，具体参考[doc/route](doc/route.md)
 
 #### start(ele[, options])
 
 启动应用
 
 * **ele** `{HTMLElement}` 容器元素
-* **options** `{Object=}` 全局配置信息，具体参考[doc/config](doc/config.md)
+* **options** `{Object=}` 全局配置信息
+    * `path` `{string=}` 默认路径，默认为 `'/'`
+    * `index` `{string=}` index文件名称，默认为 `''`，如果设置为 `'index'` 则 `'/'` 与 `'/index'` 认为是相同路径
+    * `template` `{string|Array.<string>=}` 公共模版字符串，预编译的template，主要用于在启动App时提前编译全局公用的 template，比如母版等，默认为空
+    * `templateConfig` `{Object=}` 模版配置信息，具体请参考 [etpl 配置参数](https://github.com/ecomfe/etpl/blob/master/doc/config.md)
+    * `templateData` `{Object=}` 全局模版数据
+    * `Presenter` `{Object=}` 自定义 Presenter 基类
+    * `Model` `{Object=}` 自定义 Model 基类
+    * `View` `{Object=}` 自定义 View 基类
+    * `router` `{Object=}` 路由器，默认为 `hash` 路由
+    * `timeout` `{number=}` 页面加载超时时间，单位ms，超时后框架可以响应其它页面的切换请求，默认为 `300`
+    * `processor` `{Object=}` 附加处理器，作用于特定时刻调整框架行为，具体请参考[附加处理器说明](doc/processor)
+    * `viewport` `{Object=}` 转场相关配置，具体请参考 [saber-viewprot](https://github.com/ecomfe/saber-viewport) 的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)，默认为`{ transition: false }` 关闭转场效果
 
-#### addFilter(url, fn)
+`saber-firework` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm#classes)
 
-添加在加载页面前执行的过滤器
+#### load(route)
 
-* **url** `{string|RegExp=}` filter匹配的url或者url正则表达式，如果不设置则filter对所有url都生效
-* **fn** `Function(route, next, jump)` filter，支持异步操作，有四个参数：
-    * **route** `{Object}` 路由信息，包括页面URL`path`与查询条件`query`等
-    * **next** `{Function}` 执行下一个filter
-    * **jump** `{Function}` 跳过后续的filter
+加载路由配置信息
 
-最常见的filter有日志统计，权限验证等，例如：
+* **route** `{Object|Array.<Object>}` 路由配置信息
+    * **path** `{string}` 请求路径
+    * **action** `{Object|string}` Presenter 配置信息，如果是字符串则表示配置文件的加载地址，会在后续实际访问时进行异步加载
+    * **cached** `{boolean=}` Presenter 缓存设置，缓存的页面在离开时不会被销毁，下次访问会跳过初始化渲染过程
+    * **transition** `{Object=}` 转场参数，具体请参考 [saber-viewprot](https://github.com/ecomfe/saber-viewport) 的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)
 
-```js
-// 对所有`/admin/`路径下的页面添加登录验证
-firework.addFilter(/^\/admin\//, function (route, next, jump) {
-    if (!isLogin) {
-        // 没登录就乖乖去登录
-        // 通过直接修改路由信息中的`path`来改变实际加载的页面
-        // 同时添加名为`form`的`query`参数，用于登录完成后跳转回之前的页面
-        route.query = { from: route.path };
-        route.path = '/login';
-        // 直接跳过后续的filter
-        jump();
-    }
-    else {
-        // 已经登录了
-        // 就好好继续执行下一个filter吧
-        next();
-    }
-});
-```
+#### getSyncData(name)
+
+获取后端同步的数据，只针对同构的项目，关于同构的相关信息请参考 [rebas](https://github.com/ecomfe/rebas)
+
+* **name** `{string}` 数据名称
+* _return_ `{*}` 数据内容
 
 #### delCachedAction(path)
 
@@ -110,31 +116,25 @@ firework.addFilter(/^\/admin\//, function (route, next, jump) {
     * **route** `{Object}` 待加载页面的路由信息
         * **path** `{string}` 地址
         * **query** `{Object}` 查询条件
-        * **url** `{string}` 完整URL
-    * **action** `{Action}` 待加载的[action对象](doc/action.md)
-    * **page** `{Page}` 待加载的[page对象](https://github.com/ecomfe/saber-viewport#page)
+        * **url** `{string}` 完整 URL
+    * **action** `{Action}` 待加载的 [Presenter 对象](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md)
+    * **page** `{Page}` 待加载的 [Page 对象](https://github.com/ecomfe/saber-viewport#page)
 * **before** `{Object}` 当前页面信息
     * **route** `{Object}` 当前页面的路由信息
         * **path** `{string}` 地址
         * **query** `{Object}` 查询条件
-        * **url** `{string}` 完整URL
-    * **action** `{Action}` 当前的[action对象](doc/action.md)
-    * **page** `{Page}` 当前的[page对象](https://github.com/ecomfe/saber-viewport#page)
+        * **url** `{string}` 完整 URL
+    * **action** `{Action}` 当前的 [Presenter 对象](https://github.com/ecomfe/saber-mm/blob/master/doc/presenter.md)
+    * **page** `{Page}` 当前的 [Page 对象](https://github.com/ecomfe/saber-viewport#page)
 
 #### beforetransition
 
-转场动画开始前事件，参数同[beforeload](#beforeload)
+转场动画开始前事件，参数同 [beforeload](#beforeload)
 
 #### afterload
 
-页面加载完成事件，参数同[beforeload](#beforeload)
+页面加载完成事件，参数同 [beforeload](#beforeload)
 
 #### error
 
-页面加载失败事件，参数同[beforeload](#beforeload)
-
-### Classes
-
-* [Action](doc/action.md)对象，页面行为控制
-* [View](doc/view.md)对象，页面视图管理
-* [Model](doc/model.md)对象，页面数据管理
+页面加载失败事件，参数同 [beforeload](#beforeload)

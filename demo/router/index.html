@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>Guide</title>
+    <title>Router</title>
     <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/2-0-6/esl.js"></script>
   </head>
   <body>
-    <div id="viewport"></div>
+  <div id="viewport"></div>
     <script>
         require.config({
             baseUrl: 'src',
@@ -64,8 +64,17 @@
                     location: '../../dep/etpl/3.0.1/src'
                 },
                 {
+                    name: 'saber-env',
+                    location: '../../dep/saber-env/1.0.0/src'
+                },
+                {
                     name: 'saber-widget',
                     location: '../../dep/saber-widget/1.4.0/src'
+                },
+                {
+                    name: 'saber-ajax',
+                    location: '../../dep/saber-ajax/2.0.0/src',
+                    main: 'ajax'
                 }
 
             ]

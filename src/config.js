@@ -9,7 +9,7 @@ define({
      *
      * @type {string}
      */
-    index: 'index',
+    index: '',
 
     /**
      * 默认路径
@@ -19,11 +19,46 @@ define({
     path: '/',
 
     /**
+     * 默认根路径
+     *
+     * @type {string}
+     */
+    root: '',
+
+    /**
      * 预加载的模版
      *
      * @type {Array.<string>}
      */
     template: [],
+
+    /**
+     * 模版引擎配置信息
+     *
+     * @type {Object}
+     */
+    templateConfig: {},
+
+    /**
+     * 通用模版数据
+     *
+     * @type {Object}
+     */
+    templateData: {},
+
+    /**
+     * 是否启用同构模式
+     *
+     * @type {boolean}
+     */
+    isomorphic: false,
+
+    /**
+     * 数据同步的key
+     *
+     * @type {string}
+     */
+    syncDataKey: '__rebas__',
 
     /**
      * 视图配置
