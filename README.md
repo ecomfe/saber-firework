@@ -72,7 +72,7 @@ require('saber-firework/extension/isomorphic');
     * `router` `{Object=}` 路由器，默认为 `hash` 路由
     * `timeout` `{number=}` 页面加载超时时间，单位ms，超时后框架可以响应其它页面的切换请求，默认为 `300`
     * `processor` `{Object=}` 附加处理器，作用于特定时刻调整框架行为，具体请参考[附加处理器说明](doc/processor)
-    * `viewport` `{Object=}` 转场相关配置，具体请参考 [saber-viewprot](https://github.com/ecomfe/saber-viewport) 的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)，默认为`{ transition: false }` 关闭转场效果
+    * `viewport` `{Object=}` 转场相关配置，具体请参考 [saber-viewport](https://github.com/ecomfe/saber-viewport) 的[全局配置参数说明](https://github.com/ecomfe/saber-viewport#initele-options)，默认为`{ transition: false }` 关闭转场效果
 
 `saber-firework` 由 [saber-mm](https://github.com/ecomfe/saber-mm) 提供 `MVP` 的实现，`Presenter`、`View`、`Model` 相关的配置与 API 请参考 [saber-mm 的说明文档](https://github.com/ecomfe/saber-mm#classes)
 
