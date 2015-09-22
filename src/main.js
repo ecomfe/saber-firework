@@ -29,7 +29,7 @@ define(function (require) {
      *
      * @inner
      * @param {string} name 处理器名称
-     * @return {function|undefined}
+     * @return {?Function}
      */
     function getProcessor(name) {
         var processor = globalConfig.processor || {};
@@ -151,12 +151,15 @@ define(function (require) {
          * 触发全局事件
          *
          * @inner
-         * @type {string} eventName 事件名称
+         * @param {string} eventName 事件名称
+         * @param {...*} args 其余事件参数
          */
         var fireEvent = (
             function (eventArgBack, eventArgFront) {
-                return function (eventName) {
-                    exports.emit(eventName, eventArgBack, eventArgFront);
+                return function () {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.splice(1, 0, eventArgBack, eventArgFront);
+                    exports.emit.apply(exports, args);
                 };
             }
         )(
@@ -198,8 +201,8 @@ define(function (require) {
 
             if (error) {
                 return page
-                        .enter(transition.type, transition)
-                        .then(bind(Resolver.rejected, Resolver));
+                    .enter(transition.type, transition)
+                    .then(bind(Resolver.rejected, Resolver));
             }
             return page.enter(transition.type, transition);
         }
@@ -212,10 +215,11 @@ define(function (require) {
          * action加载失败处理
          *
          * @inner
+         * @param {Object} reason 错误原因
          * @return {Promise}
          */
-        function enterFail() {
-            fireEvent('error');
+        function enterFail(reason) {
+            fireEvent('error', reason);
             return startTransition(true);
         }
 

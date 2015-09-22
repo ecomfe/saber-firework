@@ -338,19 +338,19 @@ define(function (require) {
                     var backs = [];
                     var fronts = [];
 
-                    firework.on('beforeload', function (back, front) {
+                    firework.once('beforeload', function (back, front) {
                         events.push('beforeload');
                         backs.push(back);
                         fronts.push(front);
                     });
 
-                    firework.on('beforetransition', function (back, front) {
+                    firework.once('beforetransition', function (back, front) {
                         events.push('beforetransition');
                         backs.push(back);
                         fronts.push(front);
                     });
 
-                    firework.on('afterload', function (back, front) {
+                    firework.once('afterload', function (back, front) {
                         events.push('afterload');
                         backs.push(back);
                         fronts.push(front);
@@ -374,9 +374,10 @@ define(function (require) {
                 });
 
                 it('error should emit when load action fail', function (done) {
-                    firework.on('error', function (back, front) {
+                    firework.once('error', function (back, front, reason) {
                         expect(back.route.url).toEqual('/error');
                         expect(front.route.url).toEqual('/');
+                        expect(reason.name).toEqual('error');
                         finish(done);
                     });
                     
